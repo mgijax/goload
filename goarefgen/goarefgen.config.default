@@ -1,0 +1,94 @@
+#format: sh
+#
+#  goarefgen.config
+#
+#  This file sets up environment variables that are needed for a specific
+#  data provider input file to be handled by the annotation loader.
+#
+# GOA config file for processing GOA file and loading annotations
+#
+# Note that we use the GOA file from EBI since they are the original
+# source of this information.
+# There is a GOA file available on the GO site, but the MGI GO group
+# suspects that the GO file is more out-of-date than the EBI file.
+#
+
+###########################################################################
+
+###########################################################################
+#
+#  GENERAL SETTINGS
+#
+###########################################################################
+
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+#  Annotation Loader shell script
+ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
+
+export ANNOTLOADER_CSH
+
+###########################################################################
+#
+#  LOAD SPECIFIC SETTINGS
+#
+###########################################################################
+
+#  Path name of the archive, logs, reports and output directories
+FILEDIR=${DATALOADSOUTPUT}/go/goarefgen
+ARCHIVEDIR=${FILEDIR}/archive
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+
+# directory where input files are created by goarefgen.py
+INPUTDIR=${FILEDIR}/input
+INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/submission/paint/pre-submission/gene_association.paint_mgi.gz
+INFILE_NAME_GAF=${INPUTDIR}/gene_association.paint_mgi
+INFILE_NAME=${INPUTDIR}/goarefgen.annot
+
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
+export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME
+
+#  Complete path name of the log files
+LOG_FILE=${LOGDIR}/goarefgenload.log
+LOG_PROC=${LOGDIR}/goarefgenload.proc.log
+LOG_DIAG=${LOGDIR}/goarefgenload.diag.log
+LOG_CUR=${LOGDIR}/goarefgenload.cur.log
+LOG_VAL=${LOGDIR}/goarefgenload.val.log
+
+#  Send debug messages to the diagnostic log (true or false)
+LOG_DEBUG=false
+
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
+
+#  The name of the job stream for the load
+JOBSTREAM=goarefgenload
+JNUMBER="J:161428"
+
+export JOBSTREAM JNUMBER
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+#  The name of the load for the subject of an email notification
+MAIL_LOADNAME="GOA/PAINT annotation load"
+
+export MAIL_LOADNAME
+
+INSTALLDIR=${GOLOAD}
+export INSTALLDIR
+
