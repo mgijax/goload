@@ -1,0 +1,10 @@
+TAG: goload-6-0-5-?
+DATE: 06/06/2016
+STAFF: lec 
+CHANGES: TR12049/gone-dor & more
+1) wrapper for all go-loads
+goamouse  : goaload
+goahuman  : goahumanload
+goarat    : goratload
+goacfp    : gocfpload
+goarefgen : gorefgenload
