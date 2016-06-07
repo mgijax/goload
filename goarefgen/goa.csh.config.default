@@ -6,7 +6,7 @@
 
 #. ${ANNOTLOAD}/Configuration
 
-setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/go/goarat/input
+setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/go/goarefgen/input
 setenv ANNOTMODE                new
 #setenv ANNOTMODE                preview
 setenv ANNOTTYPENAME            "GO/Marker"
@@ -14,6 +14,6 @@ setenv ANNOTPROPERTY            82
 setenv DELETEREFERENCE          "J:161428"
 setenv DELETEUSER               GO_Central
 setenv ANNOTOBSOLETE            0
-setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/goarat.annot
+setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/goarefgen.annot
 setenv ANNOTLOG                 ${ANNOTINPUTFILE}.log
 
