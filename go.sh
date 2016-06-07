@@ -28,8 +28,8 @@ touch ${LOG}
 echo 'Run GOA Load' | tee -a ${LOG}
 ${GOLOAD}/goamouse/goamouse.sh
 
-#echo 'Run GO/Rat Load' | tee -a ${LOG}
-#${GOLOAD}/goarat/goarat.sh
+echo 'Run GO/Rat Load' | tee -a ${LOG}
+${GOLOAD}/goarat/goarat.sh
 
 #echo 'Run GO/PAINT Load' | tee -a ${LOG}
 #${GOLOAD}/goarefgen/goarefgen.sh

@@ -29,9 +29,11 @@ fi
 #
 cd `dirname $0`
 
-#for i in goamouse goahuman gorat gocfp gorefgen
-for i in goamouse
+for i in goamouse goarat
 do
+
+cp -r $i/$i.config.default $i/$i.config
+cp -r $i/goa.csh.config.default $i/goa.csh.config
 
 # establish the config files
 MAIN_CONFIG=$i/$i.config
@@ -46,7 +48,17 @@ else
     installFailed
 fi
 
+#
+# Create the input directory if it doesn't exist.
+#
+if [ ! -d ${INPUTDIR} ]
+then
+    mkdir -p ${INPUTDIR}
+fi
+
 done
+
+cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
 
 # Check to see if this is a development installation
 #
@@ -61,12 +73,4 @@ fi
 #
 echo 'running DLAINSTALL'
 ${DLAINSTALL} ${DEV}
-
-#
-# Create the input directory if it doesn't exist.
-#
-if [ ! -d ${INPUTDIR} ]
-then
-    mkdir -p ${INPUTDIR}
-fi
 
