@@ -149,9 +149,9 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat"
 #
 
 echo "Running GO/RAT inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.goaratload >> ${LOG_DIAG} 
+${MGICACHELOAD}/inferredfrom.goratload >> ${LOG_DIAG} 
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goaratload"
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goratload"
 
 #
 # run postload cleanup and email logs
