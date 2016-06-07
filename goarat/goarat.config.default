@@ -54,11 +54,11 @@ OUTPUTDIR=${FILEDIR}/output
 # directory where input files are created by goarat.py
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/gene_association.rgd.gz
-INFILE_NAME_GOAGAF=${INPUTDIR}/gene_association.rgd
-INFILE_NAME_GOA=${INPUTDIR}/goarat.annot
+INFILE_NAME_GAF=${INPUTDIR}/gene_association.rgd
+INFILE_NAME=${INPUTDIR}/goarat.annot
 
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
-export INFILE_NAME_GZ INFILE_NAME_GOAGAF INFILE_NAME_GOA
+export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME
 
 #  Complete path name of the log files
 LOG_FILE=${LOGDIR}/goaratload.log

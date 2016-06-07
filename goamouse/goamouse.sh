@@ -47,7 +47,7 @@
 
 cd `dirname $0`
 
-COMMON_CONFIG=goamouse.config
+COMMON_CONFIG=${GOLOAD}/goamouse/goamouse.config
 
 USAGE="Usage: goamouse.sh"
 
@@ -98,17 +98,14 @@ fi
 # sets "JOBKEY"
 preload ${OUTPUTDIR}
 
-# remove old files
-rm -rf ${INFILE_NAME_GOAGAF}
-
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${INFILE_NAME_GOAGAF}
-gunzip ${INFILE_NAME_GOAGAF} >> ${LOG_DIAG}
-rm -rf ${INFILE_NAME_GOASORTED} >> ${LOG_DIAG}
+rm -rf ${INFILE_NAME_GAF}
+gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
+rm -rf ${INFILE_NAME_SORTED} >> ${LOG_DIAG}
 # important to sort the file so we can collapse "duplicate" lines
-sort -k2,7 ${INFILE_NAME_GOAGAF} > ${INFILE_NAME_GOASORTED}
+sort -k2,7 ${INFILE_NAME_GAF} > ${INFILE_NAME_SORTED}
 
 cd ${OUTPUTDIR}
 

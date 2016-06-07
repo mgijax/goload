@@ -7,7 +7,7 @@
 # Report:
 #	TR 7904/7926
 #
-#	Takes the GOA file ${INFILE_NAME_GOASORTED} and generates
+#	Takes the GOA file ${INFILE_NAME_SORTED} and generates
 #
 #		mgi.error
 #			file of GOA annotations that originated from MGI
@@ -133,7 +133,7 @@ def main():
     # Initialize input/output files
     #
 
-    inFileName = os.environ['INFILE_NAME_GOASORTED']
+    inFileName = os.environ['INFILE_NAME_SORTED']
     goaPrefix = os.environ['DELETEUSER']
 
     unresolvedAErrorFile = reportlib.init('unresolvedA', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')

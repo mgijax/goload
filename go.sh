@@ -31,8 +31,8 @@ ${GOLOAD}/goamouse/goamouse.sh
 echo 'Run GO/Rat Load' | tee -a ${LOG}
 ${GOLOAD}/goarat/goarat.sh
 
-#echo 'Run GO/PAINT Load' | tee -a ${LOG}
-#${GOLOAD}/goarefgen/goarefgen.sh
+echo 'Run GO/PAINT Load' | tee -a ${LOG}
+${GOLOAD}/goarefgen/goarefgen.sh
 
 #echo 'Run GOA/Human Load' | tee -a ${LOG}
 #${GOLOAD}/goahuman/goahuman.sh

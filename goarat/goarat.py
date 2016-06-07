@@ -123,7 +123,7 @@ def reinitialize():
     global inFile
 
     inFile.close()
-    inFileName = os.environ['INFILE_NAME_GOAGAF']
+    inFileName = os.environ['INFILE_NAME_GAF']
     inFile = open(inFileName, 'r')
 
 #
@@ -185,8 +185,8 @@ def initialize():
     global reasonCodeFile, memberNumDict
     global ratIdDict, isNotDict, infFromExistsDict, bioProcessList
 
-    inFileName = os.environ['INFILE_NAME_GOAGAF']
-    annotFileName = os.environ['INFILE_NAME_GOA']
+    inFileName = os.environ['INFILE_NAME_GAF']
+    annotFileName = os.environ['INFILE_NAME']
     reasonCodeFileName = os.environ['RPTDIR'] + '/reasonCode.rpt'
 
     inFile = open(inFileName, 'r')

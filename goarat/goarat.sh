@@ -114,14 +114,11 @@ fi
 # sets "JOBKEY"
 preload ${OUTPUTDIR}
 
-# remove old files
-rm -rf ${INFILE_NAME_GOAGAF}
-
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${INFILE_NAME_GOAGAF}
-gunzip ${INFILE_NAME_GOAGAF} >> ${LOG_DIAG}
+rm -rf ${INFILE_NAME_GAF}
+gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
 
 cd ${OUTPUTDIR}
 
