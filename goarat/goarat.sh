@@ -114,6 +114,8 @@ fi
 # sets "JOBKEY"
 preload ${OUTPUTDIR}
 
+cd ${OUTPUTDIR}
+
 #
 #
 # create input file
@@ -127,9 +129,8 @@ checkStatus ${STAT} "${GOLOAD}/goarat/goarat.py"
 # run annotation load
 #
 
-COMMON_CONFIG_CSH=${GOLOAD}/goarat.csh.config
+COMMON_CONFIG_CSH=${GOLOAD}/goa.csh.config
 echo "Running GO/RAT annotation load" >> ${LOG_DIAG}
-cd ${OUTPUTDIR}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat >> ${LOG_DIAG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat"
