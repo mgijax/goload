@@ -1,0 +1,102 @@
+#format: sh
+#
+#  goamouse.config
+#
+#  This file sets up environment variables that are needed for a specific
+#  data provider input file to be handled by the annotation loader.
+#
+# GOA config file for processing GOA file and loading annotations
+#
+# Note that we use the GOA file from EBI since they are the original
+# source of this information.
+# There is a GOA file available on the GO site, but the MGI GO group
+# suspects that the GO file is more out-of-date than the EBI file.
+#
+
+###########################################################################
+
+###########################################################################
+#
+#  GENERAL SETTINGS
+#
+###########################################################################
+
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+#  Annotation Loader shell script
+ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
+
+export ANNOTLOADER_CSH
+
+###########################################################################
+#
+#  LOAD SPECIFIC SETTINGS
+#
+###########################################################################
+
+#  Path name of the archive, logs, reports and output directories
+FILEDIR=${DATALOADSOUTPUT}/go/goamouse
+ARCHIVEDIR=${FILEDIR}/archive
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+
+# directory where input files are created by goamouse.py
+INPUTDIR=${FILEDIR}/input
+INFILE_NAME_GZ=${DATADOWNLOADS}/ftp.ebi.ac.uk/pub/databases/GO/goa/MOUSE/goa_mouse.gaf.gz
+INFILE_NAME_GOAGAF=${INPUTDIR}/goa_mouse.gaf
+INFILE_NAME_GOASORTED=${INPUTDIR}/goa_mouse.gaf.sorted
+INFILE_NAME_GOA=${INPUTDIR}/goamouse.annot
+GOAEDITOR=GOA
+UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
+ANNOTINPUTFILE=${INPUTDIR}/goamouse.annot
+ANNOTLOG=${ANNOTINPUTFILE}.log
+DELETEUSER="GOA_"
+
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
+export INFILE_NAME_GZ INFILE_NAME_GOAGAF INFILE_NAME_GOA INFILE_NAME_GOASORTED
+export GOAEDITOR
+export UBERONFILE
+export ANNOTINPUTFILE ANNOTLOG DELETEUSER
+
+#  Complete path name of the log files
+LOG_FILE=${LOGDIR}/goamouseload.log
+LOG_PROC=${LOGDIR}/goamouseload.proc.log
+LOG_DIAG=${LOGDIR}/goamouseload.diag.log
+LOG_CUR=${LOGDIR}/goamouseload.cur.log
+LOG_VAL=${LOGDIR}/goamouseload.val.log
+
+#  Send debug messages to the diagnostic log (true or false)
+LOG_DEBUG=false
+
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
+
+#  The name of the job stream for the load
+JOBSTREAM=goamouseload
+
+export JOBSTREAM
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+#  The name of the load for the subject of an email notification
+MAIL_LOADNAME="GOA/Mouse annotation load"
+
+export MAIL_LOADNAME
+
+INSTALLDIR=${GOLOAD}
+export INSTALLDIR
+
