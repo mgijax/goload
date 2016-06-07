@@ -47,16 +47,16 @@
 
 cd `dirname $0`
 
-COMMON_CONFIG=goarat.config
+COMMON_CONFIG=${GOLOAD}/goarat/goarat.config
 
 USAGE="Usage: goarat.sh"
 
 #
 # Make sure the common configuration file exists and source it.
 #
-if [ -f ../${COMMON_CONFIG} ]
+if [ -f ${COMMON_CONFIG} ]
 then
-    . ../${COMMON_CONFIG}
+    . ${COMMON_CONFIG}
 else
     echo "Missing configuration file: ${COMMON_CONFIG}"
     exit 1
@@ -114,6 +114,15 @@ fi
 # sets "JOBKEY"
 preload ${OUTPUTDIR}
 
+# remove old files
+rm -rf ${INFILE_NAME_GOAGAF}
+
+# copy new file from ${DATADOWNLOADS} and unzip
+cd ${INPUTDIR}
+cp ${INFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${INFILE_NAME_GOAGAF}
+gunzip ${INFILE_NAME_GOAGAF} >> ${LOG_DIAG}
+
 cd ${OUTPUTDIR}
 
 #
@@ -129,7 +138,7 @@ checkStatus ${STAT} "${GOLOAD}/goarat/goarat.py"
 # run annotation load
 #
 
-COMMON_CONFIG_CSH=${GOLOAD}/goa.csh.config
+COMMON_CONFIG_CSH=${GOLOAD}/goarat/goa.csh.config
 echo "Running GO/RAT annotation load" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat >> ${LOG_DIAG} 
 STAT=$?

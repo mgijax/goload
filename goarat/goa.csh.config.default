@@ -6,7 +6,7 @@
 
 #. ${ANNOTLOAD}/Configuration
 
-setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/go/goarat/output
+setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/go/goarat/input
 setenv ANNOTMODE                new
 #setenv ANNOTMODE                preview
 setenv ANNOTTYPENAME            "GO/Marker"

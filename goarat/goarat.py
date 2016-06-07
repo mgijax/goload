@@ -123,7 +123,7 @@ def reinitialize():
     global inFile
 
     inFile.close()
-    inFileName = os.environ['INPUTDIR'] + '/' + os.environ['INFILE_NAME_RATGAF']
+    inFileName = os.environ['INFILE_NAME_GOAGAF']
     inFile = open(inFileName, 'r')
 
 #
@@ -185,18 +185,8 @@ def initialize():
     global reasonCodeFile, memberNumDict
     global ratIdDict, isNotDict, infFromExistsDict, bioProcessList
 
-    #
-    # remove old zipped input file
-    # copy new input file
-    # unzip new input file
-    #
-
-    os.system('rm -rf ${INPUTDIR}/${INFILE_NAME_RATGAF}')
-    os.system('cp -r ${INFILE_NAME_GZ} ${INPUTDIR}')
-    os.system('cd ${INPUTDIR};gunzip ${INFILE_NAME_RATGAF}')
-
-    inFileName = os.environ['INPUTDIR'] + '/' + os.environ['INFILE_NAME_RATGAF']
-    annotFileName = os.environ['INPUTDIR'] + '/' + os.environ['INFILE_NAME_GORAT']
+    inFileName = os.environ['INFILE_NAME_GOAGAF']
+    annotFileName = os.environ['INFILE_NAME_GOA']
     reasonCodeFileName = os.environ['RPTDIR'] + '/reasonCode.rpt'
 
     inFile = open(inFileName, 'r')
