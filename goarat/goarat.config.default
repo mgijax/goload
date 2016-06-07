@@ -1,0 +1,100 @@
+#format: sh
+#
+#  goarat.config
+#
+#  This file sets up environment variables that are needed for a specific
+#  data provider input file to be handled by the annotation loader.
+#
+# GOA config file for processing GOA file and loading annotations
+#
+# Note that we use the GOA file from EBI since they are the original
+# source of this information.
+# There is a GOA file available on the GO site, but the MGI GO group
+# suspects that the GO file is more out-of-date than the EBI file.
+#
+
+###########################################################################
+
+###########################################################################
+#
+#  GENERAL SETTINGS
+#
+###########################################################################
+
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+#  Annotation Loader shell script
+ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
+
+export ANNOTLOADER_CSH
+
+###########################################################################
+#
+#  LOAD SPECIFIC SETTINGS
+#
+###########################################################################
+
+#  Path name of the archive, logs, reports and output directories
+FILEDIR=${DATALOADSOUTPUT}/go/goarat
+ARCHIVEDIR=${FILEDIR}/archive
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+
+# directory where input files are created by goarat.py
+INPUTDIR=${FILEDIR}/input
+INFILE_NAME_GZ=${DATADOWNLOADS}/${DATADOWNLOADS}/go_gene_assoc/gene_association.rgd.gz
+INFILE_NAME_GOAGAF=${INPUTDIR}/gene_association.rgd
+INFILE_NAME_GOA=${INPUTDIR}/goarat.annot
+GOAEDITOR=GOA
+UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
+ANNOTINPUTFILE=${INPUTDIR}/goarat.annot
+ANNOTLOG=${ANNOTINPUTFILE}.log
+
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
+export INFILE_NAME_GZ INFILE_NAME_GOAGAF INFILE_NAME_GOA
+export GOAEDITOR
+export UBERONFILE
+export ANNOTINPUTFILE ANNOTLOG
+
+#  Complete path name of the log files
+LOG_FILE=${LOGDIR}/goaratload.log
+LOG_PROC=${LOGDIR}/goaratload.proc.log
+LOG_DIAG=${LOGDIR}/goaratload.diag.log
+LOG_CUR=${LOGDIR}/goaratload.cur.log
+LOG_VAL=${LOGDIR}/goaratload.val.log
+
+#  Send debug messages to the diagnostic log (true or false)
+LOG_DEBUG=false
+
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
+
+#  The name of the job stream for the load
+JOBSTREAM=goaratload
+
+export JOBSTREAM
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+#  The name of the load for the subject of an email notification
+MAIL_LOADNAME="GOA/Rat annotation load"
+
+export MAIL_LOADNAME
+
+INSTALLDIR=${GOLOAD}
+export INSTALLDIR
+
