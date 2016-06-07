@@ -136,7 +136,7 @@ checkStatus ${STAT} "${GOLOAD}/goarefgen/goarefgen.py"
 # run annotation load
 #
 
-COMMON_CONFIG_CSH=${GOLOAD}/goa.csh.config
+COMMON_CONFIG_CSH=${GOLOAD}/goarefgen/goa.csh.config
 echo "Running goarefgen annotation load" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG_DIAG}
 STAT=$?
