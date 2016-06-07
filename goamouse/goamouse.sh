@@ -134,7 +134,7 @@ checkStatus ${STAT} "${GOLOAD}/goamouse/goamouse.py"
 #
 # run annotation load with new annotations
 #
-COMMON_CONFIG_CSH=${GOLOAD}/goamouse/goamouse.csh.config
+COMMON_CONFIG_CSH=${GOLOAD}/goamouse/goa.csh.config
 echo "Running GOA/Mouse annotation load" >> ${LOG_DIAG}
 echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
