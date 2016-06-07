@@ -5,14 +5,6 @@
 #  This file sets up environment variables that are needed for a specific
 #  data provider input file to be handled by the annotation loader.
 #
-# GOA config file for processing GOA file and loading annotations
-#
-# Note that we use the GOA file from EBI since they are the original
-# source of this information.
-# There is a GOA file available on the GO site, but the MGI GO group
-# suspects that the GO file is more out-of-date than the EBI file.
-#
-
 ###########################################################################
 
 ###########################################################################
