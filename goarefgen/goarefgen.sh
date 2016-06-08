@@ -86,7 +86,7 @@ touch ${LOG}
 #fi
 
 #
-#  Source the DLA library functions.
+# Source the DLA library functions.
 #
 
 if [ "${DLAJOBSTREAMFUNC}" != "" ]
@@ -112,6 +112,7 @@ fi
 #
 # createArchive including OUTPUTDIR, startLog, getConfigEnv
 # sets "JOBKEY"
+#
 preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
@@ -123,7 +124,6 @@ gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
 cd ${OUTPUTDIR}
 
 #
-#
 # create input file
 #
 echo 'Running goarefgen.py' >> ${LOG_DIAG}
@@ -134,7 +134,6 @@ checkStatus ${STAT} "${GOLOAD}/goarefgen/goarefgen.py"
 #
 # run annotation load
 #
-
 COMMON_CONFIG_CSH=${GOLOAD}/goarefgen/goa.csh.config
 echo "Running goarefgen annotation load" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG_DIAG}
@@ -144,7 +143,6 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-
 echo "Running goarefgen inferred-from cache load" >> ${LOG_DIAG}
 ${MGICACHELOAD}/inferredfrom.gorefgenload >> ${LOG_DIAG} 
 STAT=$?

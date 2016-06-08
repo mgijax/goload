@@ -70,9 +70,8 @@ rm -rf ${LOG}
 touch ${LOG}
 
 #
-#  Source the DLA library functions.
+# Source the DLA library functions.
 #
-
 if [ "${DLAJOBSTREAMFUNC}" != "" ]
 then
     if [ -r ${DLAJOBSTREAMFUNC} ]
@@ -96,6 +95,7 @@ fi
 #
 # createArchive including OUTPUTDIR, startLog, getConfigEnv
 # sets "JOBKEY"
+#
 preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip

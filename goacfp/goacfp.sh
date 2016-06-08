@@ -73,7 +73,6 @@ touch ${LOG}
 #
 #  Source the DLA library functions.
 #
-
 if [ "${DLAJOBSTREAMFUNC}" != "" ]
 then
     if [ -r ${DLAJOBSTREAMFUNC} ]
@@ -97,6 +96,7 @@ fi
 #
 # createArchive including OUTPUTDIR, startLog, getConfigEnv
 # sets "JOBKEY"
+#
 preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS}; not a gz file; no need to unzip
@@ -105,7 +105,6 @@ cp ${INFILE_NAME_GZ} ${INPUTDIR}
 
 cd ${OUTPUTDIR}
 
-#
 #
 # create input file
 #
