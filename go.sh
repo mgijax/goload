@@ -7,25 +7,33 @@
 
 cd `dirname $0`
 
-#
-# Initialize the log file.
-#
-LOG=${LOG_FILE}
-rm -rf ${LOG}
-touch ${LOG}
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+LOG=${DATALOADSOUTPUT}/go/$0.log
+rm -rf $LOG
+touch $LOG
+ 
+date | tee -a $LOG
 
 echo 'Run GOA Load' | tee -a ${LOG}
-${GOLOAD}/goamouse/goamouse.sh
+${GOLOAD}/goamouse/goamouse.sh | tee -a ${LOG}
 
 echo 'Run GO/Rat Load' | tee -a ${LOG}
-${GOLOAD}/goarat/goarat.sh
+${GOLOAD}/goarat/goarat.sh | tee -a ${LOG}
 
 echo 'Run GO/PAINT Load' | tee -a ${LOG}
-${GOLOAD}/goarefgen/goarefgen.sh
+${GOLOAD}/goarefgen/goarefgen.sh | tee -a ${LOG}
 
 echo 'Run GOA/Human Load' | tee -a ${LOG}
-${GOLOAD}/goahuman/goahuman.sh
+${GOLOAD}/goahuman/goahuman.sh | tee -a ${LOG}
 
 echo 'Run GO/CFP Load' | tee -a ${LOG}
-${GOLOAD}/goacfp/goacfp.sh
+${GOLOAD}/goacfp/goacfp.sh | tee -a ${LOG}
 
+date | tee -a $LOG
