@@ -72,5 +72,6 @@ ${DLAINSTALL} ${DEV}
 
 done
 
+# for goamouse only
 cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
 
