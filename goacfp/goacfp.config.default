@@ -46,8 +46,9 @@ INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/build.berkeleybop.org/job/gaf-check-mgi/lastBuild/artifact/gene_association.mgi.inf.gaf
 INFILE_NAME_GAF=${INPUTDIR}/gene_association.mgi.inf.gaf
 INFILE_NAME=${INPUTDIR}/goacfp.annot
+INFILE_NAME_ERROR=${INPUTDIR}/goacfp.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
-export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME
+export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME INFILE_NAME_ERROR
 
 # Complete path name of the log files
 LOG_FILE=${LOGDIR}/goacfpload.log

@@ -99,11 +99,9 @@ fi
 # sets "JOBKEY"
 preload ${OUTPUTDIR}
 
-# copy new file from ${DATADOWNLOADS} and unzip
+# copy new file from ${DATADOWNLOADS}; not a gz file; no need to unzip
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
 
 cd ${OUTPUTDIR}
 
@@ -129,9 +127,9 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 # run inferred-from cache
 #
 echo "Running goacfp inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.goacfpload >> ${LOG_DIAG} 
+${MGICACHELOAD}/inferredfrom.gocfpload >> ${LOG_DIAG} 
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goacfpload"
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gocfpload"
 
 #
 # run postload cleanup and email logs
