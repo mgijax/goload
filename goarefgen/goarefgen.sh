@@ -4,11 +4,10 @@
 ###########################################################################
 #
 #  Purpose:
-# 	This script downloads the GO-GAF RefGen file
-#       (see configuration file for names)
-#	and generates an output file of GO annotations.
-#	The GO annotations are then loaded into MGD
-#	using the annotation loader (annotload).
+#       This script creates a GOA/PAINT annotation load
+#       input file and invokes the annotload using that input file.
+#
+#  Usage=goarefgen.sh
 #
 #  Env Vars:
 #
@@ -18,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GO/RefGen load configuration file - goarefgen.config
+#      - GOA/PAINT load configuration file - goarefgen.config
 #      - input file - see python script header
 #
 #  Outputs:

@@ -32,9 +32,8 @@ fi
 
 . ${MGICONFIG}/master.config.sh
 
-#  Annotation Loader shell script
+# Annotation Loader shell script
 ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
-
 export ANNOTLOADER_CSH
 
 ###########################################################################
@@ -43,13 +42,12 @@ export ANNOTLOADER_CSH
 #
 ###########################################################################
 
-#  Path name of the archive, logs, reports and output directories
+# Path name of the archive, logs, reports and output directories
 FILEDIR=${DATALOADSOUTPUT}/go/goamouse
 ARCHIVEDIR=${FILEDIR}/archive
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
-
 # directory where input files are created by goamouse.py
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/ftp.ebi.ac.uk/pub/databases/GO/goa/MOUSE/goa_mouse.gaf.gz
@@ -61,28 +59,24 @@ UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
 ANNOTINPUTFILE=${INPUTDIR}/goamouse.annot
 ANNOTLOG=${ANNOTINPUTFILE}.log
 DELETEUSER="GOA_"
-
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
 export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME INFILE_NAME_SORTED
 export GOAEDITOR
 export UBERONFILE
 export ANNOTINPUTFILE ANNOTLOG DELETEUSER
 
-#  Complete path name of the log files
+# Complete path name of the log files
 LOG_FILE=${LOGDIR}/goamouseload.log
 LOG_PROC=${LOGDIR}/goamouseload.proc.log
 LOG_DIAG=${LOGDIR}/goamouseload.diag.log
 LOG_CUR=${LOGDIR}/goamouseload.cur.log
 LOG_VAL=${LOGDIR}/goamouseload.val.log
-
-#  Send debug messages to the diagnostic log (true or false)
+# Send debug messages to the diagnostic log (true or false)
 LOG_DEBUG=false
-
 export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
 
-#  The name of the job stream for the load
+# The name of the job stream for the load
 JOBSTREAM=goamouseload
-
 export JOBSTREAM
 
 ###########################################################################
@@ -91,9 +85,8 @@ export JOBSTREAM
 #
 ###########################################################################
 
-#  The name of the load for the subject of an email notification
+# The name of the load for the subject of an email notification
 MAIL_LOADNAME="GOA/Mouse annotation load"
-
 export MAIL_LOADNAME
 
 INSTALLDIR=${GOLOAD}

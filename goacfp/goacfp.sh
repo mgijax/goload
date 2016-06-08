@@ -1,14 +1,13 @@
 #!/bin/sh
 #
-#  gocfp.sh
+#  goacfp.sh
 ###########################################################################
 #
 #  Purpose:
-# 	This script downloads the GO-GAF Interonology (GO/CFP) file
-#       (see configuration file for names)
-#	and generates an output file of GO annotations.
-#	The GO annotations are then loaded into MGD
-#	using the annotation loader (annotload).
+#       This script creates a GOA/CFP annotation load
+#       input file and invokes the annotload using that input file.
+#
+#  Usage=goacfp.sh
 #
 #  Env Vars:
 #
@@ -18,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GO/CFP load configuration file - gocfp.config
+#      - GOA/CFP load configuration file - goacfp.config
 #      - input file - see python script header
 #
 #  Outputs:
@@ -26,7 +25,7 @@
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
 #        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
-#      - Input file: GO-GAF Interontology (GO/CFP)
+#      - Input file: GAF Interontology (GOA/CFP)
 #      - Output file: annotload
 #      - see annotload outputs
 #      - Records written to the database tables
@@ -49,16 +48,16 @@
 
 cd `dirname $0`
 
-COMMON_CONFIG=gocfp.config
+COMMON_CONFIG=${GOLOAD}/goacfp/goacfp.config
 
-USAGE="Usage: gocfp.sh"
+USAGE="Usage: goacfp.sh"
 
 #
 # Make sure the common configuration file exists and source it.
 #
-if [ -f ../${COMMON_CONFIG} ]
+if [ -f ${COMMON_CONFIG} ]
 then
-    . ../${COMMON_CONFIG}
+    . ${COMMON_CONFIG}
 else
     echo "Missing configuration file: ${COMMON_CONFIG}"
     exit 1
@@ -100,22 +99,28 @@ fi
 # sets "JOBKEY"
 preload ${OUTPUTDIR}
 
+# copy new file from ${DATADOWNLOADS} and unzip
+cd ${INPUTDIR}
+cp ${INFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${INFILE_NAME_GAF}
+gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
+
+cd ${OUTPUTDIR}
+
 #
 #
 # create input file
 #
-echo 'Running gocfp.py' >> ${LOG_DIAG}
-${GOCFPLOAD}/bin/gocfp.py >> ${LOG_DIAG}
+echo 'Running goacfp.py' >> ${LOG_DIAG}
+${GOLOAD}/goacfp/goacfp.py >> ${LOG_DIAG}
 STAT=$?
-checkStatus ${STAT} "${GOCFPLOAD}/bin/gocfp.py"
+checkStatus ${STAT} "${GOLOAD}/goacfp/goacfp.py"
 
 #
 # run annotation load
 #
-
-COMMON_CONFIG_CSH=${GOCFPLOAD}/gocfp.csh.config
-echo "Running gocfp annotation load" >> ${LOG_DIAG}
-cd ${OUTPUTDIR}
+COMMON_CONFIG_CSH=${GOLOAD}/goacfp/goa.csh.config
+echo "Running goacfp annotation load" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG_DIAG}
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
@@ -123,11 +128,10 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-
-echo "Running gocfp inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.gocfpload >> ${LOG_DIAG} 
+echo "Running goacfp inferred-from cache load" >> ${LOG_DIAG}
+${MGICACHELOAD}/inferredfrom.goacfpload >> ${LOG_DIAG} 
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gocfpload"
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goacfpload"
 
 #
 # run postload cleanup and email logs

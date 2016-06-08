@@ -4,7 +4,7 @@
 ###########################################################################
 #
 #  Purpose:
-# 	This script creates a GOAHUMAN annotation load
+# 	This script creates a GOA/Mouse annotation load
 #       input file and invokes the annotload using that input file.
 #
 #  Usage=goamouse.sh
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GOAHUMAN load configuration file - goamouse.config
+#      - GOA/Mouse load configuration file - goamouse.config
 #      - input file - see python script header
 #
 #  Outputs:

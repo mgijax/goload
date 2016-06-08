@@ -4,7 +4,7 @@
 ###########################################################################
 #
 #  Purpose:
-# 	This script creates a GOAHUMAN annotation load
+# 	This script creates a GOA/Human annotation load
 #       input file and invokes the annotload using that input file.
 #
 #  Usage=goahuman.sh
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GOAHUMAN load configuration file - goahuman.config
+#      - GOA/Human load configuration file - goahuman.config
 #      - input file - see python script header
 #
 #  Outputs:
@@ -111,15 +111,14 @@ cd ${OUTPUTDIR}
 # create input file
 #
 echo 'Running goahuman.py' >> ${LOG_DIAG}
-${GOAHUMANLOAD}/bin/goahuman.py >> ${LOG_DIAG}
+${GOLOAD}/goahuman/goahuman.py >> ${LOG_DIAG}
 STAT=$?
-checkStatus ${STAT} "${GOAHUMANLOAD}/bin/goahuman.py"
+checkStatus ${STAT} "${GOLOAD}/goahuman/goahuman.py"
 
 #
 # run annotation load
 #
-
-COMMON_CONFIG_CSH=${GOAHUMANLOAD}/goa.csh.config
+COMMON_CONFIG_CSH=${GOLOAD}/goahuman/goa.csh.config
 echo "Running GOA/Human annotation load" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goahuman >> ${LOG_DIAG} 
 STAT=$?
@@ -128,7 +127,6 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-
 echo "Running GOA/Human inferred-from cache load" >> ${LOG_DIAG}
 ${MGICACHELOAD}/inferredfrom.goahumanload >> ${LOG_DIAG} 
 STAT=$?

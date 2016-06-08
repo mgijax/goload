@@ -2,11 +2,11 @@
 
 '''
 #
-# gocfp.py
+# goacfp.py
 #
 # Inputs:
 #
-#       ${INFILE_NAME_GOCGAF}	the GO GAF file in the downloads directory
+#       ${INFILE_NAME_GAF}	the GO GAF file in the downloads directory
 #	${INFILE_NAME}		the GO GAF file in the input directory (a copy of GOCGAF)
 #	${INPUTDIR}		the input directory
 #
@@ -23,7 +23,7 @@
 #
 # Outputs:
 #
-#	${INFILE_NAME_GOCFP}	the file that will be used to load the annotations
+#	${INFILE_NAME}	        the file that will be used to load the annotations
 #	${INFILE_NAME_ERROR}	error file for reporting invalid references
 #
 # 	The annotation loader format has the following columns:
@@ -42,12 +42,11 @@
 # Report:
 #	TR 10011
 #
-#	Copy the GOCFP GAF download file (INFILE_NAME_GOCGAF)
-#	into the input directory (INPUTDIR, INFILE_NAME)
+#	Copy the GAF download file (INFILE_NAME_GAF) into the input directory (INPUTDIR)
 #
 #       Create a lookup of all MGI ids/PubMed ids/J: (mgiRefLookup)
 #
-#	for each row in the GAF file (INFILE_NAME):
+#	for each row in the GAF file (INFILE_NAME_GAF):
 #
 #           if the reference does not exist in MGI (using mgiRefLookup)
 #                   write the record to the error file (INFILE_NAME_ERROR)
@@ -56,10 +55,10 @@
 #	    note that the annotation loader checks for duplciates
 #	    (mgiID, goID, evidence code, jnumID)
 #
-#           write the record to the annotation file (INFILE_NAME_GOCFP)
+#           write the record to the annotation file (INFILE_NAME)
 #    
 # Usage:
-#       gocfp.py
+#       goacfp.py
 #
 # History:
 #
@@ -119,23 +118,15 @@ def initialize():
     global mgiRefLookup
 
     #
-    # copy new input file
-    #
-
-    os.system('cp -r ${INFILE_NAME_GOCGAF} ${INPUTDIR}')
-
-    #
     # open files
     #
 
-    inFileName = os.environ['INFILE_NAME']
-    annotFileName = os.environ['INPUTDIR'] + '/' + os.environ['INFILE_NAME_GOCFP']
-    errorFileName = os.environ['INPUTDIR'] + '/' + os.environ['INFILE_NAME_ERROR']
+    inFileName = os.environ['INFILE_NAME_GAF']
+    annotFileName = os.environ['INFILE_NAME']
+    errorFileName = os.environ['INFILE_NAME_ERROR']
 
     inFile = open(inFileName, 'r')
-
     annotFile = open(annotFileName, 'w')
-
     errorFile = open(errorFileName, 'w')
 
     #
@@ -163,13 +154,13 @@ def initialize():
 def readGAF():
 
     #
-    #	for each row in the GAF file (INFILE_NAME):
+    #	for each row in the GAF file (INFILE_NAME_GAF):
     #
     #           if the reference does not exist in MGI (using mgiRefLookup)
     #                   write the record to the error file (INFILE_NAME_ERROR)
     #                   skip the row
     #
-    #           write the record to the annotation file (INFILE_NAME_GOCFP)
+    #           write the record to the annotation file (INFILE_NAME)
     #
 
     # see annotload/annotload.py for format

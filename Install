@@ -29,7 +29,7 @@ fi
 #
 cd `dirname $0`
 
-for i in goamouse goarat goarefgen goahuman
+for i in goamouse goarat goarefgen goahuman goacfp
 do
 
 cp -r $i/$i.config.default $i/$i.config

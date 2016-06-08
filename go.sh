@@ -8,17 +8,6 @@
 cd `dirname $0`
 
 #
-# Make sure the common configuration file exists and source it.
-#
-if [ -f ../${COMMON_CONFIG} ]
-then
-    . ../${COMMON_CONFIG}
-else
-    echo "Missing configuration file: ${COMMON_CONFIG}"
-    exit 1
-fi
-
-#
 # Initialize the log file.
 #
 LOG=${LOG_FILE}
@@ -37,6 +26,6 @@ ${GOLOAD}/goarefgen/goarefgen.sh
 echo 'Run GOA/Human Load' | tee -a ${LOG}
 ${GOLOAD}/goahuman/goahuman.sh
 
-#echo 'Run GO/CFP Load' | tee -a ${LOG}
-#${GOLOAD}/goacfp/goacfp.sh
+echo 'Run GO/CFP Load' | tee -a ${LOG}
+${GOLOAD}/goacfp/goacfp.sh
 

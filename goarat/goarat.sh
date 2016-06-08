@@ -4,7 +4,7 @@
 ###########################################################################
 #
 #  Purpose:
-# 	This script creates a GORAT annotation load
+# 	This script creates a GOA/Rat annotation load
 #       input file and invokes the annotload using that input file.
 #
 #  Usage=goarat.sh
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GORAT load configuration file - goarat.config
+#      - GOA/Rat load configuration file - goarat.config
 #      - input file - see python script header
 #
 #  Outputs:
@@ -134,7 +134,6 @@ checkStatus ${STAT} "${GOLOAD}/goarat/goarat.py"
 #
 # run annotation load
 #
-
 COMMON_CONFIG_CSH=${GOLOAD}/goarat/goa.csh.config
 echo "Running GO/RAT annotation load" >> ${LOG_DIAG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat >> ${LOG_DIAG} 
@@ -144,7 +143,6 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat"
 #
 # run inferred-from cache
 #
-
 echo "Running GO/RAT inferred-from cache load" >> ${LOG_DIAG}
 ${MGICACHELOAD}/inferredfrom.goratload >> ${LOG_DIAG} 
 STAT=$?
