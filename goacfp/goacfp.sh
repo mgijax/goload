@@ -71,7 +71,7 @@ rm -rf ${LOG}
 touch ${LOG}
 
 #
-#  Source the DLA library functions.
+# Source the DLA library functions.
 #
 if [ "${DLAJOBSTREAMFUNC}" != "" ]
 then
