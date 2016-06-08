@@ -6,7 +6,11 @@
 #
 #	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goahumanload
 #
-# 	The GOA/Human file contains:
+# Inputs:
+#
+#	${INFILE_NAME_GAF}      the GAF file
+#
+# 	The GAF file contains:
 #
 # 		field 1: Database ID ('UniProtKB')
 # 		field 2: GOA ID (UniProtKB id)
@@ -18,6 +22,10 @@
 # 		field 8: Inferred From
 # 		field 14: Modification Date
 #		field 15: Assigned By
+#
+# Outputs:
+#
+#       ${INFILE_NAME}          the file that will be used to load the annotations
 #
 # 	The annotation loader format has the following columns:
 #

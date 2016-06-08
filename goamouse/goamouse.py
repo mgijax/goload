@@ -4,7 +4,31 @@
 #
 # goamouse.py
 #
-# Report:
+#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goaload
+#
+# Inputs:
+#
+#       ${INFILE_NAME_GAF}      the GAF file
+#
+#       The GAF file contains:
+#
+#               field 1:  Database ID ('MGI')
+#               field 2:  GOA ID
+#               field 3:  Symbol
+#               field 4:  Qualifier value
+#               field 5:  GO ID
+#               field 6:  References (PMIDs)
+#               field 7:  Evidence code
+#               field 8:  Inferred From 
+#		field 10: GOA Name
+#		field 11: Synonyms
+#		field 12: Marker Type
+#		field 13: Taxom ID
+#               field 14: Modification Date
+#               field 15: Assigned By
+#
+# Outputs/Report:
+#
 #	TR 7904/7926
 #
 #	Takes the GOA file ${INFILE_NAME_SORTED} and generates
@@ -356,7 +380,7 @@ def main():
     #    databaseID = tokens[0]
         databaseID = "MGI"
         goaID = tokens[1]		# translate to MGI value
-        goaSymbol = tokens[2]	# translate to MGI value
+        goaSymbol = tokens[2]		# translate to MGI value
         qualifierValue = tokens[3]
         goID = tokens[4]
         refID = tokens[5]		# translate to MGI value

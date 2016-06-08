@@ -4,11 +4,11 @@
 #
 # goacfp.py
 #
+#	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Gocfpload
+#
 # Inputs:
 #
-#       ${INFILE_NAME_GAF}	the GO GAF file in the downloads directory
-#	${INFILE_NAME}		the GO GAF file in the input directory (a copy of GOCGAF)
-#	${INPUTDIR}		the input directory
+#       ${INFILE_NAME_GAF}	the GAF file
 #
 # 	The GAF file contains:
 #
@@ -41,8 +41,6 @@
 #
 # Report:
 #	TR 10011
-#
-#	Copy the GAF download file (INFILE_NAME_GAF) into the input directory (INPUTDIR)
 #
 #       Create a lookup of all MGI ids/PubMed ids/J: (mgiRefLookup)
 #

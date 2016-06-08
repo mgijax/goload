@@ -6,7 +6,11 @@
 #
 #	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goratload
 #
-#       The GO/Rat file contains:
+# Inputs:
+#
+#       ${INFILE_NAME_GAF}      the GAF file
+#
+#       The GAF file contains:
 #
 #               field 1: Database ID (RGD or UniProtKB)
 #               field 2: RGD ID (12345)

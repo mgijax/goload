@@ -4,10 +4,11 @@
 #
 # goarefgen.py
 #
+#	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Gorefgenload
+#
 # Inputs:
 #
-#	${INPUTDIR}		the input directory
-#	${INFILE_NAME_GAF}	the GO GAF file in the input directory
+#	${INFILE_NAME_GAF}	the GAF file in the input directory
 #	${JNUMBER}		the J number to use for the annotation load
 #
 # 	The GAF file contains:
