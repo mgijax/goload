@@ -56,10 +56,6 @@ then
     mkdir -p ${INPUTDIR}
 fi
 
-done
-
-cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
-
 # Check to see if this is a development installation
 #
 DEV=""
@@ -73,4 +69,8 @@ fi
 #
 echo 'running DLAINSTALL'
 ${DLAINSTALL} ${DEV}
+
+done
+
+cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
 
