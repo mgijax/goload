@@ -41,7 +41,6 @@ ARCHIVEDIR=${FILEDIR}/archive
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
-# directory where input files are created by goarat.py
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/gene_association.rgd.gz
 INFILE_NAME_GAF=${INPUTDIR}/gene_association.rgd

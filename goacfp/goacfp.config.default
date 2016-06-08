@@ -41,7 +41,6 @@ ARCHIVEDIR=${FILEDIR}/archive
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
-# directory where input files are created by goacfp.py
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/build.berkeleybop.org/job/gaf-check-mgi/lastBuild/artifact/gene_association.mgi.inf.gaf
 INFILE_NAME_GAF=${INPUTDIR}/gene_association.mgi.inf.gaf

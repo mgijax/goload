@@ -41,7 +41,6 @@ ARCHIVEDIR=${FILEDIR}/archive
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
-# directory where input files are created by goarefgen.py
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/submission/paint/pre-submission/gene_association.paint_mgi.gz
 INFILE_NAME_GAF=${INPUTDIR}/gene_association.paint_mgi
