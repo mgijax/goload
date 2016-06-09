@@ -238,6 +238,5 @@ def closeFiles():
 
 initialize()
 readGAF()
-
 closeFiles()
 

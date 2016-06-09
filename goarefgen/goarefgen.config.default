@@ -45,7 +45,7 @@ INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/submission/paint/pre-submission/gene_association.paint_mgi.gz
 INFILE_NAME_GAF=${INPUTDIR}/gene_association.paint_mgi
 INFILE_NAME=${INPUTDIR}/goarefgen.annot
-export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR 
 export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME
 
 # Complete path name of the log files

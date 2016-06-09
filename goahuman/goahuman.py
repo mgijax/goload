@@ -191,11 +191,8 @@ def initialize():
     reasonCodeFileName = os.environ['RPTDIR'] + '/reasonCode.rpt'
 
     inFile = open(inFileName, 'r')
-
     annotFile = open(annotFileName, 'w')
-
     reasonCodeFile = open(reasonCodeFileName, 'w')
-
 
     db.useOneConnection(1)
 
@@ -563,6 +560,5 @@ initialize()
 preprocess()
 reinitialize()
 readGAF()
-
 closeFiles()
 

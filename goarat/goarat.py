@@ -570,5 +570,4 @@ initialize()
 preprocess()
 reinitialize()
 readGAF()
-
 closeFiles()

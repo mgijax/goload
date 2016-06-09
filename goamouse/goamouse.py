@@ -124,6 +124,7 @@ import os
 import db
 import reportlib
 
+#db.setTrace()
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 
@@ -690,12 +691,8 @@ def convertPropertiesIds(properties, uberonLookup={}):
 
     return properties, errors
 
-
 if __name__ == '__main__':
 
-	#db.setTrace()
-	db.setAutoTranslate(False)
-	db.setAutoTranslateBE(False)
         db.useOneConnection(1)
         db.sql('start transaction', None)
 
@@ -704,4 +701,4 @@ if __name__ == '__main__':
 
         db.commit()
 	db.useOneConnection(0) 
-
+	
