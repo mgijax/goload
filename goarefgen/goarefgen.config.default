@@ -49,11 +49,11 @@ export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
 export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME
 
 # Complete path name of the log files
-LOG_FILE=${LOGDIR}/goarefgenload.log
-LOG_PROC=${LOGDIR}/goarefgenload.proc.log
-LOG_DIAG=${LOGDIR}/goarefgenload.diag.log
-LOG_CUR=${LOGDIR}/goarefgenload.cur.log
-LOG_VAL=${LOGDIR}/goarefgenload.val.log
+LOG_FILE=${LOGDIR}/goarefgen.log
+LOG_PROC=${LOGDIR}/goarefgen.proc.log
+LOG_DIAG=${LOGDIR}/goarefgen.diag.log
+LOG_CUR=${LOGDIR}/goarefgen.cur.log
+LOG_VAL=${LOGDIR}/goarefgen.val.log
 # Send debug messages to the diagnostic log (true or false)
 LOG_DEBUG=false
 export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG

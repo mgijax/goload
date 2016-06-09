@@ -49,11 +49,11 @@ export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
 export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME
 
 # Complete path name of the log files
-LOG_FILE=${LOGDIR}/goaratload.log
-LOG_PROC=${LOGDIR}/goaratload.proc.log
-LOG_DIAG=${LOGDIR}/goaratload.diag.log
-LOG_CUR=${LOGDIR}/goaratload.cur.log
-LOG_VAL=${LOGDIR}/goaratload.val.log
+LOG_FILE=${LOGDIR}/goarat.log
+LOG_PROC=${LOGDIR}/goarat.proc.log
+LOG_DIAG=${LOGDIR}/goarat.diag.log
+LOG_CUR=${LOGDIR}/goarat.cur.log
+LOG_VAL=${LOGDIR}/goarat.val.log
 # Send debug messages to the diagnostic log (true or false)
 LOG_DEBUG=false
 export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG

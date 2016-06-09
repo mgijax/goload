@@ -65,11 +65,11 @@ export UBERONFILE
 export ANNOTINPUTFILE ANNOTLOG DELETEUSER
 
 # Complete path name of the log files
-LOG_FILE=${LOGDIR}/goamouseload.log
-LOG_PROC=${LOGDIR}/goamouseload.proc.log
-LOG_DIAG=${LOGDIR}/goamouseload.diag.log
-LOG_CUR=${LOGDIR}/goamouseload.cur.log
-LOG_VAL=${LOGDIR}/goamouseload.val.log
+LOG_FILE=${LOGDIR}/goamouse.log
+LOG_PROC=${LOGDIR}/goamouse.proc.log
+LOG_DIAG=${LOGDIR}/goamouse.diag.log
+LOG_CUR=${LOGDIR}/goamouse.cur.log
+LOG_VAL=${LOGDIR}/goamouse.val.log
 # Send debug messages to the diagnostic log (true or false)
 LOG_DEBUG=false
 export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
