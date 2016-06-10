@@ -101,9 +101,13 @@ inFile = None
 
 # annotation formatted file
 annotFileName = None
-
 # annotation file pointer
 annotFile = None
+
+# error formatted file
+errorFileName = None
+# error file pointer
+errorFile = None
 
 # j number for annotation load
 jnumID = None
@@ -126,6 +130,7 @@ def initialize():
 
     global inFileName, inFile
     global annotFileName, annotFile
+    global errorFileName, errorFile
     global jnumID
     global markerList
     global evidenceCodeList
@@ -136,6 +141,7 @@ def initialize():
 
     inFileName =  os.environ['INFILE_NAME_GAF']
     annotFileName = os.environ['INFILE_NAME']
+    errorFileName = os.environ['INFILE_NAME_ERROR']
     jnumID = os.environ['JNUMBER']
 
     try:
@@ -148,6 +154,12 @@ def initialize():
         annotFile = open(annotFileName, 'w')
     except:
 	print 'Cannot open annotation file for writing: ' + annotFileName
+	return 1
+
+    try:
+        errorFile = open(errorFileName, 'w')
+    except:
+	print 'Cannot open error file for writing: ' + errorFileName
 	return 1
 
     #
@@ -299,6 +311,7 @@ def closeFiles():
 
     inFile.close()
     annotFile.close()
+    errorFile.close()
 
     return 0
 
