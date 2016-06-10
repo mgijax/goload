@@ -26,6 +26,7 @@
 # Outputs:
 #
 #       ${INFILE_NAME}          the file that will be used to load the annotations
+#       ${INFILE_NAME_ERROR}    errors
 #
 # 	The annotation loader format has the following columns:
 #
@@ -80,8 +81,9 @@ annotFileName = None
 # annotation file pointer
 annotFile = None
 
-# line by line with reason code report
-reasonCodeFileName = None
+# error fromatted file
+errorFileName = None
+errorFile = None
 
 # list of evidence codes that are loaded into MGI
 evidenceCodeList = ['IDA', 'IPI', 'IGI', 'IMP', 'EXP']
@@ -183,16 +185,16 @@ def initialize():
 
     global inFileName, inFile
     global annotFileName, annotFile
-    global reasonCodeFile, memberNumDict
-    global goaIdDict, isNotDict, goaExistsDict, bioProcessList
+    global errorFileName, errorFile, 
+    global goaIdDict, isNotDict, goaExistsDict, bioProcessList, memberNumDict
 
     inFileName = os.environ['INFILE_NAME_GAF']
     annotFileName = os.environ['INFILE_NAME']
-    reasonCodeFileName = os.environ['RPTDIR'] + '/reasonCode.rpt'
+    errorFileName = os.environ['INPUT_NAME_ERROR']
 
     inFile = open(inFileName, 'r')
     annotFile = open(annotFileName, 'w')
-    reasonCodeFile = open(reasonCodeFileName, 'w')
+    errorFile = open(errorFileName, 'w')
 
     db.useOneConnection(1)
 
@@ -365,7 +367,7 @@ def readGAF():
     # annotation line sans modDate, note, properties
     annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t'
 
-    # Use reasonCodeFile to report every line prepended with
+    # Use errorFile to report every line prepended with
     # 1. line number
     # 2. reason code
     # 3. cluster ID if applicable/TAB if not
@@ -406,28 +408,28 @@ def readGAF():
 
 	# if database is not GOA, then skip
 	if databaseID != 'UniProtKB':
-	    reasonCodeFile.write(str(lineNum) + '\tNON_UPKB\t\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tNON_UPKB\t\t' + line[:-1] + '\t\n')
 	    continue
 
 	# if goID is in goID list then skip
 	if goID in excludedList:
-	    reasonCodeFile.write(str(lineNum) + '\tEXCL_GO\t\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tEXCL_GO\t\t' + line[:-1] + '\t\n')
 	    continue
 
 	# if not in evidence list, then skip
 	if evidenceCode not in evidenceCodeList:
-	    reasonCodeFile.write(str(lineNum) + '\tEXCL_EVID\t\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tEXCL_EVID\t\t' + line[:-1] + '\t\n')
 	    continue
 
 	# if assignedBy has a value = "MGI", then skip
 	if assignedBy == 'MGI':
-	    reasonCodeFile.write(str(lineNum) + '\tMGI\t\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tMGI\t\t' + line[:-1] + '\t\n')
 	    continue
 
 	# if no goa/mouse orthology by UniProt ID, then skip
 	clusterID = ''
 	if goaID not in goaIdDict:
-	    reasonCodeFile.write(str(lineNum) + '\tNO_HOM\t\t' +line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tNO_HOM\t\t' +line[:-1] + '\t\n')
 	    continue
 	else:
 	    mgiIDandClusterIDList = goaIdDict[goaID]
@@ -447,7 +449,7 @@ def readGAF():
 	# NOT|colocalizes_with
 	# NOT|contributes_to
 	if len(qualifierValue) > 0 and qualifierValue[:3] == 'not':
-	    reasonCodeFile.write(str(lineNum) + '\tIS_GOA_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tIS_GOA_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
 	    continue
 
 	# if goaID/goID is in the "not" list, then skip
@@ -457,7 +459,7 @@ def readGAF():
 		if goID == n:
 		    skip = 1
 	if skip == 1:
-	    reasonCodeFile.write(str(lineNum) + '\tIS_MGI_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tIS_MGI_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
 	    continue
 
         # attach reference accession ids to properties
@@ -467,7 +469,7 @@ def readGAF():
 
         # if no references found, then skip
         else:
-	    reasonCodeFile.write(str(lineNum) + '\tNO_REFERENCE\t\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tNO_REFERENCE\t\t' + line[:-1] + '\t\n')
             continue
 
 	if len(inferredFrom) > 0:
@@ -478,7 +480,7 @@ def readGAF():
 	# If not 1:1 and GO ID is Bio Process - skip
 	if memberNumDict[clusterID] != 2 and goID in bioProcessList:
 	    #print 'Not 1:1 and GO ID is Bio Process, skipping clusterID: %s %s' % (clusterID, line)
-	    reasonCodeFile.write(str(lineNum) + '\tNON_1TO1_P\t' + clusterID + '\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tNON_1TO1_P\t' + clusterID + '\t' + line[:-1] + '\t\n')
 	    continue
 
 	# get the go IDs with NOT qualifiers in the input for this clusterID
@@ -489,7 +491,7 @@ def readGAF():
 	    #print 'incoming goID: %s' % goID
 	if goID in notIdList:
 	    #print 'goID  has NOT qualifier in input, skipping clusterID: %s %s' % (clusterID, line)
-	    reasonCodeFile.write(str(lineNum) + '\tNOT_NO_TRANSFER\t' + clusterID + '\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tNOT_NO_TRANSFER\t' + clusterID + '\t' + line[:-1] + '\t\n')
 	    continue
 
 	# skip if an MGI annotation for
@@ -503,7 +505,7 @@ def readGAF():
 			#print mgiID, goID, new_inferredFrom
 			skip = 1
 	if skip == 1:
-	    reasonCodeFile.write(str(lineNum) + '\tANNOT_IN_MGI_TO ' + mgiID + '\t' + clusterID + '\t' + line[:-1] + '\t\n')
+	    errorFile.write(str(lineNum) + '\tANNOT_IN_MGI_TO ' + mgiID + '\t' + clusterID + '\t' + line[:-1] + '\t\n')
 	    continue
 
 	#
@@ -517,16 +519,16 @@ def readGAF():
 	    # this annotation not yet in the dictionary
 	    if annotloadLine not in annotToWriteDict:
 		annotToWriteDict[annotloadLine] = [modDate + '\t\t\t' + propertyPrefix + properties]
-		reasonCodeFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + clusterID + '\t' + line) 
+		errorFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + clusterID + '\t' + line) 
 
 	    # this annotation and properties in the dictionary and so exact dup
 	    elif annotloadLine in annotToWriteDict:
-		reasonCodeFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + clusterID + '\t' + line)
+		errorFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + clusterID + '\t' + line)
 
 	    # this annotation in dictionary, add additional properties 
 	    else:
 		annotToWriteDict[annotloadLine].append(propertyPrefix + properties)
-		reasonCodeFile.write(str(lineNum) + '\tCREATE_ANNOT_COL\t' + clusterID + '\t' + line) 
+		errorFile.write(str(lineNum) + '\tCREATE_ANNOT_COL\t' + clusterID + '\t' + line) 
 
     #
     # now write to annotload file
@@ -548,7 +550,7 @@ def closeFiles():
 
     inFile.close()
     annotFile.close()
-    reasonCodeFile.close()
+    errorFile.close()
 
 #
 # main
