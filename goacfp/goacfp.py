@@ -203,7 +203,7 @@ def readGAF():
 	    refID = string.replace(r, 'MGI:MGI:', 'MGI:')
 	    refID = string.replace(refID, 'PMID:', '')
 
-	    if mgiRefLookup.has_key(refID):
+	    if refID in mgiRefLookup:
 		jnumID = mgiRefLookup[refID]
 		jnumIDFound = 1
 		 

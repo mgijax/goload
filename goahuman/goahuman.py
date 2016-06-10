@@ -159,7 +159,7 @@ def preprocess():
         clusterID = ''
 
         # if goa/mouse orthology by UniProt ID get cluster ID
-        if goaIdDict.has_key(goaID):
+        if goaID in goaIdDict:
             mgiIDandClusterIDList = goaIdDict[goaID]
             # cluster will be the same for all markers with this goaID
             for ids in mgiIDandClusterIDList:
@@ -168,7 +168,7 @@ def preprocess():
 
         if len(qualifierValue) > 0 and qualifierValue[:3] == 'not':
             #print 'qualifierValue has NOT data: %s ' % line
-            if not clusterIDsWithNotDict.has_key(clusterID):
+            if clusterID not in clusterIDsWithNotDict:
                 clusterIDsWithNotDict[clusterID] = []
             clusterIDsWithNotDict[clusterID].append(goID)
 
@@ -276,7 +276,7 @@ def initialize():
     results = db.sql('select * from mouseHuman order by clusterID' , 'auto')
     for r in results:
 	clusterID = r['clusterID']
-	if not memberNumDict.has_key(clusterID):
+	if clusterID not in memberNumDict:
 	    memberNumDict[clusterID] = 0
 	memberNumDict[clusterID] += 1
 
@@ -286,7 +286,7 @@ def initialize():
 	mouseID = r['mouseID']
 	clusterID = r['clusterID']
 	value = '%s|%s' % (mouseID, clusterID)
-	if not goaIdDict.has_key(key):
+	if key not in goaIdDict:
 	    goaIdDict[key] = []
 	goaIdDict[key].append(value)
 
@@ -310,7 +310,7 @@ def initialize():
     for r in results:
 	key = r['goaID']
 	value = r['goID']
-	if not isNotDict.has_key(key):
+	if key not in isNotDict:
 	    isNotDict[key] = []
 	isNotDict[key].append(value)
 
@@ -332,7 +332,7 @@ def initialize():
     for r in results:
 	key = r['accID']
 	value = r
-	if not goaExistsDict.has_key(key):
+	if key not in goaExistsDict:
 	    goaExistsDict[key] = []
 	goaExistsDict[key].append(value)
 
@@ -426,7 +426,7 @@ def readGAF():
 
 	# if no goa/mouse orthology by UniProt ID, then skip
 	clusterID = ''
-	if not goaIdDict.has_key(goaID):
+	if goaID not in goaIdDict:
 	    reasonCodeFile.write(str(lineNum) + '\tNO_HOM\t\t' +line[:-1] + '\t\n')
 	    continue
 	else:
@@ -452,7 +452,7 @@ def readGAF():
 
 	# if goaID/goID is in the "not" list, then skip
 	skip = 0
-	if isNotDict.has_key(goaID):
+	if goaID in isNotDict:
 	    for n in isNotDict[goaID]:
 		if goID == n:
 		    skip = 1
@@ -483,7 +483,7 @@ def readGAF():
 
 	# get the go IDs with NOT qualifiers in the input for this clusterID
 	notIdList = []
-	if clusterIDsWithNotDict.has_key(clusterID):
+	if clusterID in clusterIDsWithNotDict:
 	    notIdList = clusterIDsWithNotDict[clusterID]
 	    #print 'clusterIDsWithNotDict[%s]:  %s' % (clusterID, notIdList)
 	    #print 'incoming goID: %s' % goID
@@ -497,7 +497,7 @@ def readGAF():
 	# 
 	skip = 0
 	for mgiID in mgiIDList:
-	    if goaExistsDict.has_key(mgiID):
+	    if mgiID in goaExistsDict:
 		for e in goaExistsDict[mgiID]:
 		    if goID == e['goID'] and new_inferredFrom == e['inferredFrom']:
 			#print mgiID, goID, new_inferredFrom
@@ -515,12 +515,12 @@ def readGAF():
 	    annotloadLine = annotLine % \
 		(goID, mgiID, jnumID, new_evidenceCode, new_inferredFrom, qualifierValue, editor)
 	    # this annotation not yet in the dictionary
-	    if not annotToWriteDict.has_key(annotloadLine):
+	    if annotloadLine not in annotToWriteDict:
 		annotToWriteDict[annotloadLine] = [modDate + '\t\t\t' + propertyPrefix + properties]
 		reasonCodeFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + clusterID + '\t' + line) 
 
 	    # this annotation and properties in the dictionary and so exact dup
-	    elif annotToWriteDict.has_key(annotloadLine) and propertyPrefix + properties in annotToWriteDict[annotloadLine]:
+	    elif annotloadLine in annotToWriteDict:
 		reasonCodeFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + clusterID + '\t' + line)
 
 	    # this annotation in dictionary, add additional properties 
@@ -536,8 +536,6 @@ def readGAF():
         pList = annotToWriteDict[line]
         line = line  + string.join(pList, '&===&') + '\n'
         annotFile.write(line)
-
-
 
 #
 # Purpose: Initialization

@@ -196,7 +196,7 @@ def main():
             uberonId = line[4:-1]
         elif line[:12] == emapaXrefValue:
             emapaId = line[6:-1]
-            if not uberonLookup.has_key(uberonId):
+            if uberonId not in uberonLookup:
                 uberonLookup[uberonId] = []
             uberonLookup[uberonId].append(emapaId)
         else:
@@ -270,7 +270,7 @@ def main():
     for r in results:
         key = r['goaID']
         value = r['mgiID']
-        if not assoc.has_key(key):
+        if key not in assoc:
 	    assoc[key] = []
         assoc[key].append(value)
 
@@ -446,7 +446,7 @@ def main():
         else:
 	    goaIDstrip = goaID
 
-        if not assoc.has_key(goaIDstrip):
+        if goaIDstrip not in assoc:
 	    unresolvedBErrorFile.write(line)
 	    continue
         else:
@@ -462,12 +462,12 @@ def main():
         markerKey = m['_Marker_key']
 
         # translate secondary GO ids to primary
-        if goids.has_key(goID):
+        if goID in goids:
 	    goID = goids[goID]
 
         # duplicate error if the annotation already exists in MGI
 
-        if mgiannot.has_key(markerKey) and goID in annotByGOID and checkrefID in annotByRef:
+        if markerKey in mgiannot:
             goaAnnot = (goID, evidence, checkrefID)
             if goaAnnot in mgiannot[markerKey]:
 	        dupErrorFile.write(line)
@@ -475,7 +475,7 @@ def main():
 
         # resolve pubmed ID to MGI J:
 
-        if not pubmed.has_key(refID):
+        if refID not in pubmed:
 
 	    # pubmed id not in MGI
 	    # don't load this annotation into MGI
@@ -549,7 +549,7 @@ def main():
 
         n = (goID, mgiID, jnumID, evidence, qualifierValue, mgiassignedBy, modDate, mgiproperties)
 
-        if not newannot.has_key(n):
+        if n not in newannot:
 	    newannot[n] = []
         if len(inferredFrom) > 0:
             newannot[n].append(inferredFrom)
@@ -654,7 +654,7 @@ def convertPropertiesIds(properties, uberonLookup={}):
 
 	    # found uberon id
 	    if e.find(uberonPrefix) >= 0:
-		if uberonLookup.has_key(e):
+		if e in uberonLookup:
 		    u = uberonLookup[e]
 		    # found > 1 emapa
 		    if len(u) > 1:

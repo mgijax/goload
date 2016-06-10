@@ -23,6 +23,9 @@ touch $LOG
  
 date | tee -a $LOG
 
+echo '1A:Run GOA/Mouse/Noctua Load' | tee -a ${LOG}
+${GOLOAD}/goamousenoctua/goamousenocuta.sh | tee -a ${LOG}
+
 echo '1:Run GOA/Mouse Load' | tee -a ${LOG}
 ${GOLOAD}/goamouse/goamouse.sh | tee -a ${LOG}
 

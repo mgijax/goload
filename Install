@@ -29,8 +29,8 @@ fi
 #
 cd `dirname $0`
 
-#for i in goamousegpad goamouse goarat goarefgen goahuman goacfp
-for i in goamousegpad
+#for i in goamousenoctua goamouse goarat goarefgen goahuman goacfp
+for i in goamousenoctua
 do
 
 cp -r $i/$i.config.default $i/$i.config
