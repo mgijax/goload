@@ -42,8 +42,8 @@ LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
-INFILE_NAME_GZ=${DATADOWNLOADS}/build.berkeleybop.org/view/GO/job/export-lego-to-legacy/108/artifact/legacy/noctua/production/mgi.noctua
-INFILE_NAME_GAF=${INPUTDIR}/mgi.noctua
+INFILE_NAME_GZ=${DATADOWNLOADS}/build.berkeleybop.org/view/GO/job/export-lego-to-legacy/108/artifact/legacy/gpad/production/mgi.gpad
+INFILE_NAME_GAF=${INPUTDIR}/mgi.gpad
 INFILE_NAME=${INPUTDIR}/goamousenoctua.annot
 INFILE_NAME_ERROR=${INPUTDIR}/goamousenoctua.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
