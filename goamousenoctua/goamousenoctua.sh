@@ -141,10 +141,10 @@ ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG}
 #
 # run inferred-from cache
 #
-#echo "Running GOA/Mouse inferred-from cache load" >> ${LOG_DIAG}
-#${MGICACHELOAD}/inferredfrom.goanoctua >> ${LOG_DIAG} 
-#STAT=$?
-#checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamousenoctua"
+echo "Running GOA/Mouse inferred-from cache load" >> ${LOG_DIAG}
+${MGICACHELOAD}/inferredfrom.goanoctua >> ${LOG_DIAG} 
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamousenoctua"
 
 #
 # run postload cleanup and email logs
