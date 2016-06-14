@@ -190,7 +190,7 @@ def initialize():
 
     inFileName = os.environ['INFILE_NAME_GAF']
     annotFileName = os.environ['INFILE_NAME']
-    errorFileName = os.environ['INPUT_NAME_ERROR']
+    errorFileName = os.environ['INFILE_NAME_ERROR']
 
     inFile = open(inFileName, 'r')
     annotFile = open(annotFileName, 'w')
