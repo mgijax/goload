@@ -126,15 +126,40 @@ def initialize():
     # lookup file of Evidence Code Ontology (_vocab_key = 111)
     # to GO Evidence Code (_vocab_key = 3)
 
-    results = db.sql('''select distinct a.accID as ecoID, s.synonym
-	from ACC_Accession a, MGI_Synonym s, VOC_Term t
-	where a._LogicalDB_key = 182
+    results = db.sql('''
+	select distinct a.accID as ecoID, s.synonym
+	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t
+	where a._LogicalDB_key = 182 
 	and a._Object_key = s._Object_key
 	and s._MGIType_key = 13
 	and s.synonym = t.abbreviation
-	''', 'auto')
+	and t._vocab_key = 3
+	and s._SynonymType_key = st._SynonymType_key
+        and st.synonymtype = 'exact'
+    	''', 'auto')
+
     for r in results:
 	ecoLookup[r['ecoID']] = r['synonym']
+
+    results = db.sql('''
+	select distinct a2.accID as ecoID2, s.synonym
+	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t, DAG_Closure dc, ACC_Accession a2
+	where a._LogicalDB_key = 182 
+	and a._Object_key = s._Object_key
+	and s._MGIType_key = 13
+	and s.synonym = t.abbreviation
+	and t._vocab_key = 3
+	and s._SynonymType_key = st._SynonymType_key
+        and st.synonymtype = 'exact'
+	and a._Object_key = dc._ancestorobject_key
+	and dc._descendentobject_key = a2._Object_key
+	and a2._LogicalDB_key = 182
+    	''', 'auto')
+
+    for r in results:
+	if not r['ecoID2'] in ecoLookup:
+	    ecoLookup[r['ecoID2']] = r['synonym']
+
     print ecoLookup
 
 #
@@ -195,6 +220,14 @@ def readGAF():
         extensions = tokens[10]
         properties = tokens[11]
 
+        #
+        # skip if the GO id is a root term:  GO:0003674, GO:0008150, GO:0005575
+        #
+
+        if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
+            errorFile.write('Root Id is used : %s\n%s\n' % (goID, line))
+            continue
+
 	jnumIDFound = 0
 
 	# translate references (MGI/PMID) to J numbers (J:)
@@ -217,6 +250,11 @@ def readGAF():
 
 	if evidenceCode in ecoLookup:
 	    goEvidenceCode = ecoLookup[evidenceCode]
+	# temporary hard-code fix until eco.obo is fixed
+	#elif evidenceCode in ('ECO:0000266'):
+	#    goEvidenceCode = 'ISO'
+	#elif evidenceCode in ('ECO:0000305'):
+	#    goEvidenceCode = 'IC'
 	else:
 	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n' % (evidenceCode, line))
 	    continue

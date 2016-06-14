@@ -185,7 +185,7 @@ def initialize():
 
     global inFileName, inFile
     global annotFileName, annotFile
-    global errorFileName, errorFile, 
+    global errorFileName, errorFile
     global goaIdDict, isNotDict, goaExistsDict, bioProcessList, memberNumDict
 
     inFileName = os.environ['INFILE_NAME_GAF']
