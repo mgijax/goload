@@ -2,9 +2,9 @@
 #
 #  go.sh
 #
-#  See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload_overview
+#  See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
-#  Run all GOA loads from loadadmin/sundaytasks.csh
+#  Run all GOA loads from loadadmin/prod/sundaytasks.csh
 #
 
 cd `dirname $0`

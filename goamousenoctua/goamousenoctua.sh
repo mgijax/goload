@@ -127,6 +127,7 @@ echo 'Running goamousenoctua.py' >> ${LOG_DIAG}
 ${GOLOAD}/goamousenoctua/goamousenoctua.py >> ${LOG_DIAG}
 #STAT=$?
 #checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
+exit 0
 
 #
 # run annotation load with new annotations

@@ -125,8 +125,11 @@ def initialize():
 
     # lookup file of Evidence Code Ontology (_vocab_key = 111)
     # to GO Evidence Code (_vocab_key = 3)
+    # EXP needs to float to the bottom
+    # these are the lowest priority evidence codes that wind up in the translation
 
     results = db.sql('''
+	(
 	select distinct a.accID as ecoID, s.synonym
 	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t
 	where a._LogicalDB_key = 182 
@@ -136,13 +139,8 @@ def initialize():
 	and t._vocab_key = 3
 	and s._SynonymType_key = st._SynonymType_key
         and st.synonymtype = 'exact'
-    	''', 'auto')
-
-    for r in results:
-	ecoLookup[r['ecoID']] = r['synonym']
-
-    results = db.sql('''
-	select distinct a2.accID as ecoID2, s.synonym
+	union all
+	select distinct a2.accID, s.synonym
 	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t, DAG_Closure dc, ACC_Accession a2
 	where a._LogicalDB_key = 182 
 	and a._Object_key = s._Object_key
@@ -154,13 +152,15 @@ def initialize():
 	and a._Object_key = dc._ancestorobject_key
 	and dc._descendentobject_key = a2._Object_key
 	and a2._LogicalDB_key = 182
+	)
+	order by ecoID, synonym desc
     	''', 'auto')
 
     for r in results:
-	if not r['ecoID2'] in ecoLookup:
-	    ecoLookup[r['ecoID2']] = r['synonym']
-
-    print ecoLookup
+	key = r['ecoID']
+	if key not in ecoLookup:
+		ecoLookup[r['ecoID']] = r['synonym']
+		print r
 
 #
 # Purpose: Read GAF file and generate Annotation file
