@@ -16,7 +16,7 @@ date | tee -a $ECOLOG
  
 cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a ${ECOLOG}
 
-select p.value, t.term, t.abbreviation, m.symbol
+select distinct p.value, t.term, t.abbreviation, m.symbol
 from VOC_Annot a, VOC_Evidence e, VOC_Term t, MRK_Marker m, VOC_Evidence_Property p, VOC_Term pt
 where a._AnnotType_key = 1000
 and a._Annot_key = e._Annot_key
