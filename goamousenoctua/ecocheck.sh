@@ -8,7 +8,7 @@ cd `dirname $0`
 
 . ${GOLOAD}/goamousenoctua/goamousenoctua.config
 
-ECOLOG=${LOGDIR}/$0.log
+ECOLOG=${LOGDIR}/ecocheck.sh.log
 rm -rf $ECOLOG
 touch $ECOLOG
  

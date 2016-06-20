@@ -138,7 +138,7 @@ def initialize():
 	and s.synonym = t.abbreviation
 	and t._vocab_key = 3
 	and s._SynonymType_key = st._SynonymType_key
-        and st.synonymtype = 'exact'
+        and st.synonymtype in ('exact', 'related')
 	union all
 	select distinct a2.accID, s.synonym
 	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t, DAG_Closure dc, ACC_Accession a2
@@ -148,7 +148,7 @@ def initialize():
 	and s.synonym = t.abbreviation
 	and t._vocab_key = 3
 	and s._SynonymType_key = st._SynonymType_key
-        and st.synonymtype = 'exact'
+        and st.synonymtype in ('exact', 'related')
 	and a._Object_key = dc._ancestorobject_key
 	and dc._descendentobject_key = a2._Object_key
 	and a2._LogicalDB_key = 182
@@ -267,6 +267,12 @@ def readGAF():
 	#		go_qualifier=enables
 	#		go_qualifier=involved_in
 	#
+	if len(extensions) > 0:
+	    extensions = extensions.replace('(', '=')
+	    extensions = extensions.replace(')', '')
+	    extensions = extensions.replace(',', '|')
+	    properties = extensions
+
 	properties = properties + '|go_qualifier=' + qualifier
 
         # for evidence:
