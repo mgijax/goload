@@ -1,25 +1,20 @@
-#!/bin/csh -f
+#!/bin/sh
 
 #
 # Template
 #
 
+cd `dirname $0` 
 
-if ( ${?MGICONFIG} == 0 ) then
-        setenv MGICONFIG /usr/local/mgi/live/mgiconfig
-endif
+. ${GOLOAD}/goamousenoctua/goamousenoctua.config
 
-source ${MGICONFIG}/master.config.csh
-
-cd `dirname $0`
-
-setenv LOG $0.log
-rm -rf $LOG
-touch $LOG
+ECOLOG=${LOGDIR}/$0.log
+rm -rf $ECOLOG
+touch $ECOLOG
  
-date | tee -a $LOG
+date | tee -a $ECOLOG
  
-cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a $LOG
+cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a ${ECOLOG}
 
 select p.value, t.term, t.abbreviation, m.symbol
 from VOC_Annot a, VOC_Evidence e, VOC_Term t, MRK_Marker m, VOC_Evidence_Property p, VOC_Term pt
@@ -62,5 +57,5 @@ order by ecoID, synonym desc
 
 EOSQL
 
-date |tee -a $LOG
+date |tee -a ${ECOLOG}
 
