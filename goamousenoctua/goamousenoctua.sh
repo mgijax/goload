@@ -96,16 +96,11 @@ fi
 # createArchive including OUTPUTDIR, startLog, getConfigEnv
 # sets "JOBKEY"
 #
-#preload ${OUTPUTDIR}
+preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
-#rm -rf ${INFILE_NAME_GAF}
-#gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
-#rm -rf ${INFILE_NAME_SORTED} >> ${LOG_DIAG}
-# important to sort the file so we can collapse "duplicate" lines
-#sort -k2,7 ${INFILE_NAME_GAF} > ${INFILE_NAME_SORTED}
 
 cd ${OUTPUTDIR}
 
@@ -125,30 +120,37 @@ cd ${OUTPUTDIR}
 #
 echo 'Running goamousenoctua.py' >> ${LOG_DIAG}
 ${GOLOAD}/goamousenoctua/goamousenoctua.py >> ${LOG_DIAG}
-#STAT=$?
-#checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
-exit 0
+STAT=$?
+checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
 
 #
 # run annotation load with new annotations
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goamousenoctua/goa.csh.config
-echo "Running GOA/Mouse annotation load" >> ${LOG_DIAG}
+echo "Running GOA/Mouse/Noctua annotation load" >> ${LOG_DIAG}
 echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua >> ${LOG_DIAG} 
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
-#STAT=$?
-#checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
+STAT=$?
+checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
 
 #
 # run inferred-from cache
 #
-echo "Running GOA/Mouse inferred-from cache load" >> ${LOG_DIAG}
+echo "Running GOA/Mouse/Noctua inferred-from cache load" >> ${LOG_DIAG}
 ${MGICACHELOAD}/inferredfrom.goanoctua >> ${LOG_DIAG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamousenoctua"
 
 #
+# run eco check
+#
+echo "Running GOA/Mouse/Noctua ecocheck.sh" >> ${LOG_DIAG}
+${GOLOAD}/goamousenoctua/ecocheck.sh >> ${LOG_DIAG}
+STAT=$?
+checkStatus ${STAT} "${GOLOAD}/goamousenoctua/echocheck.sh"
+
+#
 # run postload cleanup and email logs
 #
-#shutDown
+shutDown
 
