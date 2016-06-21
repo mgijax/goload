@@ -271,7 +271,7 @@ def readGAF():
 	    extensions = extensions.replace('(', '=')
 	    extensions = extensions.replace(')', '')
 	    extensions = extensions.replace(',', '|')
-	    properties = extensions
+	    properties = extensions + '|' + properties
 
 	properties = properties + '|go_qualifier=' + qualifier
 

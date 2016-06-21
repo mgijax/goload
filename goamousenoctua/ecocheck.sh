@@ -26,6 +26,7 @@ and a._Object_key = m._Marker_key
 and e._AnnotEvidence_key = p._AnnotEvidence_key
 and p._PropertyTerm_key = pt._Term_key
 and pt.term = 'evidence'
+order by symbol, value
 ;
 
 (
