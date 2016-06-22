@@ -320,7 +320,7 @@ def readGAF():
         #
 
         if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
-            errorFile.write('error: Root Id is used : %s\n%s\n' % (goID, line))
+            errorFile.write('Root Id is used : %s\n%s****\n' % (goID, line))
             continue
 
 	#
@@ -329,7 +329,7 @@ def readGAF():
 	#
 
 	if not dbobjectID.find('MGI:') >= 0:
-	    errorFile.write('error: dbobjectID is not an MGI:xxxx id : %s\n%s\n' % (dbobjectID, line))
+	    errorFile.write('dbobjectID is not an MGI:xxxx id : %s\n%s****\n' % (dbobjectID, line))
 	    continue
 
 	jnumIDFound = 0
@@ -349,13 +349,13 @@ def readGAF():
 	# if reference does not exist...skip it
 
 	if not jnumIDFound:
-	    errorFile.write('error: Invalid Refeference: %s\n%s\n' % (references, line))
+	    errorFile.write('Invalid Refeference: %s\n%s****\n' % (references, line))
 	    continue
 
 	if evidenceCode in ecoLookup:
 	    goEvidenceCode = ecoLookup[evidenceCode]
 	else:
-	    errorFile.write('error: Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n' % (evidenceCode, line))
+	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s****\n' % (evidenceCode, line))
 	    continue
 
 	# for testing old gpad
@@ -372,9 +372,12 @@ def readGAF():
 	    extensions, errors = convertExtensionsIds(extensions, uberonLookup)
 	    if errors:
 	        for error in errors:
-		    errorFile.write(error + '\n')
-		    errorFile.write(line + '*****\n')
+	            errorFile.write('%s\n%s****\n' % (error, line))
+		    #errorFile.write(error + '\n')
+		    #errorFile.write(line + '*****\n')
 
+	    # re-format to use 'properties' format
+	    # (which will then be re-formated tomgi-property format)
 	    extensions = extensions.replace('(', '=')
 	    extensions = extensions.replace(')', '')
 	    extensions = extensions.replace(',', '|')
@@ -390,7 +393,6 @@ def readGAF():
 	#
 	if len(properties) > 0:
 	    properties = properties + '|'
-
 	properties = properties + 'go_qualifier=' + qualifier
 
         # for evidence:
@@ -398,7 +400,6 @@ def readGAF():
 	#	b) append to 'properties' as:
 	#		evidence=ECO:xxxx
         #
-
 	properties = properties + '|evidence=' + evidenceCode
 
         # re-format to mgi-property format
