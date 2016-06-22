@@ -43,18 +43,18 @@ and a2._LogicalDB_key = 182
 order by synonym desc, ecoID
 ;
 
---select distinct p.value, t.term, t.abbreviation, m.symbol
---from VOC_Annot a, VOC_Evidence e, VOC_Term t, MRK_Marker m, VOC_Evidence_Property p, VOC_Term pt
---where a._AnnotType_key = 1000
---and a._Annot_key = e._Annot_key
---and e._CreatedBy_key = 1559
---and e._EvidenceTerm_key = t._Term_key
---and a._Object_key = m._Marker_key
---and e._AnnotEvidence_key = p._AnnotEvidence_key
---and p._PropertyTerm_key = pt._Term_key
---and pt.term = 'evidence'
---order by symbol, value
---;
+select distinct p.value, t.term, t.abbreviation, m.symbol
+from VOC_Annot a, VOC_Evidence e, VOC_Term t, MRK_Marker m, VOC_Evidence_Property p, VOC_Term pt
+where a._AnnotType_key = 1000
+and a._Annot_key = e._Annot_key
+and e._CreatedBy_key = 1559
+and e._EvidenceTerm_key = t._Term_key
+and a._Object_key = m._Marker_key
+and e._AnnotEvidence_key = p._AnnotEvidence_key
+and p._PropertyTerm_key = pt._Term_key
+and pt.term = 'evidence'
+order by symbol, value
+;
 
 EOSQL
 
