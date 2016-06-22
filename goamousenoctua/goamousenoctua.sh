@@ -105,17 +105,6 @@ cp ${INFILE_NAME_GZ} ${INPUTDIR}
 cd ${OUTPUTDIR}
 
 #
-# run annotation load with an empty file to remove previous data
-#
-##echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG_DIAG}
-##rm -rf ${ANNOTINPUTFILE}
-##touch ${ANNOTINPUTFILE}
-##COMMON_CONFIG_CSH=${GOLOAD}/goamousenoctua/goadelete.csh.config
-##${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua >> ${LOG_DIAG} 
-##STAT=$?
-##checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
-
-#
 # create input file
 #
 echo 'Running goamousenoctua.py' >> ${LOG_DIAG}

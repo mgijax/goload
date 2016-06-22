@@ -49,6 +49,10 @@ INFILE_NAME_ERROR=${INPUTDIR}/goamousenoctua.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
 export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME INFILE_NAME_ERROR
 
+UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
+UBERONTEXTFILE=${OUTPUTDIR}/uberon.txt
+export UBERONFILE UBERONTEXTFILE
+
 # Complete path name of the log files
 LOG_FILE=${LOGDIR}/goamousenoctua.log
 LOG_PROC=${LOGDIR}/goamousenoctua.proc.log

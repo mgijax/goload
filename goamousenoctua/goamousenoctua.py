@@ -84,6 +84,24 @@ mgiRefLookup = {}
 # to GO Evidence Code (_vocab_key = 3)
 ecoLookup = {}
 
+# uberson stuff
+
+# uberson formatted file
+uberonFileName = None
+# uberson file pointer
+uberonFile = None
+
+# uberson text formatted file
+uberonTextFileName = None
+# uberson text file pointer
+uberonTextFile = None
+
+uberonLookup = {}
+
+UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
+UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
+# end uberson stuff
+
 #
 # Purpose: Initialization
 # Returns: 1 if file does not exist or is not readable, else 0
@@ -98,24 +116,33 @@ def initialize():
     global errorFileName, errorFile
     global mgiRefLookup
     global echoLookup
+    global uberonLookup
+    global uberonFileName, uberonFile
+    global uberonTextFileName, uberonTextFile
 
     #
     # open files
     #
 
     inFileName = os.environ['INFILE_NAME_GAF']
+    uberonFileName = os.environ['UBERONFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
+    uberonTextFileName = os.environ['UBERONTEXTFILE']
 
     inFile = open(inFileName, 'r')
+    uberonFile = open(uberonFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
+    uberonTextFile = open(uberonTextFileName, 'w')
 
     #
     # lookup file of mgi ids or pubmed ids -> J:
     # mgi id:jnum id
     # pubmed id:jnum id
     #
+
+    print 'reading mgi id/pubmed id -> J: translation...'
 
     results = db.sql('select mgiID, pubmedID, jnumID from BIB_Citation_Cache', 'auto')
     for r in results:
@@ -127,6 +154,8 @@ def initialize():
     # to GO Evidence Code (_vocab_key = 3)
     # EXP needs to float to the bottom
     # these are the lowest priority evidence codes that wind up in the translation
+
+    print 'reading eco -> go evidence translation...'
 
     results = db.sql('''
 	(
@@ -160,7 +189,73 @@ def initialize():
 	key = r['ecoID']
 	if key not in ecoLookup:
 		ecoLookup[r['ecoID']] = r['synonym']
-		print r
+
+    #
+    # read/store UBERON-to-EMAPA info
+    #
+
+    print 'reading uberon -> emapa translation file...'
+
+    uberonIdValue = 'id: UBERON:'
+    emapaXrefValue = 'xref: EMAPA:'
+
+    for line in uberonFile.readlines():
+        # find [Term]
+        # find xref: EMAPA:
+        if line[:11] == uberonIdValue:
+            uberonId = line[4:-1]
+        elif line[:12] == emapaXrefValue:
+            emapaId = line[6:-1]
+            if uberonId not in uberonLookup:
+                uberonLookup[uberonId] = []
+            uberonLookup[uberonId].append(emapaId)
+        else:
+            continue
+
+    for u in uberonLookup:
+        uberonTextFile.write(u + '\n')
+
+    return
+
+def convertExtensionsIds(extensions, uberonLookup={}):
+    #
+    # Converts extensions ids (column 11):
+    #
+    # 	UBERON: -> EMAPA:, uberonLookup
+    # 
+    #   Returns converted extensions
+    #   Returns list of error messages []
+    #
+
+    uberonPrefix = 'UBERON:'
+    
+    errors = []
+    print extensions
+
+    pStart = extensions.split('(')
+    for p in pStart:
+
+	pEnd = p.split(')')
+
+	for e in pEnd:
+
+	    # found uberon id
+	    if e.find(uberonPrefix) >= 0:
+		if e in uberonLookup:
+		    u = uberonLookup[e]
+		    # found > 1 emapa
+		    if len(u) > 1:
+			errors.append(UBERON_MAPPING_MULTIPLES_ERROR % (e, str(u)))
+		    # replace UBERON id with EMAPA id
+		    else:
+			extensions = extensions.replace(e, u[0])
+		# did not find uberon id
+		else:
+		    errors.append(UBERON_MAPPING_MISSING_ERROR % (e))
+
+	    # else, do nothing
+
+    return extensions, errors
 
 #
 # Purpose: Read GAF file and generate Annotation file
@@ -225,8 +320,17 @@ def readGAF():
         #
 
         if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
-            errorFile.write('Root Id is used : %s\n%s\n' % (goID, line))
+            errorFile.write('error: Root Id is used : %s\n%s\n' % (goID, line))
             continue
+
+	#
+	# skip if not MGI:
+	# only loading genes at the moment...
+	#
+
+	if not dbobjectID.find('MGI:') >= 0:
+	    errorFile.write('error: dbobjectID is not an MGI:xxxx id : %s\n%s\n' % (dbobjectID, line))
+	    continue
 
 	jnumIDFound = 0
 
@@ -245,19 +349,36 @@ def readGAF():
 	# if reference does not exist...skip it
 
 	if not jnumIDFound:
-	    errorFile.write('Invalid Refeference: %s\n%s\n' % (references, line))
+	    errorFile.write('error: Invalid Refeference: %s\n%s\n' % (references, line))
 	    continue
 
 	if evidenceCode in ecoLookup:
 	    goEvidenceCode = ecoLookup[evidenceCode]
-	# temporary hard-code fix until eco.obo is fixed
-	#elif evidenceCode in ('ECO:0000266'):
-	#    goEvidenceCode = 'ISO'
-	#elif evidenceCode in ('ECO:0000305'):
-	#    goEvidenceCode = 'IC'
 	else:
-	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n' % (evidenceCode, line))
+	    errorFile.write('error: Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n' % (evidenceCode, line))
 	    continue
+
+	# for testing old gpad
+	#extensions = extensions.replace(evidenceCode,'')
+	#properties = properties.replace(goEvidenceCode,'')
+
+	#
+	# "extensions" contain things like "occurs_in", "part_of", etc.
+	# and are added to "properties" for forwarding to the annotation loader
+	#
+	if len(extensions) > 0:
+
+	    # to translate uberon ids to emapa
+	    extensions, errors = convertExtensionsIds(extensions, uberonLookup)
+	    if errors:
+	        for error in errors:
+		    errorFile.write(error + '\n')
+		    errorFile.write(line + '*****\n')
+
+	    extensions = extensions.replace('(', '=')
+	    extensions = extensions.replace(')', '')
+	    extensions = extensions.replace(',', '|')
+	    properties = extensions + '|' + properties
 
 	#
 	# for qualifier:
@@ -267,19 +388,17 @@ def readGAF():
 	#		go_qualifier=enables
 	#		go_qualifier=involved_in
 	#
-	if len(extensions) > 0:
-	    extensions = extensions.replace('(', '=')
-	    extensions = extensions.replace(')', '')
-	    extensions = extensions.replace(',', '|')
-	    properties = extensions + '|' + properties
+	if len(properties) > 0:
+	    properties = properties + '|'
 
-	properties = properties + '|go_qualifier=' + qualifier
+	properties = properties + 'go_qualifier=' + qualifier
 
         # for evidence:
 	#	a) store as translated ECO->MGI->Evidence Code field
 	#	b) append to 'properties' as:
 	#		evidence=ECO:xxxx
         #
+
 	properties = properties + '|evidence=' + evidenceCode
 
         # re-format to mgi-property format
@@ -305,8 +424,10 @@ def readGAF():
 def closeFiles():
 
     inFile.close()
+    uberonFile.close()
     annotFile.close()
     errorFile.close()
+    uberonTextFile.close()
 
 #
 # main
