@@ -54,7 +54,6 @@
 
 import sys 
 import os
-import string
 import db
 
 db.setAutoTranslate(False)
@@ -300,7 +299,8 @@ def readGAF():
 	if line[0] == '!':
 	    continue
 
-	tokens = string.split(line[:-1], '\t')
+	line = line[:-1]
+	tokens = line.split('\t')
 
         databaseID = tokens[0]		# should always be 'MGI'
 	dbobjectID = tokens[1]
@@ -320,7 +320,7 @@ def readGAF():
         #
 
         if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
-            errorFile.write('Root Id is used : %s\n%s****\n' % (goID, line))
+            errorFile.write('Root Id is used : %s\n%s\n****\n' % (goID, line))
             continue
 
 	#
@@ -329,18 +329,18 @@ def readGAF():
 	#
 
 	if not dbobjectID.find('MGI:') >= 0:
-	    errorFile.write('dbobjectID is not an MGI:xxxx id : %s\n%s****\n' % (dbobjectID, line))
+	    errorFile.write('dbobjectID is not an MGI:xxxx id : %s\n%s\n****\n' % (dbobjectID, line))
 	    continue
-
-	jnumIDFound = 0
 
 	# translate references (MGI/PMID) to J numbers (J:)
 	# use the first J: match that we find
+
+	jnumIDFound = 0
 	referencesTokens = references.split('|')
 	for r in referencesTokens:
 
-	    refID = string.replace(r, 'MGI:MGI:', 'MGI:')
-	    refID = string.replace(refID, 'PMID:', '')
+	    refID = r.replace('MGI:MGI:', 'MGI:')
+	    refID = refID.replace('PMID:', '')
 
 	    if refID in mgiRefLookup:
 		jnumID = mgiRefLookup[refID]
@@ -349,13 +349,13 @@ def readGAF():
 	# if reference does not exist...skip it
 
 	if not jnumIDFound:
-	    errorFile.write('Invalid Refeference: %s\n%s****\n' % (references, line))
+	    errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
 	    continue
 
 	if evidenceCode in ecoLookup:
 	    goEvidenceCode = ecoLookup[evidenceCode]
 	else:
-	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s****\n' % (evidenceCode, line))
+	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
 	    continue
 
 	# for testing old gpad
@@ -372,9 +372,7 @@ def readGAF():
 	    extensions, errors = convertExtensionsIds(extensions, uberonLookup)
 	    if errors:
 	        for error in errors:
-	            errorFile.write('%s\n%s****\n' % (error, line))
-		    #errorFile.write(error + '\n')
-		    #errorFile.write(line + '*****\n')
+	            errorFile.write('%s\n%s\n****\n' % (error, line))
 
 	    # re-format to use 'properties' format
 	    # (which will then be re-formated tomgi-property format)
