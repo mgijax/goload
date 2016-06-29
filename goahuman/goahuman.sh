@@ -24,7 +24,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
 #      - Input file for annotload
 #      - see annotload outputs
 #      - Records written to the database tables
@@ -65,7 +65,7 @@ fi
 #
 # Initialize the log file.
 #
-LOG=${LOG_FILE}
+LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
 
@@ -102,15 +102,15 @@ preload ${OUTPUTDIR}
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
 rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
+gunzip ${INFILE_NAME_GAF} >> ${LOG}
 
 cd ${OUTPUTDIR}
 
 #
 # create input file
 #
-echo 'Running goahuman.py' >> ${LOG_DIAG}
-${GOLOAD}/goahuman/goahuman.py >> ${LOG_DIAG}
+echo 'Running goahuman.py' >> ${LOG}
+${GOLOAD}/goahuman/goahuman.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goahuman/goahuman.py"
 
@@ -118,16 +118,16 @@ checkStatus ${STAT} "${GOLOAD}/goahuman/goahuman.py"
 # run annotation load
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goahuman/goa.csh.config
-echo "Running GOA/Human annotation load" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goahuman >> ${LOG_DIAG} 
+echo "Running GOA/Human annotation load" >> ${LOG}
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goahuman >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 
 #
 # run inferred-from cache
 #
-echo "Running GOA/Human inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.goahumanload >> ${LOG_DIAG} 
+echo "Running GOA/Human inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.goahumanload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goahumanload"
 

@@ -24,7 +24,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
 #      - Input file for annotload
 #      - see annotload outputs
 #      - Records written to the database tables
@@ -65,7 +65,7 @@ fi
 #
 # Initialize the log file.
 #
-LOG=${LOG_FILE}
+LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
 
@@ -107,8 +107,8 @@ cd ${OUTPUTDIR}
 #
 # create input file
 #
-echo 'Running goamousenoctua.py' >> ${LOG_DIAG}
-${GOLOAD}/goamousenoctua/goamousenoctua.py >> ${LOG_DIAG}
+echo 'Running goamousenoctua.py' >> ${LOG}
+${GOLOAD}/goamousenoctua/goamousenoctua.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
 
@@ -116,25 +116,25 @@ checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
 # run annotation load with new annotations
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goamousenoctua/goa.csh.config
-echo "Running GOA/Mouse/Noctua annotation load" >> ${LOG_DIAG}
-echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua >> ${LOG_DIAG} 
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
+echo "Running GOA/Mouse/Noctua annotation load" >> ${LOG}
+echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua >> ${LOG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
 
 #
 # run inferred-from cache
 #
-echo "Running GOA/Mouse/Noctua inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.goanoctua >> ${LOG_DIAG} 
+echo "Running GOA/Mouse/Noctua inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.goanoctua >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamousenoctua"
 
 #
 # run eco check
 #
-echo "Running GOA/Mouse/Noctua ecocheck.sh" >> ${LOG_DIAG}
-${GOLOAD}/goamousenoctua/ecocheck.sh >> ${LOG_DIAG}
+echo "Running GOA/Mouse/Noctua ecocheck.sh" >> ${LOG}
+${GOLOAD}/goamousenoctua/ecocheck.sh >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goamousenoctua/echocheck.sh"
 

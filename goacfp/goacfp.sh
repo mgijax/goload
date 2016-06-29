@@ -24,7 +24,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
 #      - Input file: GAF Interontology (GOA/CFP)
 #      - Output file: annotload
 #      - see annotload outputs
@@ -66,7 +66,7 @@ fi
 #
 # Initialize the log file.
 #
-LOG=${LOG_FILE}
+LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
 
@@ -108,8 +108,8 @@ cd ${OUTPUTDIR}
 #
 # create input file
 #
-echo 'Running goacfp.py' >> ${LOG_DIAG}
-${GOLOAD}/goacfp/goacfp.py >> ${LOG_DIAG}
+echo 'Running goacfp.py' >> ${LOG}
+${GOLOAD}/goacfp/goacfp.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goacfp/goacfp.py"
 
@@ -117,16 +117,16 @@ checkStatus ${STAT} "${GOLOAD}/goacfp/goacfp.py"
 # run annotation load
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goacfp/goa.csh.config
-echo "Running goacfp annotation load" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG_DIAG}
+echo "Running goacfp annotation load" >> ${LOG}
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 
 #
 # run inferred-from cache
 #
-echo "Running goacfp inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.gocfpload >> ${LOG_DIAG} 
+echo "Running goacfp inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.gocfpload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gocfpload"
 

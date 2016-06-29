@@ -24,7 +24,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
 #      - Input file for annotload
 #      - see annotload outputs
 #      - Records written to the database tables
@@ -65,7 +65,7 @@ fi
 #
 # Initialize the log file.
 #
-LOG=${LOG_FILE}
+LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
 
@@ -102,8 +102,8 @@ preload ${OUTPUTDIR}
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
 rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
-rm -rf ${INFILE_NAME_SORTED} >> ${LOG_DIAG}
+gunzip ${INFILE_NAME_GAF} >> ${LOG}
+rm -rf ${INFILE_NAME_SORTED} >> ${LOG}
 # important to sort the file so we can collapse "duplicate" lines
 sort -k2,7 ${INFILE_NAME_GAF} > ${INFILE_NAME_SORTED}
 
@@ -112,19 +112,19 @@ cd ${OUTPUTDIR}
 #
 # run annotation load with an empty file to remove previous data
 #
-echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG_DIAG}
+echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
 rm -rf ${ANNOTINPUTFILE}
 touch ${ANNOTINPUTFILE}
 COMMON_CONFIG_CSH=${GOLOAD}/goamouse/goadelete.csh.config
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse"
 
 #
 # create input file
 #
-echo 'Running goamouse.py' >> ${LOG_DIAG}
-${GOLOAD}/goamouse/goamouse.py >> ${LOG_DIAG}
+echo 'Running goamouse.py' >> ${LOG}
+${GOLOAD}/goamouse/goamouse.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goamouse/goamouse.py"
 
@@ -132,17 +132,17 @@ checkStatus ${STAT} "${GOLOAD}/goamouse/goamouse.py"
 # run annotation load with new annotations
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goamouse/goa.csh.config
-echo "Running GOA/Mouse annotation load" >> ${LOG_DIAG}
-echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG_DIAG} 
+echo "Running GOA/Mouse annotation load" >> ${LOG}
+echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse"
 
 #
 # run inferred-from cache
 #
-echo "Running GOA/Mouse inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.goaload >> ${LOG_DIAG} 
+echo "Running GOA/Mouse inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.goaload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamouse"
 

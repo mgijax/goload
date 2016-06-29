@@ -4,7 +4,7 @@
 #
 # goarefgen.py
 #
-#	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Gorefgenload
+#	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
 # Inputs:
 #
@@ -121,10 +121,6 @@ evidenceCodeList = {}
 
 #
 # Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Copies & opens files
-# Throws: Nothing
 #
 def initialize():
 
@@ -189,10 +185,6 @@ def initialize():
 
 #
 # Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Reads input file and creates output annotation file
-# Throws: Nothing
 #
 def readGAF():
 
@@ -301,11 +293,7 @@ def readGAF():
     return 0
 
 #
-# Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Closes files
-# Throws: Nothing
+# Purpose: Close files
 #
 def closeFiles():
 

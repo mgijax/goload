@@ -4,7 +4,7 @@
 #
 # goamouse.py
 #
-#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goaload
+#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
 # Inputs:
 #

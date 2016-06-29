@@ -24,7 +24,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
 #      - Input file for annotload
 #      - see annotload outputs
 #      - Records written to the database tables
@@ -65,7 +65,7 @@ fi
 #
 # Initialize the log file.
 #
-LOG=${LOG_FILE}
+LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
 
@@ -118,15 +118,15 @@ preload ${OUTPUTDIR}
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
 rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
+gunzip ${INFILE_NAME_GAF} >> ${LOG}
 
 cd ${OUTPUTDIR}
 
 #
 # create input file
 #
-echo 'Running goarat.py' >> ${LOG_DIAG}
-${GOLOAD}/goarat/goarat.py >> ${LOG_DIAG}
+echo 'Running goarat.py' >> ${LOG}
+${GOLOAD}/goarat/goarat.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goarat/goarat.py"
 
@@ -134,16 +134,16 @@ checkStatus ${STAT} "${GOLOAD}/goarat/goarat.py"
 # run annotation load
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goarat/goa.csh.config
-echo "Running GO/RAT annotation load" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat >> ${LOG_DIAG} 
+echo "Running GO/RAT annotation load" >> ${LOG}
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat"
 
 #
 # run inferred-from cache
 #
-echo "Running GO/RAT inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.goratload >> ${LOG_DIAG} 
+echo "Running GO/RAT inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.goratload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goratload"
 

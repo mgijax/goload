@@ -4,7 +4,7 @@
 #
 # goamousenoctua.py
 #
-#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload_overview
+#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
 # Inputs:
 #
@@ -103,10 +103,6 @@ UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s"
 
 #
 # Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Copies & opens files
-# Throws: Nothing
 #
 def initialize():
 
@@ -216,6 +212,9 @@ def initialize():
 
     return
 
+#
+# Purpose: Converts extensions ids (column 11)
+#
 def convertExtensionsIds(extensions, uberonLookup={}):
     #
     # Converts extensions ids (column 11):
@@ -258,10 +257,6 @@ def convertExtensionsIds(extensions, uberonLookup={}):
 
 #
 # Purpose: Read GAF file and generate Annotation file
-# Returns: 1 if file can be read/processed correctly, else 0
-# Assumes: Nothing
-# Effects: Reads input file and creates output annotation file
-# Throws: Nothing
 #
 def readGAF():
 
@@ -414,11 +409,7 @@ def readGAF():
 		createdBy, modDate, properties))
 
 #
-# Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Closes files
-# Throws: Nothing
+# Purpose: Close files
 #
 def closeFiles():
 

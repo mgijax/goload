@@ -4,7 +4,7 @@
 #
 # goacfp.py
 #
-#	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Gocfpload
+#	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
 # Inputs:
 #
@@ -103,10 +103,6 @@ mgiRefLookup = {}
 
 #
 # Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Copies & opens files
-# Throws: Nothing
 #
 def initialize():
 
@@ -144,10 +140,6 @@ def initialize():
 
 #
 # Purpose: Read GAF file and generate Annotation file
-# Returns: 1 if file can be read/processed correctly, else 0
-# Assumes: Nothing
-# Effects: Reads input file and creates output annotation file
-# Throws: Nothing
 #
 def readGAF():
 
@@ -220,11 +212,7 @@ def readGAF():
 	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, inferredFrom, createdBy, modDate))
 
 #
-# Purpose: Initialization
-# Returns: 1 if file does not exist or is not readable, else 0
-# Assumes: Nothing
-# Effects: Closes files
-# Throws: Nothing
+# Purpose: Close files
 #
 def closeFiles():
 

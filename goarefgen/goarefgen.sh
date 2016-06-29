@@ -24,7 +24,7 @@
 #
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
-#        ${LOG_DIAG}, ${LOG_CUR} and ${LOG_VAL}
+#        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
 #      - Input file: GO-GAF RefGen
 #      - Output file: annotload
 #      - see annotload outputs
@@ -66,7 +66,7 @@ fi
 #
 # Initialize the log file.
 #
-LOG=${LOG_FILE}
+LOG=${LOG_DIAG}
 rm -rf ${LOG}
 touch ${LOG}
 
@@ -119,15 +119,15 @@ preload ${OUTPUTDIR}
 cd ${INPUTDIR}
 cp ${INFILE_NAME_GZ} ${INPUTDIR}
 rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG_DIAG}
+gunzip ${INFILE_NAME_GAF} >> ${LOG}
 
 cd ${OUTPUTDIR}
 
 #
 # create input file
 #
-echo 'Running goarefgen.py' >> ${LOG_DIAG}
-${GOLOAD}/goarefgen/goarefgen.py >> ${LOG_DIAG}
+echo 'Running goarefgen.py' >> ${LOG}
+${GOLOAD}/goarefgen/goarefgen.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goarefgen/goarefgen.py"
 
@@ -135,16 +135,16 @@ checkStatus ${STAT} "${GOLOAD}/goarefgen/goarefgen.py"
 # run annotation load
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goarefgen/goa.csh.config
-echo "Running goarefgen annotation load" >> ${LOG_DIAG}
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG_DIAG}
+echo "Running goarefgen annotation load" >> ${LOG}
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 
 #
 # run inferred-from cache
 #
-echo "Running goarefgen inferred-from cache load" >> ${LOG_DIAG}
-${MGICACHELOAD}/inferredfrom.gorefgenload >> ${LOG_DIAG} 
+echo "Running goarefgen inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.gorefgenload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gorefgenload"
 
