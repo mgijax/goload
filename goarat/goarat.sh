@@ -135,9 +135,9 @@ checkStatus ${STAT} "${GOLOAD}/goarat/goarat.py"
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goarat/goa.csh.config
 echo "Running GO/RAT annotation load" >> ${LOG}
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat >> ${LOG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gorat >> ${LOG} 
 STAT=$?
-checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goarat"
+checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gorat"
 
 #
 # run inferred-from cache
