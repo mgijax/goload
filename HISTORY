@@ -1,3 +1,9 @@
+TAG: goload-tr12349
+DATE: 07/07/2016
+STAFF: lec 
+CHANGES: TR12349/gone-dor & more
+TR12345/GO-Noctua/GPAD/GPI
+
 TAG: goload-6-0-4-6
 TAG: goload-6-0-4-5
 TAG: goload-6-0-4-4
@@ -7,6 +13,7 @@ TAG: goload-6-0-4-1
 DATE: 06/14/2016
 STAFF: lec 
 CHANGES: TR12349/gone-dor & more
+TR12345/GO-Noctua/GPAD/GPI
 1) wrapper for all go-loads
 goamouse  : goaload
 goahuman  : goahumanload
