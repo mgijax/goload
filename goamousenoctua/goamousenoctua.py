@@ -55,6 +55,7 @@
 import sys 
 import os
 import db
+import ecolib
 
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
@@ -110,7 +111,7 @@ def initialize():
     global annotFileName, annotFile
     global errorFileName, errorFile
     global mgiRefLookup
-    global echoLookup
+    global ecoLookup
     global uberonLookup
     global uberonFileName, uberonFile
     global uberonTextFileName, uberonTextFile
@@ -145,45 +146,10 @@ def initialize():
 	if r['pubmedID'] != '':
 	    mgiRefLookup[r['pubmedID']] = r['jnumID']
 
-    # lookup file of Evidence Code Ontology (_vocab_key = 111)
-    # to GO Evidence Code (_vocab_key = 3)
-    # EXP needs to float to the bottom
-    # these are the lowest priority evidence codes that wind up in the translation
+    # lookup file of Evidence Code Ontology using ecolib.py library
 
     print 'reading eco -> go evidence translation...'
-
-    results = db.sql('''
-	(
-	select distinct a.accID as ecoID, s.synonym
-	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t
-	where a._LogicalDB_key = 182 
-	and a._Object_key = s._Object_key
-	and s._MGIType_key = 13
-	and s.synonym = t.abbreviation
-	and t._vocab_key = 3
-	and s._SynonymType_key = st._SynonymType_key
-        and st.synonymtype in ('exact', 'related')
-	union all
-	select distinct a2.accID, s.synonym
-	from ACC_Accession a, MGI_Synonym s, MGI_SynonymType st, VOC_Term t, DAG_Closure dc, ACC_Accession a2
-	where a._LogicalDB_key = 182 
-	and a._Object_key = s._Object_key
-	and s._MGIType_key = 13
-	and s.synonym = t.abbreviation
-	and t._vocab_key = 3
-	and s._SynonymType_key = st._SynonymType_key
-        and st.synonymtype in ('exact', 'related')
-	and a._Object_key = dc._ancestorobject_key
-	and dc._descendentobject_key = a2._Object_key
-	and a2._LogicalDB_key = 182
-	)
-	order by ecoID, synonym desc
-    	''', 'auto')
-
-    for r in results:
-	key = r['ecoID']
-	if key not in ecoLookup:
-		ecoLookup[r['ecoID']] = r['synonym']
+    ecoLookup = ecolib.processECO()
 
     #
     # read/store UBERON-to-EMAPA info
@@ -288,6 +254,8 @@ def readGAF():
     # field 9 : Notes : none
     # field 10: logicalDB : MGI
     annotLine = '%s\t%s\t%s\t%s\t%s\t\t%s\t%s\t\tMGI\t%s\n' 
+
+    print 'reading GAF...'
 
     for line in inFile.readlines():
 
