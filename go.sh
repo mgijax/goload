@@ -23,8 +23,8 @@ touch $GOLOG
  
 date | tee -a $GOLOG
 
-echo '1:Run GOA/Mouse/Noctua Load' | tee -a ${GOLOG}
-${GOLOAD}/goamousenoctua/goamousenoctua.sh | tee -a ${GOLOG}
+#echo '1:Run GOA/Mouse/Noctua Load' | tee -a ${GOLOG}
+#${GOLOAD}/goamousenoctua/goamousenoctua.sh | tee -a ${GOLOG}
 
 echo '2:Run GOA/Mouse Load' | tee -a ${GOLOG}
 ${GOLOAD}/goamouse/goamouse.sh | tee -a ${GOLOG}
