@@ -18,14 +18,14 @@
 # to call from command line (output will be sent to standard out)
 #	ecolib.py
 #    
-# What it does:
+# What it will do:
 #	read eco.obo file
 #	find the GO evidence code for each top-level ECO id
 #	find the parent (is_a) of each ECO id
 #	find the associated GO evidence code of each ECO id 
-#		by recursively iterating ECO id parent(s)
+#		by recursively iterating thru ECO id parent(s)
 #
-# What this does not do:
+# What it will not do:
 #	does not store the ECO ids in the vocabulary tables
 #	does not store the ECO DAG in the DAG tables
 # 
@@ -150,6 +150,7 @@ def processECO():
             evidence = tokens[1]
             n.evidence = evidence.replace('GOECO:', '')
 	    addToLookup = 1
+	    print n.ecoId, line
 
 	elif line.find('synonym:') == 0:
 	    if line.find('EXACT [GO:') >= 0:
@@ -157,6 +158,7 @@ def processECO():
                 evidence = tokens[1]
                 n.evidence = evidence.replace(']', '')
 	        addToLookup = 1
+		print n.ecoId, line
 
         #
 	# list of typs of "tags" that need to be included in nodeLookup
