@@ -8,9 +8,9 @@
 #
 # Inputs:
 #
-#       ${INFILE_NAME_GAF}      the GAF file
+#       ${INFILE_NAME_GPAD}      the GPAD file
 #
-#       The GAF file contains:
+#       The GPAD file contains:
 #
 #               field 1:  Database ID ('MGI')
 #		field 2:  DB Object ID
@@ -60,9 +60,9 @@ import ecolib
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 
-# GAF file from the dataloads directory
+# GPAD file from the dataloads directory
 inFileName = None
-# GAF file pointer
+# GPAD file pointer
 inFile = None
 
 # annotation formatted file
@@ -120,7 +120,7 @@ def initialize():
     # open files
     #
 
-    inFileName = os.environ['INFILE_NAME_GAF']
+    inFileName = os.environ['INFILE_NAME_GPAD']
     uberonFileName = os.environ['UBERONFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
@@ -222,12 +222,12 @@ def convertExtensionsIds(extensions, uberonLookup={}):
     return extensions, errors
 
 #
-# Purpose: Read GAF file and generate Annotation file
+# Purpose: Read GPAD file and generate Annotation file
 #
-def readGAF():
+def readGPAD():
 
     #
-    #	for each row in the GAF file (INFILE_NAME_GAF):
+    #	for each row in the GPAD file (INFILE_NAME_GPAD):
     #
     #           if the reference does not exist in MGI (using mgiRefLookup)
     #                   write the record to the error file (INFILE_NAME_ERROR)
@@ -255,7 +255,7 @@ def readGAF():
     # field 10: logicalDB : MGI
     annotLine = '%s\t%s\t%s\t%s\t%s\t\t%s\t%s\t\tMGI\t%s\n' 
 
-    print 'reading GAF...'
+    print 'reading GPAD...'
 
     for line in inFile.readlines():
 
@@ -392,6 +392,6 @@ def closeFiles():
 #
 
 initialize()
-readGAF()
+readGPAD()
 closeFiles()
 

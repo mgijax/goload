@@ -43,11 +43,11 @@ RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/build.berkeleybop.org/view/GO/job/export-lego-to-legacy/108/artifact/legacy/gpad/production/mgi.gpad
-INFILE_NAME_GAF=${INPUTDIR}/mgi.gpad
+INFILE_NAME_GPAD=${INPUTDIR}/mgi.gpad
 INFILE_NAME=${INPUTDIR}/goamousenoctua.annot
 INFILE_NAME_ERROR=${INPUTDIR}/goamousenoctua.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
-export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME INFILE_NAME_ERROR
+export INFILE_NAME_GZ INFILE_NAME_GPAD INFILE_NAME INFILE_NAME_ERROR
 
 ECOFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/eco/eco.obo
 export ECOFILE
