@@ -41,7 +41,10 @@ ${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG}
 echo '6:Run GOA/CFP Load' | tee -a ${GOLOG}
 ${GOLOAD}/goacfp/goacfp.sh | tee -a ${GOLOG}
 
-echo 'running go_annot_extensions_display_load...' | tee -a ${GOLOG}
+echo 'running go_annot_extensions_display_load.csh...' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG}
+
+echo 'running go_isoforms_display_load.csh | tee -a ${GOLOG}
+${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG}
 
 date | tee -a $GOLOG
