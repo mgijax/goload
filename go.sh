@@ -41,16 +41,6 @@ ${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG}
 echo '6:Run GOA/CFP Load' | tee -a ${GOLOG}
 ${GOLOAD}/goacfp/goacfp.sh | tee -a ${GOLOG}
 
-#echo 'running VOC_deleteGOGAFRed()...' | tee -a ${GOLOG}
-#cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a ${GOLOG}
-#select * from VOC_deleteGOGAFRed('GO_Noctua%');
-#select * from VOC_deleteGOGAFRed('GOA_%');
-#select * from VOC_deleteGOGAFRed('GO_Central%');
-#select * from VOC_deleteGOGAFRed('GOC%');
-#select * from VOC_deleteGOGAFRed('RGD%');
-#select * from VOC_deleteGOGAFRed('UniProtKB%');
-#EOSQL
-
 echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG}
 
