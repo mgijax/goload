@@ -41,7 +41,7 @@ class Node:
     def __init__ (self, ecoId):
         self.ecoId = ecoId
 	self.name = ''
-	self.evidence = ''
+	self.evidence = []
 	self.parentId = []
 		
     def toString (self):
@@ -148,7 +148,7 @@ def processECO():
         elif line.find('xref: GOECO:') == 0:
             tokens = line.split(' ')
             evidence = tokens[1]
-            n.evidence = evidence.replace('GOECO:', '')
+            n.evidence.append(evidence.replace('GOECO:', ''))
 	    addToLookup = 1
 	    print n.ecoId, line
 
@@ -156,7 +156,7 @@ def processECO():
 	    if line.find('EXACT [GO:') >= 0:
                 tokens = line.split('[GO:')
                 evidence = tokens[1]
-                n.evidence = evidence.replace(']', '')
+                n.evidence.append(evidence.replace(']', ''))
 	        addToLookup = 1
 		print n.ecoId, line
 
@@ -228,7 +228,8 @@ def findEvidenceByParent(n):
 #
 def generateLookup():
 
-    ecoLookup = {}
+    ecoLookupByEco = {}
+    ecoLookupByEvidence = {}
 
     for r in nodeLookup:
 
@@ -248,16 +249,24 @@ def generateLookup():
 	if len(evidence) == 0:
 	    continue
 
-	ecoLookup[n.ecoId] = evidence
+	ecoLookupByEco[n.ecoId] = evidence
 
-    return ecoLookup
+	for e in evidence:
+	    if e not in ecoLookupByEvidence:
+		ecoLookupByEvidence[e] = n.ecoId
+
+    return ecoLookupByEco, ecoLookupByEvidence
 
 if __name__ == '__main__':
 
-    ecoLookup = processECO()
+    ecoLookupByEco, ecoLookupByEvidence = processECO()
 
-    print 'rows:', len(ecoLookup)
+    print 'rows:', len(ecoLookupByEco)
+    print 'rows:', len(ecoLookupByEvidence)
 
-    for e in ecoLookup:
-        print e, ecoLookup[e]
+    for e in ecoLookupByEco:
+        print e, ecoLookupByEco[e]
+
+    for e in ecoLookupByEvidence:
+        print e, ecoLookupByEvidence[e]
 

@@ -82,7 +82,8 @@ mgiRefLookup = {}
 
 # lookup file of Evidence Code Ontology (_vocab_key = 111)
 # to GO Evidence Code (_vocab_key = 3)
-ecoLookup = {}
+ecoLookupByEco = {}
+ecoLookupByEvidence = {}
 
 # uberson stuff
 
@@ -111,7 +112,8 @@ def initialize():
     global annotFileName, annotFile
     global errorFileName, errorFile
     global mgiRefLookup
-    global ecoLookup
+    global ecoLookupByEco
+    global ecoLookupByEvidence
     global uberonLookup
     global uberonFileName, uberonFile
     global uberonTextFileName, uberonTextFile
@@ -149,7 +151,7 @@ def initialize():
     # lookup file of Evidence Code Ontology using ecolib.py library
 
     print 'reading eco -> go evidence translation...'
-    ecoLookup = ecolib.processECO()
+    ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
     #
     # read/store UBERON-to-EMAPA info
@@ -315,8 +317,8 @@ def readGPAD():
 	    errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
 	    continue
 
-	if evidenceCode in ecoLookup:
-	    goEvidenceCode = ecoLookup[evidenceCode]
+	if evidenceCode in ecoLookupByEco:
+	    goEvidenceCode = ecoLookupByEco[evidenceCode][0]
 	else:
 	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
 	    continue
