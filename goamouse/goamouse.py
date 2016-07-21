@@ -181,6 +181,17 @@ def main():
 
     print 'reading uberon/emapa file...'
 
+    primaryEmapa = []
+    results = db.sql('''select a.accID
+                from ACC_Accession a, VOC_Term t
+                where a._MGIType_key = 13
+                and a.preferred = 1
+                and a._Object_key = t._Term_key
+                and t._Vocab_key = 90
+                ''', 'auto')
+    for r in results:
+        primaryEmapa.append(r['accID'])
+
     uberonIdValue = 'id: UBERON:'
     emapaXrefValue = 'xref: EMAPA:'
 
@@ -196,6 +207,8 @@ def main():
             uberonId = line[4:-1]
         elif line[:12] == emapaXrefValue:
             emapaId = line[6:-1]
+            if emapaId not in primaryEmapa:
+                continue
             if uberonId not in uberonLookup:
                 uberonLookup[uberonId] = []
             uberonLookup[uberonId].append(emapaId)

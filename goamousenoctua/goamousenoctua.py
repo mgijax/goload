@@ -103,6 +103,9 @@ UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
 UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
 # end uberson stuff
 
+# marker-by-isoform
+markerByIsoform = {}
+
 #
 # Purpose: Initialization
 #
@@ -117,6 +120,7 @@ def initialize():
     global uberonLookup
     global uberonFileName, uberonFile
     global uberonTextFileName, uberonTextFile
+    global markerByIsoform
 
     #
     # open files
@@ -159,6 +163,17 @@ def initialize():
 
     print 'reading uberon -> emapa translation file...'
 
+    primaryEmapa = []
+    results = db.sql('''select a.accID 
+    		from ACC_Accession a, VOC_Term t
+		where a._MGIType_key = 13
+		and a.preferred = 1
+		and a._Object_key = t._Term_key
+		and t._Vocab_key = 90
+		''', 'auto')
+    for r in results:
+        primaryEmapa.append(r['accID'])
+
     uberonIdValue = 'id: UBERON:'
     emapaXrefValue = 'xref: EMAPA:'
 
@@ -169,6 +184,8 @@ def initialize():
             uberonId = line[4:-1]
         elif line[:12] == emapaXrefValue:
             emapaId = line[6:-1]
+	    if emapaId not in primaryEmapa:
+	        continue
             if uberonId not in uberonLookup:
                 uberonLookup[uberonId] = []
             uberonLookup[uberonId].append(emapaId)
@@ -177,6 +194,32 @@ def initialize():
 
     for u in uberonLookup:
         uberonTextFile.write(u + '\n')
+
+    #
+    # read/store Isoform-to-Marker info
+    #
+
+    print 'reading isforom -> marker translation...'
+
+    results = db.sql('''
+        select a1.accID as markerID, a2.accID as prID
+        from VOC_Annot v, ACC_Accession a1, ACC_Accession a2
+        where v._AnnotType_key = 1019
+        and v._Object_key = a1._Object_key
+        and a1._MGIType_key = 2
+        and a1._LogicalDB_key = 1
+        and a1.prefixPart = 'MGI:'
+        and a1.preferred = 1
+        and v._Term_key = a2._Object_key
+        and a2._MGIType_key = 13
+        ''', 'auto')
+
+    for r in results:
+        key = r['prID']
+        value = r['markerID']
+        if key not in markerByIsoform:
+                markerByIsoform[key] = []
+        markerByIsoform[key].append(value)
 
     return
 
@@ -196,7 +239,6 @@ def convertExtensionsIds(extensions, uberonLookup={}):
     uberonPrefix = 'UBERON:'
     
     errors = []
-    print extensions
 
     pStart = extensions.split('(')
     for p in pStart:
@@ -255,7 +297,7 @@ def readGPAD():
     # field 6:  Qualifier : null
     # field 9 : Notes : none
     # field 10: logicalDB : MGI
-    annotLine = '%s\t%s\t%s\t%s\t%s\t\t%s\t%s\t\tMGI\t%s\n' 
+    annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\tMGI\t%s\n' 
 
     print 'reading GPAD...'
 
@@ -284,18 +326,31 @@ def readGPAD():
         # skip if the GO id is a root term:  GO:0003674, GO:0008150, GO:0005575
         #
 
-        if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
+        if createdBy == 'GO_Noctua' and goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
             errorFile.write('Root Id is used : %s\n%s\n****\n' % (goID, line))
             continue
 
+        #
+        # skip if the databaseID is not MGI or PR
+        #
+
+	#if databaseID not in ('MGI', 'PR', 'EMBL', 'RefSeq', 'UniProtKB'):
+	#if databaseID not in ('PR'):
+            #errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
+            #continue
+
 	#
-	# skip if not MGI:
-	# only loading genes at the moment...
+	# if PR (isoform), then add as Marker annotation and use PR as a property
 	#
 
-	if not dbobjectID.find('MGI:') >= 0:
-	    errorFile.write('dbobjectID is not an MGI:xxxx id : %s\n%s\n****\n' % (dbobjectID, line))
-	    continue
+	if databaseID in ('PR'):
+	    #print tokens
+	    properties = 'gene product=' + dbobjectID
+	    if dbobjectID in markerByIsoform:
+	        dbobjectID = markerByIsoform[dbobjectID][0]
+            else:
+	        errorFile.write('isoform is not in isoform lookup: %s\n%s\n****\n' % (dbobjectID, line))
+	        continue
 
 	# translate references (MGI/PMID) to J numbers (J:)
 	# use the first J: match that we find
@@ -323,10 +378,6 @@ def readGPAD():
 	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
 	    continue
 
-	# for testing old gpad
-	#extensions = extensions.replace(evidenceCode,'')
-	#properties = properties.replace(goEvidenceCode,'')
-
 	#
 	# "extensions" contain things like "occurs_in", "part_of", etc.
 	# and are added to "properties" for forwarding to the annotation loader
@@ -340,23 +391,36 @@ def readGPAD():
 	            errorFile.write('%s\n%s\n****\n' % (error, line))
 
 	    # re-format to use 'properties' format
-	    # (which will then be re-formated tomgi-property format)
+	    # (which will then be re-formated to mgi-property format)
 	    extensions = extensions.replace('(', '=')
 	    extensions = extensions.replace(')', '')
 	    extensions = extensions.replace(',', '|')
-	    properties = extensions + '|' + properties
+	    if len(properties) > 0:
+	        properties = extensions + '|' + properties
+	    else:
+	        properties = extensions
 
 	#
 	# for qualifier:
-	#	a) store as 'null' in MGI-Qualifier field (see annotLine/field 3)
+	#
+	# if qualifier in ('part_of', 'enables', 'involves_in':
+	#	a) store as annotload/column 11/Property
 	#	b) append to 'properties' as:
 	#		go_qualifier=part_of
 	#		go_qualifier=enables
 	#		go_qualifier=involved_in
 	#
-	if len(properties) > 0:
-	    properties = properties + '|'
-	properties = properties + 'go_qualifier=' + qualifier
+	# else:
+	#	a) store as annotload/column 6/Qualifier
+	#
+	goqualifiers = []
+	for g in qualifier.split('|'):
+	    if g in ('part_of', 'enables', 'involved_in'):
+	        if len(properties) > 0:
+	            properties = properties + '|'
+	    	properties = properties + 'go_qualifier=' + g
+	    else:
+	        goqualifiers.append(g)
 
         # for evidence:
 	#	a) store as translated ECO->MGI->Evidence Code field
@@ -374,9 +438,12 @@ def readGPAD():
 	# note that the annotation load will qc duplicate annotations itself
 	# (dbobjectID, goID, goEvidenceCode, jnumID)
 
-	# temporary
+	# if using mgd-generated GPAD to run a test, then set createdBy = 'GO_Noctua'
+	# or else the createdBy in the input file will generate errors.
+	#createdBy = 'GO_Noctua'
+
 	annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
-		createdBy, modDate, properties))
+		'|'.join(goqualifiers), createdBy, modDate, properties))
 
 #
 # Purpose: Close files
