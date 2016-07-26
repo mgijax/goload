@@ -250,7 +250,7 @@ def readGPAD():
 	if databaseID in gpiSet:
 	    #print tokens
 	    dbobjectID = databaseID + ':' + dbobjectID
-	    properties = 'gene product=' + dbobjectID
+	    properties = 'gene product=' + dbobjectID + '|' + properties
 
 	    if dbobjectID in gpiLookup:
 	        dbobjectID = gpiLookup[dbobjectID][0]
