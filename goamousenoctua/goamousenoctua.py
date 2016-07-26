@@ -103,8 +103,12 @@ UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
 UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
 # end uberson stuff
 
-# marker-by-isoform
-markerByIsoform = {}
+#
+# gpi file
+#
+gpiFileName = None
+gpiFile = None
+gpiLookup = {}
 
 #
 # Purpose: Initialization
@@ -117,10 +121,9 @@ def initialize():
     global mgiRefLookup
     global ecoLookupByEco
     global ecoLookupByEvidence
-    global uberonLookup
-    global uberonFileName, uberonFile
+    global uberonFileName, uberonFile, uberonLookup
     global uberonTextFileName, uberonTextFile
-    global markerByIsoform
+    global gpiFileName, gpiFile, gpiLookup
 
     #
     # open files
@@ -128,12 +131,14 @@ def initialize():
 
     inFileName = os.environ['INFILE_NAME_GPAD']
     uberonFileName = os.environ['UBERONFILE']
+    gpiFileName = os.environ['GPIFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
     uberonTextFileName = os.environ['UBERONTEXTFILE']
 
     inFile = open(inFileName, 'r')
     uberonFile = open(uberonFileName, 'r')
+    gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
     uberonTextFile = open(uberonTextFileName, 'w')
@@ -196,30 +201,21 @@ def initialize():
         uberonTextFile.write(u + '\n')
 
     #
-    # read/store Isoform-to-Marker info
+    # read/store object-to-Marker info
     #
 
-    print 'reading isforom -> marker translation...'
+    print 'reading object -> marker translation using gpi file...'
 
-    results = db.sql('''
-        select a1.accID as markerID, a2.accID as prID
-        from VOC_Annot v, ACC_Accession a1, ACC_Accession a2
-        where v._AnnotType_key = 1019
-        and v._Object_key = a1._Object_key
-        and a1._MGIType_key = 2
-        and a1._LogicalDB_key = 1
-        and a1.prefixPart = 'MGI:'
-        and a1.preferred = 1
-        and v._Term_key = a2._Object_key
-        and a2._MGIType_key = 13
-        ''', 'auto')
-
-    for r in results:
-        key = r['prID']
-        value = r['markerID']
-        if key not in markerByIsoform:
-                markerByIsoform[key] = []
-        markerByIsoform[key].append(value)
+    for line in gpiFile.readlines():
+        if line[:1] == '!':
+	    continue
+        tokens = line[:-1].split('\t')
+	if tokens[0] in ('PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA'):
+	    key = tokens[0] + ':' + tokens[1]
+	    value = tokens[7].replace('MGI:MGI:', 'MGI:')
+            if key not in gpiLookup:
+                gpiLookup[key] = []
+            gpiLookup[key].append(value)
 
     return
 
@@ -334,22 +330,23 @@ def readGPAD():
         # skip if the databaseID is not MGI or PR
         #
 
-	#if databaseID not in ('MGI', 'PR', 'EMBL', 'RefSeq', 'UniProtKB'):
-	#if databaseID not in ('PR'):
-            #errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
-            #continue
+	if databaseID not in ('MGI', 'PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA'):
+            errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
+            continue
 
 	#
-	# if PR (isoform), then add as Marker annotation and use PR as a property
+	# if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
 	#
 
-	if databaseID in ('PR'):
+	if databaseID in ('PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA'):
 	    #print tokens
+	    dbobjectID = databaseID + ':' + dbobjectID
 	    properties = 'gene product=' + dbobjectID
-	    if dbobjectID in markerByIsoform:
-	        dbobjectID = markerByIsoform[dbobjectID][0]
+
+	    if dbobjectID in gpiLookup:
+	        dbobjectID = gpiLookup[dbobjectID][0]
             else:
-	        errorFile.write('isoform is not in isoform lookup: %s\n%s\n****\n' % (dbobjectID, line))
+	        errorFile.write('object is not in object lookup(gpi file): %s\n%s\n****\n' % (dbobjectID, line))
 	        continue
 
 	# translate references (MGI/PMID) to J numbers (J:)
@@ -440,7 +437,7 @@ def readGPAD():
 
 	# if using mgd-generated GPAD to run a test, then set createdBy = 'GO_Noctua'
 	# or else the createdBy in the input file will generate errors.
-	#createdBy = 'GO_Noctua'
+	createdBy = 'GO_Noctua'
 
 	annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
 		'|'.join(goqualifiers), createdBy, modDate, properties))
