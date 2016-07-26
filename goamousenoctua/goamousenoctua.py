@@ -55,6 +55,9 @@
 import sys 
 import os
 import db
+
+goloadpath = os.environ['GOLOAD'] + '/lib'
+sys.path.insert(0, goloadpath)
 import ecolib
 import uberonlib
 

@@ -124,13 +124,15 @@ import os
 import db
 import reportlib
 
+goloadpath = os.environ['GOLOAD'] + '/goamousenoctua'
+sys.path.insert(0, goloadpath)
+import uberonlib
+
 #db.setTrace()
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 
 #### Constants ###
-UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
-UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s"
 PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse marker: %s"
 
 mgiLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'
@@ -172,7 +174,6 @@ def main():
     dupErrorFile = reportlib.init('duplicates', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     mgiFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.mgi')
     annotFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
-    uberonTextFile = reportlib.init('uberon', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.txt')
     propertiesErrorFile = reportlib.init('properties', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     #
@@ -180,44 +181,8 @@ def main():
     #
 
     print 'reading uberon/emapa file...'
-
-    primaryEmapa = []
-    results = db.sql('''select a.accID
-                from ACC_Accession a, VOC_Term t
-                where a._MGIType_key = 13
-                and a.preferred = 1
-                and a._Object_key = t._Term_key
-                and t._Vocab_key = 90
-                ''', 'auto')
-    for r in results:
-        primaryEmapa.append(r['accID'])
-
-    uberonIdValue = 'id: UBERON:'
-    emapaXrefValue = 'xref: EMAPA:'
-
-    uberonFileName = os.environ['UBERONFILE']
-    uberonFile = open(uberonFileName, 'r')
-
     uberonLookup = {}
-
-    for line in uberonFile.readlines():
-        # find [Term]
-        # find xref: EMAPA:
-        if line[:11] == uberonIdValue:
-            uberonId = line[4:-1]
-        elif line[:12] == emapaXrefValue:
-            emapaId = line[6:-1]
-            if emapaId not in primaryEmapa:
-                continue
-            if uberonId not in uberonLookup:
-                uberonLookup[uberonId] = []
-            uberonLookup[uberonId].append(emapaId)
-        else:
-            continue
-
-    uberonFile.close()
-    for u in uberonLookup:
-        uberonTextFile.write(u + '\n')
+    uberonLookup = uberonlib.processUberon()
 
     #
     # Mouse Markers
@@ -536,7 +501,8 @@ def main():
         # start : column 16 (properties)
         #
 	
-	properties, errors = convertPropertiesIds(properties, uberonLookup)
+	properties, errors = convertExtensions(properties, uberonLookup)
+	#properties, errors = convertPropertiesIds(properties, uberonLookup)
 
 	if errors:
 	    for error in errors:
@@ -595,114 +561,7 @@ def main():
     reportlib.finish_nonps(dupErrorFile)
     reportlib.finish_nonps(mgiFile)
     reportlib.finish_nonps(annotFile)
-    reportlib.finish_nonps(uberonTextFile)
     reportlib.finish_nonps(propertiesErrorFile)
-
-### Helper functions ###
-
-def queryMouseAccId(logicalDBKey, id):
-    #
-    # Queries mouse marker accession id of given accession id/logicalDBKey
-    # 	returns list of MGI IDs
-    #
-
-    queryMouseAccIdSQL = ''' 
-    	select a2.accID
-    	from acc_accession a1, acc_accession a2
-    	where a1._logicaldb_key = %s
-    	and a1.accid = '%s'
-    	and a1._object_key = a2._object_key
-    	and a2._mgitype_key = 2 
-    	and a2._logicaldb_key = 1 
-    	and a2.prefixPart = 'MGI:'
-    	and a2.preferred = 1 
-    	'''
-
-    return [r['accid'] for r in db.sql( queryMouseAccIdSQL % (logicalDBKey, id) , 'auto')]
-
-def queryNonMouseAccId(logicalDBKey, id):
-    #
-    # Queries non-mouse marker of given accession id/logicalDBKey
-    # 	returns marker symbol, organism
-    #
-
-    queryNonMouseAccIdSQL = ''' 
-    	select m.symbol || ',' || o.commonname as symbol
-    	from acc_accession a1, mrk_marker m, mgi_organism o
-    	where a1._logicaldb_key = %s
-    	and a1.accid = '%s'
-    	and a1._object_key = m._marker_key
-    	and m._organism_key != 1
-    	and m._organism_key = o._organism_key
-    	'''
-
-    return [r['symbol'] for r in db.sql( queryNonMouseAccIdSQL % (logicalDBKey, id) , 'auto')]
-
-def convertPropertiesIds(properties, uberonLookup={}):
-    #
-    # Converts properties ids (column 16):
-    #
-    # 	UBERON: -> EMAPA:, uberonLookup
-    # 	ENSEMBL: -> MGI:, queryMouseAccId()
-    # 	NCBI_Gene: -> MGI:, queryMouseAccId()
-    # 
-    #   Returns converted properties
-    #   Returns list of error messages []
-    #
-
-    ensemblPrefix = 'ENSEMBL:'
-    ncbiPrefix = 'NCBI_Gene:'
-    uberonPrefix = 'UBERON:'
-    ensembl_ldb = 60
-    ncbi_ldb = 55
-    
-    errors = []
-
-    pStart = properties.split('(')
-    for p in pStart:
-
-	pEnd = p.split(')')
-
-	for e in pEnd:
-
-	    # found uberon id
-	    if e.find(uberonPrefix) >= 0:
-		if e in uberonLookup:
-		    u = uberonLookup[e]
-		    # found > 1 emapa
-		    if len(u) > 1:
-			errors.append(UBERON_MAPPING_MULTIPLES_ERROR % (e, str(u)))
-		    # replace UBERON id with EMAPA id
-		    else:
-			properties = properties.replace(e, u[0])
-		# did not find uberon id
-		else:
-		    errors.append(UBERON_MAPPING_MISSING_ERROR % (e))
-
-	    # found ensembl id
-	    if e.find(ensemblPrefix) >= 0:
-		id = e.replace(ensemblPrefix, '')
-		mgiIds = queryMouseAccId(ensembl_ldb, id)
-		if len(mgiIds) != 1:
-		    errors.append(PROPERTIES_ACCID_INVALID_ERROR % (e))
-		else:
-		    properties = properties.replace(e, mgiIds[0])
-
-	    # found ncbi id
-	    elif e.find(ncbiPrefix) >= 0:
-		id = e.replace(ncbiPrefix, '')
-		mgiIds = queryMouseAccId(ncbi_ldb, id)
-		if len(mgiIds) != 1:
-		    symbol = queryNonMouseAccId(ncbi_ldb, id)
-		    if len(symbol) > 0:
-		        e = e + ',' + symbol[0]
-		    errors.append(PROPERTIES_ACCID_INVALID_ERROR % (e))
-		else:
-		    properties = properties.replace(e, mgiIds[0])
-
-	    # else, do nothing
-
-    return properties, errors
 
 if __name__ == '__main__':
 
