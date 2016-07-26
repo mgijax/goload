@@ -56,6 +56,7 @@ import sys
 import os
 import db
 import ecolib
+import uberonlib
 
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
@@ -80,35 +81,21 @@ errorFile = None
 # pubmed id:jnum id
 mgiRefLookup = {}
 
+#
+# use gpi file to build gpiLookup of object:MGI:xxxx relationship
+#
+gpiSet = ['PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA']
+gpiFileName = None
+gpiFile = None
+gpiLookup = {}
+
 # lookup file of Evidence Code Ontology (_vocab_key = 111)
 # to GO Evidence Code (_vocab_key = 3)
 ecoLookupByEco = {}
 ecoLookupByEvidence = {}
 
-# uberson stuff
-
-# uberson formatted file
-uberonFileName = None
-# uberson file pointer
-uberonFile = None
-
-# uberson text formatted file
-uberonTextFileName = None
-# uberson text file pointer
-uberonTextFile = None
-
+# lookup file of Uberon to EMAPA
 uberonLookup = {}
-
-UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
-UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
-# end uberson stuff
-
-#
-# gpi file
-#
-gpiFileName = None
-gpiFile = None
-gpiLookup = {}
 
 #
 # Purpose: Initialization
@@ -119,29 +106,24 @@ def initialize():
     global annotFileName, annotFile
     global errorFileName, errorFile
     global mgiRefLookup
+    global gpiFileName, gpiFile, gpiLookup
     global ecoLookupByEco
     global ecoLookupByEvidence
-    global uberonFileName, uberonFile, uberonLookup
-    global uberonTextFileName, uberonTextFile
-    global gpiFileName, gpiFile, gpiLookup
+    global uberonLookup
 
     #
     # open files
     #
 
     inFileName = os.environ['INFILE_NAME_GPAD']
-    uberonFileName = os.environ['UBERONFILE']
     gpiFileName = os.environ['GPIFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
-    uberonTextFileName = os.environ['UBERONTEXTFILE']
 
     inFile = open(inFileName, 'r')
-    uberonFile = open(uberonFileName, 'r')
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
-    uberonTextFile = open(uberonTextFileName, 'w')
 
     #
     # lookup file of mgi ids or pubmed ids -> J:
@@ -157,49 +139,6 @@ def initialize():
 	if r['pubmedID'] != '':
 	    mgiRefLookup[r['pubmedID']] = r['jnumID']
 
-    # lookup file of Evidence Code Ontology using ecolib.py library
-
-    print 'reading eco -> go evidence translation...'
-    ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
-
-    #
-    # read/store UBERON-to-EMAPA info
-    #
-
-    print 'reading uberon -> emapa translation file...'
-
-    primaryEmapa = []
-    results = db.sql('''select a.accID 
-    		from ACC_Accession a, VOC_Term t
-		where a._MGIType_key = 13
-		and a.preferred = 1
-		and a._Object_key = t._Term_key
-		and t._Vocab_key = 90
-		''', 'auto')
-    for r in results:
-        primaryEmapa.append(r['accID'])
-
-    uberonIdValue = 'id: UBERON:'
-    emapaXrefValue = 'xref: EMAPA:'
-
-    for line in uberonFile.readlines():
-        # find [Term]
-        # find xref: EMAPA:
-        if line[:11] == uberonIdValue:
-            uberonId = line[4:-1]
-        elif line[:12] == emapaXrefValue:
-            emapaId = line[6:-1]
-	    if emapaId not in primaryEmapa:
-	        continue
-            if uberonId not in uberonLookup:
-                uberonLookup[uberonId] = []
-            uberonLookup[uberonId].append(emapaId)
-        else:
-            continue
-
-    for u in uberonLookup:
-        uberonTextFile.write(u + '\n')
-
     #
     # read/store object-to-Marker info
     #
@@ -210,56 +149,26 @@ def initialize():
         if line[:1] == '!':
 	    continue
         tokens = line[:-1].split('\t')
-	if tokens[0] in ('PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA'):
+	if tokens[0] in gpiSet:
 	    key = tokens[0] + ':' + tokens[1]
 	    value = tokens[7].replace('MGI:MGI:', 'MGI:')
             if key not in gpiLookup:
                 gpiLookup[key] = []
             gpiLookup[key].append(value)
 
+    #
+    # lookup file of Evidence Code Ontology using ecolib.py library
+    #
+    print 'reading eco -> go evidence translation...'
+    ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
+
+    #
+    # read/store UBERON-to-EMAPA info
+    #
+    print 'reading uberon -> emapa translation file...'
+    uberonLookup = uberonlib.processUberon() 
+
     return
-
-#
-# Purpose: Converts extensions ids (column 11)
-#
-def convertExtensionsIds(extensions, uberonLookup={}):
-    #
-    # Converts extensions ids (column 11):
-    #
-    # 	UBERON: -> EMAPA:, uberonLookup
-    # 
-    #   Returns converted extensions
-    #   Returns list of error messages []
-    #
-
-    uberonPrefix = 'UBERON:'
-    
-    errors = []
-
-    pStart = extensions.split('(')
-    for p in pStart:
-
-	pEnd = p.split(')')
-
-	for e in pEnd:
-
-	    # found uberon id
-	    if e.find(uberonPrefix) >= 0:
-		if e in uberonLookup:
-		    u = uberonLookup[e]
-		    # found > 1 emapa
-		    if len(u) > 1:
-			errors.append(UBERON_MAPPING_MULTIPLES_ERROR % (e, str(u)))
-		    # replace UBERON id with EMAPA id
-		    else:
-			extensions = extensions.replace(e, u[0])
-		# did not find uberon id
-		else:
-		    errors.append(UBERON_MAPPING_MISSING_ERROR % (e))
-
-	    # else, do nothing
-
-    return extensions, errors
 
 #
 # Purpose: Read GPAD file and generate Annotation file
@@ -330,7 +239,7 @@ def readGPAD():
         # skip if the databaseID is not MGI or PR
         #
 
-	if databaseID not in ('MGI', 'PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA'):
+	if databaseID != 'MGI' and databaseID not in gpiSet:
             errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
             continue
 
@@ -338,7 +247,7 @@ def readGPAD():
 	# if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
 	#
 
-	if databaseID in ('PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA'):
+	if databaseID in gpiSet:
 	    #print tokens
 	    dbobjectID = databaseID + ':' + dbobjectID
 	    properties = 'gene product=' + dbobjectID
@@ -382,7 +291,7 @@ def readGPAD():
 	if len(extensions) > 0:
 
 	    # to translate uberon ids to emapa
-	    extensions, errors = convertExtensionsIds(extensions, uberonLookup)
+	    extensions, errors = uberonlib.convertExtensions(extensions, uberonLookup)
 	    if errors:
 	        for error in errors:
 	            errorFile.write('%s\n%s\n****\n' % (error, line))
@@ -448,10 +357,8 @@ def readGPAD():
 def closeFiles():
 
     inFile.close()
-    uberonFile.close()
     annotFile.close()
     errorFile.close()
-    uberonTextFile.close()
 
 #
 # main

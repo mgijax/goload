@@ -52,6 +52,11 @@ class Node:
 #
 nodeLookup = {}
 
+#
+# Purpose: Reads the eco.obo file and returns a dictionary of:
+#	ecoLookupByEco : ecoId -> evidence
+#	ecoLookupByEvidence : evidence -> ecoId (the default ecoId of the evidence)
+#
 def processECO():
 
     oboFileName = os.environ['ECOFILE']
@@ -224,7 +229,9 @@ def findEvidenceByParent(n):
     return evidence
 
 #
-# Purpose: To return a dictionary of ecoId->evidence code associations
+# Purpose: To return a dictionary of:
+#	ecoLookupByEco : ecoId -> evidence
+#	ecoLookupByEvidence : evidence -> ecoId (the default ecoId of the evidence)
 #
 def generateLookup():
 
