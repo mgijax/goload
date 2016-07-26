@@ -625,16 +625,14 @@ def closeFiles():
 if initialize() != 0:
     sys.exit(1)
 
-#for inFileName in (os.environ['PROTEIN_SORTED'], \
-#		os.environ['ISOFORM_SORTED'], \
-#		os.environ['COMPLEX_SORTED'], \
-#		os.environ['RNA_SORTED'])
-#		):
-#for inFileName in (os.environ['PROTEIN_SORTED'], \
-#		os.environ['ISOFORM_SORTED'])
-for inFileName in (os.environ['PROTEIN_SORTED']):
-    if readGAF() != 0:
-        sys.exit(1)
+inFileName = os.environ['PROTEIN_SORTED']
+inFile = open(inFileName, 'r')
+if readGAF(inFile) != 0:
+    sys.exit(1)
+
+#os.environ['ISOFORM_SORTED'], \
+#os.environ['COMPLEX_SORTED'], \
+#os.environ['RNA_SORTED'])
 
 closeFiles()
 sys.exit(0)
