@@ -165,12 +165,12 @@ mgiannot = {}	# dictionary of existing annotations:  Marker key, GO ID, Evidence
 newannot = {}	# dictionary of new annotations: Marker key, GO ID, Evidence Code, Pub Med ID
 goids = {}      # dictionary of secondary GO ID:primary GO ID
 
-annotByGOID = []
-annotByRef = []
+annotByGOID = []	# go annotation by go ids
+annotByRef = []		# go annotation by pub med ids
 pubmed = {}		# dictionary of pubmed->J:
 pubmedUnique = []	# list of unique pubmedids that are not in MGI
 pubmedEvidence = {}	# evidence code:count for those annotations with pubmedids that are not in MGI
-uberonLookup = {}
+uberonLookup = {}	# uberon -> emapa lookup
 
 #
 # Initialize input/output files
@@ -202,8 +202,6 @@ def initialize():
     global pubmedEvidence
     global uberonLookup
 
-    db.useOneConnection(1)
-
     #
     # open files
     #
@@ -226,7 +224,7 @@ def initialize():
     # read/store UBERON-to-EMAPA info
     #
 
-    print 'reading uberon/emapa file...'
+    print 'reading uberon/emapa obo file...'
     uberonLookup = uberonlib.processUberon()
     #print uberonLookup
 
@@ -390,6 +388,8 @@ def initialize():
         key = r['pubmedID']
         value = r['jnumID']
         pubmed[key] = value
+
+    return 0
 
 #
 # Purpose : Read GAF file and generate Annotation file
@@ -583,6 +583,8 @@ def readGAF(inFile):
 
     inFile.close()
 
+    return 0
+
 #
 # write error files and close all files
 #
@@ -614,22 +616,25 @@ def closeFiles():
     reportlib.finish_nonps(annotFile)
     reportlib.finish_nonps(propertiesErrorFile)
 
-    db.commit()
-    db.useOneConnection(0) 
+    return 0
 
-if __name__ == '__main__':
+#
+# main
+#
 
-	initialize()
+if initialize() != 0:
+    sys.exit(1)
 
-	#for inFileName in (os.environ['PROTEIN_SORTED'], \
-	#		os.environ['ISOFORM_SORTED'], \
-	#		os.environ['COMPLEX_SORTED'], \
-	#		os.environ['RNA_SORTED'])
-	#		):
-	for inFileName in (os.environ['PROTEIN_SORTED'], \
-			os.environ['ISOFORM_SORTED'])
-			):
-	    readGAF(open(inFileName, 'r'))
+#for inFileName in (os.environ['PROTEIN_SORTED'], \
+#		os.environ['ISOFORM_SORTED'], \
+#		os.environ['COMPLEX_SORTED'], \
+#		os.environ['RNA_SORTED'])
+#		):
+#for inFileName in (os.environ['PROTEIN_SORTED'], \
+#		os.environ['ISOFORM_SORTED'])
+for inFileName in (os.environ['PROTEIN_SORTED']):
+    if readGAF() != 0:
+        sys.exit(1)
 
-	closeFiles()
-	
+closeFiles()
+sys.exit(0)
