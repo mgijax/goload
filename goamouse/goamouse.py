@@ -630,7 +630,11 @@ inFile = open(inFileName, 'r')
 if readGAF(inFile) != 0:
     sys.exit(1)
 
-#os.environ['ISOFORM_SORTED'], \
+inFileName = os.environ['ISOFORM_SORTED']
+inFile = open(inFileName, 'r')
+if readGAF(inFile) != 0:
+    sys.exit(1)
+
 #os.environ['COMPLEX_SORTED'], \
 #os.environ['RNA_SORTED'])
 
