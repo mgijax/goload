@@ -150,7 +150,7 @@ def processECO():
             evidence = tokens[1]
             n.evidence.append(evidence.replace('GOECO:', ''))
 	    addToLookup = 1
-	    print n.ecoId, line
+	    #print n.ecoId, line
 
 	elif line.find('synonym:') == 0:
 	    if line.find('EXACT [GO:') >= 0:
@@ -158,7 +158,7 @@ def processECO():
                 evidence = tokens[1]
                 n.evidence.append(evidence.replace(']', ''))
 	        addToLookup = 1
-		print n.ecoId, line
+		#print n.ecoId, line
 
         #
 	# list of typs of "tags" that need to be included in nodeLookup
