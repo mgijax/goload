@@ -129,9 +129,7 @@ def initialize():
     # pubmed id:jnum id
     #
 
-    results = db.sql('''select mgiID, pubmedID, jnumID 
-			from BIB_Citation_Cache 
-		     ''', 'auto')
+    results = db.sql('''select mgiID, pubmedID, jnumID from BIB_Citation_Cache ''', 'auto')
     for r in results:
 	mgiRefLookup[r['mgiID']] = r['jnumID']
 
@@ -224,7 +222,12 @@ def closeFiles():
 # main
 #
 
-initialize()
-readGAF()
+if initialize() != 0:
+    sys.exit(1)
+
+if readGAF() != 0:
+    sys.exit(1)
+
 closeFiles()
+sys.exit(0)
 

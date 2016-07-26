@@ -543,8 +543,17 @@ def closeFiles():
 # main
 #
 
-initialize()
-preprocess()
-reinitialize()
-readGAF()
+if initialize() != 0:
+    sys.exit(1)
+
+if preprocess() != 0:
+    sys.exit(1)
+
+if reinitialize() != 0:
+    sys.exit(1)
+
+if readGAF() != 0:
+    sys.exit(1)
+
 closeFiles()
+sys.exit(0)

@@ -100,12 +100,22 @@ preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
-cp ${INFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG}
-rm -rf ${INFILE_NAME_SORTED} >> ${LOG}
-# important to sort the file so we can collapse "duplicate" lines
-sort -k2,7 ${INFILE_NAME_GAF} > ${INFILE_NAME_SORTED}
+
+#
+# important to sort the files so we can collapse "duplicate" lines
+#
+
+cp ${PROTEIN_GZ} ${INPUTDIR}
+rm -rf ${PROTEIN_GAF}
+gunzip ${PROTEIN_GAF} >> ${LOG}
+rm -rf ${PROTEIN_SORTED} >> ${LOG}
+sort -k2,7 ${PROTEIN_GAF} > ${PROTEIN_SORTED}
+
+cp ${ISOFORM_GZ} ${INPUTDIR}
+rm -rf ${ISOFORM_GAF}
+gunzip ${ISOFORM_GAF} >> ${LOG}
+rm -rf ${ISOFORM_SORTED} >> ${LOG}
+sort -k2,7 ${ISOFORM_GAF} > ${ISOFORM_SORTED}
 
 cd ${OUTPUTDIR}
 

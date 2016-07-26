@@ -8,7 +8,8 @@
 #
 # Inputs:
 #
-#       ${INFILE_NAME_GAF}      the GAF file
+#       ${PROTEIN_SORTED}      the sorted GAF file
+#       ${ISOFORM_SORTED}      the sorted GAF file
 #
 #       The GAF file contains:
 #
@@ -31,7 +32,7 @@
 #
 #	TR 7904/7926
 #
-#	Takes the GOA file ${INFILE_NAME_SORTED} and generates
+#	Takes the GOA file ${PROTEIN_SORTED} and generates
 #
 #		mgi.error
 #			file of GOA annotations that originated from MGI
@@ -124,7 +125,7 @@ import os
 import db
 import reportlib
 
-goloadpath = os.environ['GOLOAD'] + '/goamousenoctua'
+goloadpath = os.environ['GOLOAD'] + '/lib'
 sys.path.insert(0, goloadpath)
 import uberonlib
 
@@ -143,6 +144,21 @@ skipEvidenceCodes = ['IEP']
 
 ### Globals ###
 
+inFileName = None
+goaPrefix = None
+unresolvedAErrorFile = None
+unresolvedBErrorFile = None
+unresolvedCErrorFile = None
+mgiErrorFile = None
+nopubmedFile = None
+pubmedAnnotFile = None
+pubmedErrorFile = None
+pubmedeviErrorFile = None
+dupErrorFile = None
+mgiFile = None
+annotFile = None
+propertiesErrorFile = None
+
 assoc = {}	# dictionary of GOA ID:Marker MGI ID
 marker = {}	# dictionary of MGI Marker ID:Marker data
 mgiannot = {}	# dictionary of existing annotations:  Marker key, GO ID, Evidence Code, Pub Med ID
@@ -154,15 +170,45 @@ annotByRef = []
 pubmed = {}		# dictionary of pubmed->J:
 pubmedUnique = []	# list of unique pubmedids that are not in MGI
 pubmedEvidence = {}	# evidence code:count for those annotations with pubmedids that are not in MGI
+uberonLookup = {}
 
-def main():
+#
+# Initialize input/output files
+#
+def initialize():
+    global goaPrefix 
+    global unresolvedAErrorFile 
+    global unresolvedBErrorFile 
+    global unresolvedCErrorFile 
+    global mgiErrorFile 
+    global nopubmedFile 
+    global pubmedAnnotFile 
+    global pubmedErrorFile 
+    global pubmedeviErrorFile 
+    global dupErrorFile 
+    global mgiFile 
+    global annotFile 
+    global propertiesErrorFile 
+
+    global assoc
+    global marker
+    global mgiannot
+    global newannot
+    global goids
+    global annotByGOID
+    global annotByRef
+    global pubmed
+    global pubmedUnique
+    global pubmedEvidence
+    global uberonLookup
+
+    db.useOneConnection(1)
+
     #
-    # Initialize input/output files
+    # open files
     #
 
-    inFileName = os.environ['INFILE_NAME_SORTED']
     goaPrefix = os.environ['DELETEUSER']
-
     unresolvedAErrorFile = reportlib.init('unresolvedA', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     unresolvedBErrorFile = reportlib.init('unresolvedB', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     unresolvedCErrorFile = reportlib.init('unresolvedC', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -181,8 +227,8 @@ def main():
     #
 
     print 'reading uberon/emapa file...'
-    uberonLookup = {}
     uberonLookup = uberonlib.processUberon()
+    #print uberonLookup
 
     #
     # Mouse Markers
@@ -238,6 +284,7 @@ def main():
     # VEGA (85)
     #
 
+    print 'reading mouse markers annotatined to SwissProt/TrEMBL/RefSeq, etc....'
     results = db.sql('''
 	select m._Marker_key, m.mgiID, a.accID as goaID 
 	from markers m, ACC_Accession a 
@@ -257,6 +304,7 @@ def main():
     # to detect duplicate annotations
     #
 
+    print 'reading existing GO annotations that have pub med ids....'
     results = db.sql('''
 	select a.accID as goID, t._Object_key, ec.abbreviation, \'PMID:\' || r.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
@@ -291,6 +339,7 @@ def main():
     # J:72245
     #
 
+    print 'reading existing IEA GO annotations....'
     results = db.sql('''
 	select a.accID as goID, t._Object_key, ec.abbreviation, a.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
@@ -324,6 +373,7 @@ def main():
     # existing pubmed->j: relationships
     #
 
+    print 'reading existing pubmed->J: relationships....'
     results = db.sql('''
 	select a1.accID as jnumID, 'PMID:' || a2.accID as pubmedID 
 	from ACC_Accession a1, ACC_Accession a2 
@@ -341,11 +391,10 @@ def main():
         value = r['jnumID']
         pubmed[key] = value
 
-    #
-    # GOA annotations
-    #
-
-    inFile = open(inFileName, 'r')
+#
+# Purpose : Read GAF file and generate Annotation file
+#
+def readGAF(inFile):
 
     for line in inFile.readlines():
 
@@ -357,7 +406,7 @@ def main():
 
         tokens = line[:-1].split('\t')
     #    databaseID = tokens[0]
-        databaseID = "MGI"
+        databaseID = 'MGI'
         goaID = tokens[1]		# translate to MGI value
         goaSymbol = tokens[2]		# translate to MGI value
         qualifierValue = tokens[3]
@@ -418,7 +467,7 @@ def main():
 
         # error if GOA id is not found in MGI
 
-        s = goaID.find("-")
+        s = goaID.find('-')
         if s >= 0:
 	    goaIDstrip = goaID[:s]
         else:
@@ -501,8 +550,7 @@ def main():
         # start : column 16 (properties)
         #
 	
-	properties, errors = convertExtensions(properties, uberonLookup)
-	#properties, errors = convertPropertiesIds(properties, uberonLookup)
+	properties, errors = uberonlib.convertExtensions(properties, uberonLookup)
 
 	if errors:
 	    for error in errors:
@@ -535,6 +583,11 @@ def main():
 
     inFile.close()
 
+#
+# write error files and close all files
+#
+def closeFiles():
+
     # write out all annotations
     for n in newannot.keys():
         inferredFrom = '|'.join(newannot[n])
@@ -547,8 +600,6 @@ def main():
     # write out evidence code counts for unique pubmed ids that are not found in MGI
     for p in pubmedEvidence.keys():
         pubmedeviErrorFile.write(p + ':\t' + str(pubmedEvidence[p]) + '\n')
-
-    # close files
 
     reportlib.finish_nonps(unresolvedAErrorFile)
     reportlib.finish_nonps(unresolvedBErrorFile)
@@ -563,14 +614,22 @@ def main():
     reportlib.finish_nonps(annotFile)
     reportlib.finish_nonps(propertiesErrorFile)
 
+    db.commit()
+    db.useOneConnection(0) 
+
 if __name__ == '__main__':
 
-        db.useOneConnection(1)
-        db.sql('start transaction', None)
+	initialize()
 
-        # do main processing
-        main()
+	#for inFileName in (os.environ['PROTEIN_SORTED'], \
+	#		os.environ['ISOFORM_SORTED'], \
+	#		os.environ['COMPLEX_SORTED'], \
+	#		os.environ['RNA_SORTED'])
+	#		):
+	for inFileName in (os.environ['PROTEIN_SORTED'], \
+			os.environ['ISOFORM_SORTED'])
+			):
+	    readGAF(open(inFileName, 'r'))
 
-        db.commit()
-	db.useOneConnection(0) 
+	closeFiles()
 	
