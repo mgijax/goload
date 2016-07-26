@@ -124,6 +124,7 @@ def reinitialize():
     inFile.close()
     inFileName = os.environ['INFILE_NAME_GAF']
     inFile = open(inFileName, 'r')
+    return 0
 
 #
 # Purpose: Create lookup of MGI clusters with human NOT annotations
@@ -164,6 +165,8 @@ def preprocess():
             if clusterID not in clusterIDsWithNotDict:
                 clusterIDsWithNotDict[clusterID] = []
             clusterIDsWithNotDict[clusterID].append(goID)
+
+    return 0
 
 #
 # Purpose:  Open and copy files. Create lookups
@@ -325,7 +328,7 @@ def initialize():
 	    goaExistsDict[key] = []
 	goaExistsDict[key].append(value)
 
-    db.useOneConnection(0)
+    return 0
 
 #
 # Purpose: Read GAF file and generate Annotation file
@@ -522,6 +525,8 @@ def readGAF():
         line = line  + string.join(pList, '&===&') + '\n'
         annotFile.write(line)
 
+    return 0
+
 #
 # Purpose: Close files
 #
@@ -530,6 +535,7 @@ def closeFiles():
     inFile.close()
     annotFile.close()
     errorFile.close()
+    return 0
 
 #
 # main

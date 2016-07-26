@@ -136,6 +136,8 @@ def initialize():
 	if r['pubmedID'] != '':
 	    mgiRefLookup[r['pubmedID']] = r['jnumID']
 
+    return 0
+
 #
 # Purpose: Read GAF file and generate Annotation file
 #
@@ -209,6 +211,8 @@ def readGAF():
 
 	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, inferredFrom, createdBy, modDate))
 
+    return 0
+
 #
 # Purpose: Close files
 #
@@ -217,6 +221,7 @@ def closeFiles():
     inFile.close()
     annotFile.close()
     errorFile.close()
+    return 0
 
 #
 # main

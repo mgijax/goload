@@ -125,6 +125,7 @@ def reinitialize():
     inFile.close()
     inFileName = os.environ['INFILE_NAME_GAF']
     inFile = open(inFileName, 'r')
+    return 0
 
 #
 # Purpose:  Create lookup of MGI clusters with rat NOT annotations
@@ -166,6 +167,8 @@ def preprocess():
                 clusterIDsWithNotDict[clusterID] = []
             clusterIDsWithNotDict[clusterID].append(goID)
 
+    return 0
+
 #
 # Purpose: Open and copy files. Create lookups
 #
@@ -184,8 +187,6 @@ def initialize():
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
 
-    db.useOneConnection(1)
-  
     # select all bioprocess go terms and load into a list 
     results = db.sql('''select t.term, a.accid
 	from DAG_Node dn, VOC_Term t, ACC_Accession a
@@ -326,7 +327,7 @@ def initialize():
 	    infFromExistsDict[key] = []
 	infFromExistsDict[key].append(value)
 
-    db.useOneConnection(0)
+    return 0
 
 #
 # Purpose: Read GAF file and generate Annotation file
@@ -529,6 +530,7 @@ def readGAF():
         line = line  + string.join(pList, '&===&') + '\n'
 	annotFile.write(line)
 
+    return 0
 
 #
 # Purpose: Close files
@@ -538,6 +540,7 @@ def closeFiles():
     inFile.close()
     annotFile.close()
     errorFile.close()
+    return 0
 
 #
 # main

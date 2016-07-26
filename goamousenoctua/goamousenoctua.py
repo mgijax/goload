@@ -171,7 +171,7 @@ def initialize():
     print 'reading uberon -> emapa translation file...'
     uberonLookup = uberonlib.processUberon() 
 
-    return
+    return 0
 
 #
 # Purpose: Read GPAD file and generate Annotation file
@@ -354,6 +354,8 @@ def readGPAD():
 	annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
 		'|'.join(goqualifiers), createdBy, modDate, properties))
 
+    return 0
+
 #
 # Purpose: Close files
 #
@@ -362,12 +364,17 @@ def closeFiles():
     inFile.close()
     annotFile.close()
     errorFile.close()
+    return 0
 
 #
 # main
 #
 
-initialize()
-readGPAD()
-closeFiles()
+if initialize() != 0:
+    sys.exit(1)
 
+if readGPAD() != 0:
+    sys.exit(1)
+
+closeFiles()
+sys.exit(0)

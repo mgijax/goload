@@ -87,7 +87,6 @@
 import sys 
 import os
 import string
-import re
 import db
 
 db.setAutoTranslate(False)
@@ -197,98 +196,92 @@ def readGAF():
     # see annotload/annotload.py for format
     annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n' 
 
-    try:
+    for line in inFile.readlines():
 
-        for line in inFile.readlines():
+        if line[0] == '!':
+            continue
 
-            if line[0] == '!':
-                continue
+        tokens = string.split(line[:-1],'\t')
 
-            tokens = string.split(line[:-1], '\t')
+	#
+        # field 1: Database ID (MGI)
+        # field 2: MGI ids
+        # field 4: Qualifier
+        # field 5: GO ID
+        # field 6: MGI:MGI:#### (reference) (ignore)
+        # field 7: Evidence code (always ISS)
+        # field 8: With (inferred from)
+        # field 14: Modification Date
+        # field 15: Assigned By
+        #
 
-	    #
-            # field 1: Database ID (MGI)
-            # field 2: MGI ids
-            # field 4: Qualifier
-            # field 5: GO ID
-            # field 6: MGI:MGI:#### (reference) (ignore)
-            # field 7: Evidence code (always ISS)
-            # field 8: With (inferred from)
-            # field 14: Modification Date
-            # field 15: Assigned By
-            #
+	databaseID = tokens[0]
+	mgiID = tokens[1]
+	qualifier = tokens[3]
+	goID = tokens[4]
+	evidenceCode = tokens[6]
+	modDate = tokens[13]
+	createdBy = tokens[14]
 
-	    databaseID = tokens[0]
-	    mgiID = tokens[1]
-	    qualifier = tokens[3]
-	    goID = tokens[4]
-	    evidenceCode = tokens[6]
-	    modDate = tokens[13]
-	    createdBy = tokens[14]
+	# inferred-from may contain '|' or ','
+	allInferredFrom = tokens[7].split('\||,')
 
-	    # inferred-from may contain '|' or ','
-	    allInferredFrom = re.split('\||,', tokens[7])
+	#
+	# skip if qualifier = "NOT"
+	#
 
-	    #
-	    # skip if qualifier = "NOT"
-	    #
+        if qualifier in ['NOT']:
+	    continue
 
-            if qualifier in ['NOT']:
-		continue
+	#
+	# skip if mgiID is not an MGI id
+	#
 
-	    #
-	    # skip if mgiID is not an MGI id
-	    #
+        if mgiID.find('MGI:') < 0:
+	    continue
 
-            if string.find(mgiID, 'MGI:') < 0:
-		continue
+	#
+	# skip if mgiID is not of type 'gene'
+	#
 
-	    #
-	    # skip if mgiID is not of type 'gene'
-	    #
+	if mgiID not in markerList:
+	    continue
 
-	    if mgiID not in markerList:
-		continue
+	#
+	# skip if evidenceCode is not valid
+	#
 
-	    #
-	    # skip if evidenceCode is not valid
-	    #
+	if evidenceCode not in evidenceCodeList:
+	    print 'Invalid Evidence Code:  ', evidenceCode
+	    continue
 
-	    if evidenceCode not in evidenceCodeList:
-		print 'Invalid Evidence Code:  ', evidenceCode
-		continue
+	#
+	# only interested in:
+	#
+	#	Panther IDs (PANTHER:PTHR24316_AN0)
+	#
 
-	    #
-	    # only interested in:
-	    #
-	    #	Panther IDs (PANTHER:PTHR24316_AN0)
-	    #
+	inferredFrom = []
+	for i in allInferredFrom:
+            if i.find('PANTHER:') >= 0:
+	        # split once more to remove the _A### stuff
+		pthID = i.split('_')
+                inferredFrom.append(pthID[0])
 
-	    inferredFrom = []
-	    for i in allInferredFrom:
-                if string.find(i, 'PANTHER:') >= 0:
-		    # split once more to remove the _A### stuff
-		    pthID = string.split(i, '_')
-                    inferredFrom.append(pthID[0])
+	#
+	# TR10339/new evidence codes added/remove default 'ISS'
+	# convert all evidence codes to ISS
+	# (orignally: IMR, IRD, IAS -> ISS)
+	#if evidenceCode in ('IMR', 'IRD', 'IAS'):
+	#evidenceCode = 'ISS'
+	#
 
-	    #
-	    # TR10339/new evidence codes added/remove default 'ISS'
-	    # convert all evidence codes to ISS
-	    # (orignally: IMR, IRD, IAS -> ISS)
-	    #if evidenceCode in ('IMR', 'IRD', 'IAS'):
-	    #evidenceCode = 'ISS'
-	    #
+	# write data to the annotation file
+	# note that the annotation load will qc duplicate annotations itself
+	# (mgiID, goID, evidenceCode, jnumID)
 
-	    # write data to the annotation file
-	    # note that the annotation load will qc duplicate annotations itself
-	    # (mgiID, goID, evidenceCode, jnumID)
-
-	    annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, \
-			    string.join(inferredFrom, '|'), qualifier, createdBy, modDate))
-
-    except:
-	print 'Cannot read/process input file'
-	return 1
+	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, \
+		   '|'.join(inferredFrom), qualifier, createdBy, modDate))
 
     return 0
 
