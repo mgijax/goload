@@ -93,6 +93,9 @@
 #
 # History:
 #
+# lec	07/27/2016
+#	- TR12378/isoforms are now in their own file : see config/ISOFORM
+#
 # lec   11/05/2015
 #       - TR12070/properties translations:
 #	a) UBERON -> EMAPA
@@ -632,10 +635,10 @@ inFile = open(inFileName, 'r')
 if readGAF(inFile) != 0:
     sys.exit(1)
 
-#inFileName = os.environ['ISOFORM_SORTED']
-#inFile = open(inFileName, 'r')
-#if readGAF(inFile) != 0:
-#    sys.exit(1)
+inFileName = os.environ['ISOFORM_SORTED']
+inFile = open(inFileName, 'r')
+if readGAF(inFile) != 0:
+    sys.exit(1)
 
 #inFileName = os.environ['COMPLEX_SORTED']
 #inFile = open(inFileName, 'r')

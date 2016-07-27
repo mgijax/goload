@@ -1,3 +1,10 @@
+TAG: goload-?
+DATE: 07/27/2016
+STAFF: lec 
+CHANGES:
+TR12378/isoforms are now in their own file : see config/ISOFORM
+goamouse/goamouse.config.default/goamouse.py
+
 TAG: goload-tr12349
 DATE: 07/07/2016
 STAFF: lec 
