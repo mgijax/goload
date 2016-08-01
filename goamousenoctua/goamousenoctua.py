@@ -223,7 +223,7 @@ def readGPAD():
         goID = tokens[3]
         references = tokens[4]
         evidenceCode = tokens[5]
-        inferredFrom = tokens[6]
+        inferredFrom = tokens[6].replace('MGI:MGI:', 'MGI:')
         taxID = tokens[7]
         modDate = tokens[8]
         createdBy = tokens[9]

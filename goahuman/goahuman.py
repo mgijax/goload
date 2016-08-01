@@ -8,7 +8,8 @@
 #
 # Inputs:
 #
-#	${INFILE_NAME_GAF}      the GAF file
+#	${PROTEIN_GAF}      the GAF file
+#	${ISOFORM_GAF}      the GAF file
 #
 # 	The GAF file contains:
 #
@@ -116,20 +117,9 @@ bioProcessList = []
 clusterIDsWithNotDict = {}
 
 #
-# Purpose: reinitialize input file descriptor
-#
-def reinitialize():
-    global inFile
-
-    inFile.close()
-    inFileName = os.environ['INFILE_NAME_GAF']
-    inFile = open(inFileName, 'r')
-    return 0
-
-#
 # Purpose: Create lookup of MGI clusters with human NOT annotations
 #
-def preprocess():
+def preprocess(inFile):
     global clusterIDsWithNotDict
 
     for line in inFile.readlines():
@@ -166,6 +156,8 @@ def preprocess():
                 clusterIDsWithNotDict[clusterID] = []
             clusterIDsWithNotDict[clusterID].append(goID)
 
+    inFile.close()
+
     return 0
 
 #
@@ -173,16 +165,13 @@ def preprocess():
 #
 def initialize():
 
-    global inFileName, inFile
     global annotFileName, annotFile
     global errorFileName, errorFile
     global goaIdDict, isNotDict, goaExistsDict, bioProcessList, memberNumDict
 
-    inFileName = os.environ['INFILE_NAME_GAF']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
 
-    inFile = open(inFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
 
@@ -333,7 +322,8 @@ def initialize():
 #
 # Purpose: Read GAF file and generate Annotation file
 #
-def readGAF():
+def readGAF(inFile):
+
     # reference used by this load
     jnumID = 'J:164563'
 
@@ -417,23 +407,19 @@ def readGAF():
 	if goaID not in goaIdDict:
 	    errorFile.write(str(lineNum) + '\tNO_HOM\t\t' +line[:-1] + '\t\n')
 	    continue
-	else:
-	    mgiIDandClusterIDList = goaIdDict[goaID]
-	    # cluster will be the same for all markers with this goaID
-	    # get the cluster ID
-	    mgiIDList = []
-	    #output = 0
-	    for ids in mgiIDandClusterIDList:
-		(mgiID, cID) = string.split(ids, '|')
-		mgiIDList.append(mgiID)
-		clusterID = cID
-	# if qualifier has a value, then skip sc - incorrect, need to filter for 'NOT'
-	# sc - current values:
-	# colocalizes_with
-	# contributes_to
-	# NOT
-	# NOT|colocalizes_with
-	# NOT|contributes_to
+
+	#
+	# cluster will be the same for all markers with this goaID
+	# get the cluster ID
+	#
+	mgiIDandClusterIDList = goaIdDict[goaID]
+	mgiIDList = []
+	for ids in mgiIDandClusterIDList:
+	    (mgiID, cID) = string.split(ids, '|')
+	    mgiIDList.append(mgiID)
+	    clusterID = cID
+
+	# if qualifier has a "NOT" value, then skip
 	if len(qualifierValue) > 0 and qualifierValue[:3] == 'not':
 	    errorFile.write(str(lineNum) + '\tIS_GOA_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
 	    continue
@@ -525,6 +511,8 @@ def readGAF():
         line = line  + string.join(pList, '&===&') + '\n'
         annotFile.write(line)
 
+    inFile.close()
+
     return 0
 
 #
@@ -532,7 +520,6 @@ def readGAF():
 #
 def closeFiles():
 
-    inFile.close()
     annotFile.close()
     errorFile.close()
     return 0
@@ -544,14 +531,19 @@ def closeFiles():
 if initialize() != 0:
     sys.exit(1)
 
-if preprocess() != 0:
-    sys.exit(1)
+for inFileName in (os.environ['PROTEIN_GAF'], \
+        os.environ['ISOFORM_GAF']):
 
-if reinitialize() != 0:
-    sys.exit(1)
+    inFile = open(inFileName, 'r')
 
-if readGAF() != 0:
-    sys.exit(1)
+    if preprocess(inFile) != 0:
+        sys.exit(1)
+
+    # reopen file
+    inFile = open(inFileName, 'r')
+
+    if readGAF(inFile) != 0:
+        sys.exit(1)
 
 closeFiles()
 sys.exit(0)

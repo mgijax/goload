@@ -100,9 +100,12 @@ preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
-cp ${INFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${INFILE_NAME_GAF}
-gunzip ${INFILE_NAME_GAF} >> ${LOG}
+cp ${PROTEIN_GZ} ${INPUTDIR}
+rm -rf ${PROTEIN_GAF}
+gunzip ${PROTEIN_GAF} >> ${LOG}
+cp ${ISOFORM_GZ} ${INPUTDIR}
+rm -rf ${ISOFORM_GAF}
+gunzip ${ISOFORM_GAF} >> ${LOG}
 
 cd ${OUTPUTDIR}
 

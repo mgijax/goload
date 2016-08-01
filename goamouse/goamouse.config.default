@@ -52,26 +52,26 @@ INPUTDIR=${FILEDIR}/input
 INFILE_NAME=${INPUTDIR}/goamouse.annot
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
 
-PROTEIN_GZ=${DATADOWNLOADS}/goa/goa_mouse.gaf.gz
+PROTEIN_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse.gaf.gz
 PROTEIN_GAF=${INPUTDIR}/goa_mouse.gaf
 PROTEIN_SORTED=${INPUTDIR}/goa_mouse.gaf.sorted
 
-ISOFORM_GZ=${DATADOWNLOADS}/goa/goa_mouse_isoform.gaf.gz
+ISOFORM_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse_isoform.gaf.gz
 ISOFORM_GAF=${INPUTDIR}/goa_mouse_isoform.gaf
 ISOFORM_SORTED=${INPUTDIR}/goa_mouse_isoform.gaf.sorted
 
-COMPLEX_GZ=${DATADOWNLOADS}/goa/goa_mouse_complex.gaf.gz
-COMPLEX_GAF=${INPUTDIR}/goa_mouse_complex.gaf
-COMPLEX_SORTED=${INPUTDIR}/goa_mouse_complex.gaf.sorted
+#COMPLEX_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse_complex.gaf.gz
+#COMPLEX_GAF=${INPUTDIR}/goa_mouse_complex.gaf
+#COMPLEX_SORTED=${INPUTDIR}/goa_mouse_complex.gaf.sorted
 
-RNA_GZ=${DATADOWNLOADS}/goa/goa_mouse_rna.gaf.gz
-RNA_GAF=${INPUTDIR}/goa_mouse_rna.gaf
-RNA_SORTED=${INPUTDIR}/goa_mouse_rna.gaf.sorted
+#RNA_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse_rna.gaf.gz
+#RNA_GAF=${INPUTDIR}/goa_mouse_rna.gaf
+#RNA_SORTED=${INPUTDIR}/goa_mouse_rna.gaf.sorted
 
 export PROTEIN_GZ PROTEIN_GAF PROTEIN_SORTED
 export ISOFORM_GZ ISOFORM_GAF ISOFORM_SORTED
-export COMPLEX_GZ COMPLEX_GAF COMPLEX_SORTED
-export RNA_GZ RNA_GAF RNA_SORTED
+#export COMPLEX_GZ COMPLEX_GAF COMPLEX_SORTED
+#export RNA_GZ RNA_GAF RNA_SORTED
 
 GOAEDITOR=GOA
 ANNOTINPUTFILE=${INPUTDIR}/goamouse.annot
