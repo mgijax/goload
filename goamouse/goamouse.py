@@ -10,8 +10,6 @@
 #
 #       ${PROTEIN_SORTED}      the sorted GAF file
 #       ${ISOFORM_SORTED}      the sorted GAF file
-#       ${COMPLEX_SORTED}      the sorted GAF file
-#       ${RNA_SORTED}          the sorted GAF file
 #
 #       The GAF file contains:
 #
@@ -630,25 +628,15 @@ def closeFiles():
 if initialize() != 0:
     sys.exit(1)
 
-inFileName = os.environ['PROTEIN_SORTED']
-inFile = open(inFileName, 'r')
-if readGAF(inFile) != 0:
-    sys.exit(1)
+for inFileName in (os.environ['PROTEIN_SORTED'], \
+	os.environ['ISOFORM_SORTED']):
+    inFile = open(inFileName, 'r')
+    print inFile
+    if readGAF(inFile) != 0:
+        sys.exit(1)
 
-inFileName = os.environ['ISOFORM_SORTED']
-inFile = open(inFileName, 'r')
-if readGAF(inFile) != 0:
-    sys.exit(1)
-
-#inFileName = os.environ['COMPLEX_SORTED']
-#inFile = open(inFileName, 'r')
-#if readGAF(inFile) != 0:
-#    sys.exit(1)
-
-#inFileName = os.environ['RNA_SORTED']
-#inFile = open(inFileName, 'r')
-#if readGAF(inFile) != 0:
-#    sys.exit(1)
+#os.environ['COMPLEX_SORTED']
+#os.environ['RNA_SORTED']
 
 closeFiles()
 sys.exit(0)
