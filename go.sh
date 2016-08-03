@@ -23,6 +23,10 @@ touch $GOLOG
  
 date | tee -a $GOLOG
 
+echo 'Generate GPI file (goamousenoctua depends on it)...'
+REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG}
+
 echo '1:Run GOA/Mouse/Noctua Load' | tee -a ${GOLOG}
 ${GOLOAD}/goamousenoctua/goamousenoctua.sh | tee -a ${GOLOG}
 
