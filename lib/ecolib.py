@@ -59,7 +59,7 @@ nodeLookup = {}
 #
 def processECO():
 
-    oboFileName = os.environ['ECOFILE']
+    oboFileName = os.environ['DATADOWNLOADS'] + '/purl.obolibrary.org/obo/eco/eco.obo'
     oboFile = open(oboFileName, 'r')
 
     startTag = '[Term]'
