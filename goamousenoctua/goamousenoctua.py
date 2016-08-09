@@ -227,7 +227,7 @@ def readGPAD():
         taxID = tokens[7]
         modDate = tokens[8]
         createdBy = tokens[9]
-        extensions = tokens[10]
+        extensions = tokens[10].replace('MGI:MGI:', 'MGI:')
         properties = tokens[11]
 
         #
