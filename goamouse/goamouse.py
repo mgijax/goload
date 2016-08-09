@@ -58,7 +58,7 @@
 #		pubmedevi.error
 #			file of Evidence Codes + count of Annotations for those with PubMed IDs that are not in MGI
 #
-#		goa.mgi
+#		goamouse.gaf
 #			file of GOA annotations that can be appended to MGI GO association file
 #
 #		goa.annot
@@ -130,6 +130,7 @@ import reportlib
 
 goloadpath = os.environ['GOLOAD'] + '/lib'
 sys.path.insert(0, goloadpath)
+import ecolib
 import uberonlib
 
 #db.setTrace()
@@ -139,7 +140,8 @@ db.setAutoTranslateBE(False)
 #### Constants ###
 PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse marker: %s"
 
-mgiLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'
+gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
+gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
 # list of evidence codes that are skipped; that is, not loaded into MGI
@@ -158,7 +160,8 @@ pubmedAnnotFile = None
 pubmedErrorFile = None
 pubmedeviErrorFile = None
 dupErrorFile = None
-mgiFile = None
+gafFile = None
+gpadFile = None
 annotFile = None
 propertiesErrorFile = None
 
@@ -175,6 +178,12 @@ pubmedUnique = []	# list of unique pubmedids that are not in MGI
 pubmedEvidence = {}	# evidence code:count for those annotations with pubmedids that are not in MGI
 uberonLookup = {}	# uberon -> emapa lookup
 
+# gpad file
+# translate dag to qualifier (col 3)
+dagQualifier = {'C':'part_of', 'P':'involved_in', 'F':'enables'}
+ecoLookupByEco = {} 
+ecoLookupByEvidence = {} 
+
 #
 # Initialize input/output files
 #
@@ -189,7 +198,8 @@ def initialize():
     global pubmedErrorFile 
     global pubmedeviErrorFile 
     global dupErrorFile 
-    global mgiFile 
+    global gafFile 
+    global gpadFile 
     global annotFile 
     global propertiesErrorFile 
 
@@ -204,6 +214,7 @@ def initialize():
     global pubmedUnique
     global pubmedEvidence
     global uberonLookup
+    global ecoLookupByEco, ecoLookupByEvidence
 
     #
     # open files
@@ -219,7 +230,8 @@ def initialize():
     pubmedErrorFile = reportlib.init('pubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     pubmedeviErrorFile = reportlib.init('pubmedevi', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     dupErrorFile = reportlib.init('duplicates', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    mgiFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.mgi')
+    gafFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gaf')
+    gpadFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
     annotFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
     propertiesErrorFile = reportlib.init('properties', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
@@ -392,6 +404,9 @@ def initialize():
         value = r['jnumID']
         pubmed[key] = value
 
+    # use goload/ecolib to lookup eco using evidence
+    ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
+
     return 0
 
 #
@@ -536,8 +551,26 @@ def readGAF(inFile):
         # if this annotation is not loaded into MGI, then write it to the "to-append" file and continue
 
         if not loadMGI:
-            mgiFile.write(mgiLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
+
+	    # for gafFile
+
+            gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
 	        dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
+
+	    # for gpadFile, translate 'qualiferValue' and 'evidence'
+
+	    gpadQualifier = dagQualifier[dag]
+            if qualifierValue != None:
+                gpadQualifier = gpadQualifier + '|' + qualifierValue.strip()
+
+	    if evidence in ecoLookupByEvidence:
+	        gpadEvidence = ecoLookupByEvidence[evidence]
+	    else:
+	        gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
+
+            gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
+	        taxID, modDate, assignedBy))
+
 	    continue
 
         #
@@ -615,7 +648,8 @@ def closeFiles():
     reportlib.finish_nonps(pubmedErrorFile)
     reportlib.finish_nonps(pubmedeviErrorFile)
     reportlib.finish_nonps(dupErrorFile)
-    reportlib.finish_nonps(mgiFile)
+    reportlib.finish_nonps(gafFile)
+    reportlib.finish_nonps(gpadFile)
     reportlib.finish_nonps(annotFile)
     reportlib.finish_nonps(propertiesErrorFile)
 
