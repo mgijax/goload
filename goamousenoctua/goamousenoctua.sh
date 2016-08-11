@@ -118,7 +118,7 @@ checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
 COMMON_CONFIG_CSH=${GOLOAD}/goamousenoctua/goa.csh.config
 echo "Running GOA/Mouse/Noctua annotation load" >> ${LOG}
 echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
 
