@@ -56,7 +56,7 @@ UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
 UBERONTEXTFILE=${OUTPUTDIR}/uberon.txt
 export UBERONFILE UBERONTEXTFILE
 
-GPIFILE=${PUBREPORTDIR}/output/mgi_association.gpi
+GPIFILE=${PUBREPORTDIR}/output/mgi.gpi
 export GPIFILE
 
 # Complete path name of the log files
