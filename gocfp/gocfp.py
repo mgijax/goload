@@ -2,7 +2,7 @@
 
 '''
 #
-# goacfp.py
+# gocfp.py
 #
 #	See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
@@ -56,7 +56,7 @@
 #           write the record to the annotation file (INFILE_NAME)
 #    
 # Usage:
-#       goacfp.py
+#       gocfp.py
 #
 # History:
 #

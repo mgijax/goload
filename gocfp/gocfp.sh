@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-#  goacfp.sh
+#  gocfp.sh
 ###########################################################################
 #
 #  Purpose:
-#       This script creates a GOA/CFP annotation load
+#       This script creates a CFP annotation load
 #       input file and invokes the annotload using that input file.
 #
-#  Usage=goacfp.sh
+#  Usage=gocfp.sh
 #
 #  Env Vars:
 #
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GOA/CFP load configuration file - goacfp.config
+#      - CFP load configuration file - gocfp.config
 #      - input file - see python script header
 #
 #  Outputs:
@@ -25,7 +25,7 @@
 #      - An archive file
 #      - Log files defined by the environment variables ${LOG_PROC},
 #        ${LOG}, ${LOG_CUR} and ${LOG_VAL}
-#      - Input file: GAF Interontology (GOA/CFP)
+#      - Input file: GAF Interontology (CFP)
 #      - Output file: annotload
 #      - see annotload outputs
 #      - Records written to the database tables
@@ -48,9 +48,9 @@
 
 cd `dirname $0`
 
-COMMON_CONFIG=${GOLOAD}/goacfp/goacfp.config
+COMMON_CONFIG=${GOLOAD}/gocfp/gocfp.config
 
-USAGE="Usage: goacfp.sh"
+USAGE="Usage: gocfp.sh"
 
 #
 # Make sure the common configuration file exists and source it.
@@ -108,16 +108,16 @@ cd ${OUTPUTDIR}
 #
 # create input file
 #
-echo 'Running goacfp.py' >> ${LOG}
-${GOLOAD}/goacfp/goacfp.py >> ${LOG}
+echo 'Running gocfp.py' >> ${LOG}
+${GOLOAD}/gocfp/gocfp.py >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "${GOLOAD}/goacfp/goacfp.py"
+checkStatus ${STAT} "${GOLOAD}/gocfp/gocfp.py"
 
 #
 # run annotation load
 #
-COMMON_CONFIG_CSH=${GOLOAD}/goacfp/goa.csh.config
-echo "Running goacfp annotation load" >> ${LOG}
+COMMON_CONFIG_CSH=${GOLOAD}/gocfp/go.csh.config
+echo "Running gocfp annotation load" >> ${LOG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
@@ -125,7 +125,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-echo "Running goacfp inferred-from cache load" >> ${LOG}
+echo "Running gocfp inferred-from cache load" >> ${LOG}
 ${MGICACHELOAD}/inferredfrom.gocfpload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gocfpload"
