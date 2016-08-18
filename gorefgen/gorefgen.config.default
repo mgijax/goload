@@ -71,7 +71,7 @@ export JOBSTREAM JNUMBER
 ###########################################################################
 
 # The name of the load for the subject of an email notification
-MAIL_LOADNAME="GOA/PAINT annotation load"
+MAIL_LOADNAME="GO/PAINT annotation load"
 export MAIL_LOADNAME
 
 INSTALLDIR=${GOLOAD}
