@@ -1,7 +1,7 @@
 #!/bin/csh -f
 
 #
-# defaults for GOA/Rat csh file
+# defaults for GO/Rat csh file
 #
 
 #. ${ANNOTLOAD}/Configuration

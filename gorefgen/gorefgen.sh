@@ -4,7 +4,7 @@
 ###########################################################################
 #
 #  Purpose:
-#       This script creates a GOA/PAINT annotation load
+#       This script creates a GO/PAINT annotation load
 #       input file and invokes the annotload using that input file.
 #
 #  Usage=gorefgen.sh
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GOA/PAINT load configuration file - gorefgen.config
+#      - GO/PAINT load configuration file - gorefgen.config
 #      - input file - see python script header
 #
 #  Outputs:

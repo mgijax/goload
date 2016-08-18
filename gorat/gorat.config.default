@@ -70,7 +70,7 @@ export JOBSTREAM
 ###########################################################################
 
 # The name of the load for the subject of an email notification
-MAIL_LOADNAME="GOA/Rat annotation load"
+MAIL_LOADNAME="GO/Rat annotation load"
 export MAIL_LOADNAME
 
 INSTALLDIR=${GOLOAD}
