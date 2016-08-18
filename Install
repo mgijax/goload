@@ -33,8 +33,16 @@ for i in goamousenoctua goamouse gorat goarefgen goahuman goacfp
 do
 
 cp -r $i/$i.config.default $i/$i.config
+
+if [ -r $i/goa.csh.config.default ]
+then
 cp -r $i/goa.csh.config.default $i/goa.csh.config
+fi
+
+if [ -r $i/go.csh.config.default ]
+then
 cp -r $i/go.csh.config.default $i/go.csh.config
+fi
 
 # establish the config files
 MAIN_CONFIG=$i/$i.config

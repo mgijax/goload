@@ -34,7 +34,7 @@ echo '2:Run GOA/Mouse Load' | tee -a ${GOLOG}
 ${GOLOAD}/goamouse/goamouse.sh | tee -a ${GOLOG}
 
 echo '3:Run GOA/Rat Load' | tee -a ${GOLOG}
-${GOLOAD}/goarat/goarat.sh | tee -a ${GOLOG}
+${GOLOAD}/gorat/gorat.sh | tee -a ${GOLOG}
 
 echo '4:Run GOA/PAINT Load' | tee -a ${GOLOG}
 ${GOLOAD}/goarefgen/goarefgen.sh | tee -a ${GOLOG}

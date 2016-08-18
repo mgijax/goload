@@ -1,0 +1,78 @@
+#format: sh
+#
+#  gorat.config
+#
+#  This file sets up environment variables that are needed for a specific
+#  data provider input file to be handled by the annotation loader.
+#
+###########################################################################
+
+###########################################################################
+#
+#  GENERAL SETTINGS
+#
+###########################################################################
+
+#
+#  If the MGICONFIG environment variable does not have a local override,
+#  use the default "live" settings.
+#
+if [ "${MGICONFIG}" = "" ]
+then
+    MGICONFIG=/usr/local/mgi/live/mgiconfig
+    export MGICONFIG
+fi
+
+. ${MGICONFIG}/master.config.sh
+
+# Annotation Loader shell script
+ANNOTLOADER_CSH=${ANNOTLOAD}/annotload.csh
+export ANNOTLOADER_CSH
+
+###########################################################################
+#
+#  LOAD SPECIFIC SETTINGS
+#
+###########################################################################
+
+# Path name of the archive, logs, reports and output directories
+FILEDIR=${DATALOADSOUTPUT}/go/gorat
+ARCHIVEDIR=${FILEDIR}/archive
+LOGDIR=${FILEDIR}/logs
+RPTDIR=${FILEDIR}/reports
+OUTPUTDIR=${FILEDIR}/output
+INPUTDIR=${FILEDIR}/input
+INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/gene_association.rgd.gz
+INFILE_NAME_GAF=${INPUTDIR}/gene_association.rgd
+INFILE_NAME=${INPUTDIR}/gorat.annot
+INFILE_NAME_ERROR=${INPUTDIR}/gorat.annot.error
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR 
+export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME INFILE_NAME_ERROR
+
+# Complete path name of the log files
+LOG_FILE=${LOGDIR}/gorat.log
+LOG_PROC=${LOGDIR}/gorat.proc.log
+LOG_DIAG=${LOGDIR}/gorat.diag.log
+LOG_CUR=${LOGDIR}/gorat.cur.log
+LOG_VAL=${LOGDIR}/gorat.val.log
+# Send debug messages to the diagnostic log (true or false)
+LOG_DEBUG=false
+export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
+
+# The name of the job stream for the load
+JOBSTREAM=goratload
+export JOBSTREAM
+
+###########################################################################
+#
+#  MISCELLANEOUS SETTINGS
+#
+###########################################################################
+
+# The name of the load for the subject of an email notification
+MAIL_LOADNAME="GOA/Rat annotation load"
+export MAIL_LOADNAME
+
+INSTALLDIR=${GOLOAD}
+export INSTALLDIR
+
