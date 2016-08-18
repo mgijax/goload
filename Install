@@ -34,6 +34,7 @@ do
 
 cp -r $i/$i.config.default $i/$i.config
 cp -r $i/goa.csh.config.default $i/goa.csh.config
+cp -r $i/go.csh.config.default $i/go.csh.config
 
 # establish the config files
 MAIN_CONFIG=$i/$i.config
