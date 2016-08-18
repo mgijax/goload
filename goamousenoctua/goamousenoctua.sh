@@ -117,8 +117,8 @@ checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goamousenoctua/goa.csh.config
 echo "Running GOA/Mouse/Noctua annotation load" >> ${LOG}
-echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua >> ${LOG} 
+echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
 
@@ -126,9 +126,9 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamousenoctua"
 # run inferred-from cache
 #
 echo "Running GOA/Mouse/Noctua inferred-from cache load" >> ${LOG}
-${MGICACHELOAD}/inferredfrom.goanoctua >> ${LOG} 
+${MGICACHELOAD}/inferredfrom.gomousenoctua >> ${LOG} 
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamousenoctua"
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gomousenoctua"
 
 #
 # run eco check
