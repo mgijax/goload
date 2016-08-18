@@ -1,0 +1,19 @@
+#!/bin/csh -f
+
+#
+# defaults for GO/Mouse csh file
+#
+
+#. ${ANNOTLOAD}/Configuration
+
+setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/go/goamousenoctua/input
+setenv ANNOTMODE                new
+#setenv ANNOTMODE                preview
+setenv ANNOTTYPENAME            "GO/Marker"
+setenv ANNOTPROPERTY            82
+setenv DELETEREFERENCE          "J:0"
+setenv DELETEUSER               GO_Noctua
+setenv ANNOTOBSOLETE            0
+setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/goamousenoctua.annot
+setenv ANNOTLOG                 ${ANNOTINPUTFILE}.log
+

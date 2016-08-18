@@ -23,12 +23,12 @@ touch $GOLOG
  
 date | tee -a $GOLOG
 
-echo 'Generate GPI file (goamousenoctua depends on it)...'
+echo 'Generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG}
 
 echo '1:Run GOA/Mouse/Noctua Load' | tee -a ${GOLOG}
-${GOLOAD}/goamousenoctua/goamousenoctua.sh | tee -a ${GOLOG}
+${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG}
 
 echo '2:Run GOA/Mouse Load' | tee -a ${GOLOG}
 ${GOLOAD}/goamouse/goamouse.sh | tee -a ${GOLOG}
@@ -37,7 +37,7 @@ echo '3:Run GOA/Rat Load' | tee -a ${GOLOG}
 ${GOLOAD}/gorat/gorat.sh | tee -a ${GOLOG}
 
 echo '4:Run GOA/PAINT Load' | tee -a ${GOLOG}
-${GOLOAD}/goarefgen/goarefgen.sh | tee -a ${GOLOG}
+${GOLOAD}/gorefgen/gorefgen.sh | tee -a ${GOLOG}
 
 echo '5:Run GOA/Human Load' | tee -a ${GOLOG}
 ${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG}
