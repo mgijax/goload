@@ -4,7 +4,7 @@
 ###########################################################################
 #
 #  Purpose:
-#       This script creates a CFP annotation load
+#       This script creates a GO/CFP annotation load
 #       input file and invokes the annotload using that input file.
 #
 #  Usage=gocfp.sh
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - CFP load configuration file - gocfp.config
+#      - GO/CFP load configuration file - gocfp.config
 #      - input file - see python script header
 #
 #  Outputs:
