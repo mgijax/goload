@@ -12,7 +12,7 @@
 #
 # a python dictionary of eco ID -> GO evidence code
 #
-# to call from goamousenoctua.py:  
+# to call from gomousenoctua.py:  
 #	python dictionary = processECO()
 #
 # to call from command line (output will be sent to standard out)
