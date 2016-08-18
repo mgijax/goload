@@ -4,7 +4,7 @@
 #
 #  See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
-#  Run all GOA loads from loadadmin/prod/sundaytasks.csh
+#  Run all GO loads from loadadmin/prod/sundaytasks.csh
 #
 
 cd `dirname $0`
@@ -27,22 +27,22 @@ echo 'Generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG}
 
-echo '1:Run GOA/Mouse/Noctua Load' | tee -a ${GOLOG}
+echo '1:Run GO/Mouse/Noctua Load' | tee -a ${GOLOG}
 ${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG}
 
 echo '2:Run GOA/Mouse Load' | tee -a ${GOLOG}
 ${GOLOAD}/goamouse/goamouse.sh | tee -a ${GOLOG}
 
-echo '3:Run GOA/Rat Load' | tee -a ${GOLOG}
+echo '3:Run GO/Rat Load' | tee -a ${GOLOG}
 ${GOLOAD}/gorat/gorat.sh | tee -a ${GOLOG}
 
-echo '4:Run GOA/PAINT Load' | tee -a ${GOLOG}
+echo '4:Run GO/PAINT Load' | tee -a ${GOLOG}
 ${GOLOAD}/gorefgen/gorefgen.sh | tee -a ${GOLOG}
 
 echo '5:Run GOA/Human Load' | tee -a ${GOLOG}
 ${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG}
 
-echo '6:Run GOA/CFP Load' | tee -a ${GOLOG}
+echo '6:Run GO/CFP Load' | tee -a ${GOLOG}
 ${GOLOAD}/gocfp/gocfp.sh | tee -a ${GOLOG}
 
 echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
