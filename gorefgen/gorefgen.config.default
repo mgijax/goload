@@ -1,6 +1,6 @@
 #format: sh
 #
-#  goarefgen.config
+#  gorefgen.config
 #
 #  This file sets up environment variables that are needed for a specific
 #  data provider input file to be handled by the annotation loader.
@@ -36,7 +36,7 @@ export ANNOTLOADER_CSH
 ###########################################################################
 
 # Path name of the archive, logs, reports and output directories
-FILEDIR=${DATALOADSOUTPUT}/go/goarefgen
+FILEDIR=${DATALOADSOUTPUT}/go/gorefgen
 ARCHIVEDIR=${FILEDIR}/archive
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
@@ -44,23 +44,23 @@ OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
 INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/submission/paint/pre-submission/gene_association.paint_mgi.gz
 INFILE_NAME_GAF=${INPUTDIR}/gene_association.paint_mgi
-INFILE_NAME=${INPUTDIR}/goarefgen.annot
-INFILE_NAME_ERROR=${INPUTDIR}/goarefgen.annot.error
+INFILE_NAME=${INPUTDIR}/gorefgen.annot
+INFILE_NAME_ERROR=${INPUTDIR}/gorefgen.annot.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR 
 export INFILE_NAME_GZ INFILE_NAME_GAF INFILE_NAME INFILE_NAME_ERROR
 
 # Complete path name of the log files
-LOG_FILE=${LOGDIR}/goarefgen.log
-LOG_PROC=${LOGDIR}/goarefgen.proc.log
-LOG_DIAG=${LOGDIR}/goarefgen.diag.log
-LOG_CUR=${LOGDIR}/goarefgen.cur.log
-LOG_VAL=${LOGDIR}/goarefgen.val.log
+LOG_FILE=${LOGDIR}/gorefgen.log
+LOG_PROC=${LOGDIR}/gorefgen.proc.log
+LOG_DIAG=${LOGDIR}/gorefgen.diag.log
+LOG_CUR=${LOGDIR}/gorefgen.cur.log
+LOG_VAL=${LOGDIR}/gorefgen.val.log
 # Send debug messages to the diagnostic log (true or false)
 LOG_DEBUG=false
 export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
 
 # The name of the job stream for the load
-JOBSTREAM=goarefgenload
+JOBSTREAM=gorefgenload
 JNUMBER="J:161428"
 export JOBSTREAM JNUMBER
 

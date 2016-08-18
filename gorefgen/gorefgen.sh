@@ -1,13 +1,13 @@
 #!/bin/sh
 #
-#  goarefgen.sh
+#  gorefgen.sh
 ###########################################################################
 #
 #  Purpose:
 #       This script creates a GOA/PAINT annotation load
 #       input file and invokes the annotload using that input file.
 #
-#  Usage=goarefgen.sh
+#  Usage=gorefgen.sh
 #
 #  Env Vars:
 #
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GOA/PAINT load configuration file - goarefgen.config
+#      - GOA/PAINT load configuration file - gorefgen.config
 #      - input file - see python script header
 #
 #  Outputs:
@@ -48,9 +48,9 @@
 
 cd `dirname $0`
 
-COMMON_CONFIG=${GOLOAD}/goarefgen/goarefgen.config
+COMMON_CONFIG=${GOLOAD}/gorefgen/gorefgen.config
 
-USAGE="Usage: goarefgen.sh"
+USAGE="Usage: gorefgen.sh"
 
 #
 # Make sure the common configuration file exists and source it.
@@ -126,16 +126,16 @@ cd ${OUTPUTDIR}
 #
 # create input file
 #
-echo 'Running goarefgen.py' >> ${LOG}
-${GOLOAD}/goarefgen/goarefgen.py >> ${LOG}
+echo 'Running gorefgen.py' >> ${LOG}
+${GOLOAD}/gorefgen/gorefgen.py >> ${LOG}
 STAT=$?
-checkStatus ${STAT} "${GOLOAD}/goarefgen/goarefgen.py"
+checkStatus ${STAT} "${GOLOAD}/gorefgen/gorefgen.py"
 
 #
 # run annotation load
 #
-COMMON_CONFIG_CSH=${GOLOAD}/goarefgen/goa.csh.config
-echo "Running goarefgen annotation load" >> ${LOG}
+COMMON_CONFIG_CSH=${GOLOAD}/gorefgen/go.csh.config
+echo "Running gorefgen annotation load" >> ${LOG}
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
@@ -143,7 +143,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-echo "Running goarefgen inferred-from cache load" >> ${LOG}
+echo "Running gorefgen inferred-from cache load" >> ${LOG}
 ${MGICACHELOAD}/inferredfrom.gorefgenload >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gorefgenload"
