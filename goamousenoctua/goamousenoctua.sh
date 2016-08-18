@@ -4,7 +4,7 @@
 ###########################################################################
 #
 #  Purpose:
-# 	This script creates a GOA/Mouse annotation load
+# 	This script creates a GO/Mouse annotation load
 #       input file and invokes the annotload using that input file.
 #
 #  Usage=goamousenoctua.sh
@@ -17,7 +17,7 @@
 #
 #      - Common configuration file -
 #               /usr/local/mgi/live/mgiconfig/master.config.sh
-#      - GOA/Mouse load configuration file - goamousenoctua.config
+#      - GO/Mouse load configuration file - goamousenoctua.config
 #      - input file - see python script header
 #
 #  Outputs:
@@ -116,7 +116,7 @@ checkStatus ${STAT} "${GOLOAD}/goamousenoctua/goamousenoctua.py"
 # run annotation load with new annotations
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goamousenoctua/goa.csh.config
-echo "Running GOA/Mouse/Noctua annotation load" >> ${LOG}
+echo "Running GO/Mouse/Noctua annotation load" >> ${LOG}
 echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
 STAT=$?
@@ -125,7 +125,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua"
 #
 # run inferred-from cache
 #
-echo "Running GOA/Mouse/Noctua inferred-from cache load" >> ${LOG}
+echo "Running GO/Mouse/Noctua inferred-from cache load" >> ${LOG}
 ${MGICACHELOAD}/inferredfrom.gomousenoctua >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gomousenoctua"
@@ -133,7 +133,7 @@ checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.gomousenoctua"
 #
 # run eco check
 #
-echo "Running GOA/Mouse/Noctua ecocheck.sh" >> ${LOG}
+echo "Running GO/Mouse/Noctua ecocheck.sh" >> ${LOG}
 ${GOLOAD}/goamousenoctua/ecocheck.sh >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goamousenoctua/echocheck.sh"
