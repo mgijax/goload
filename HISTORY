@@ -2,6 +2,7 @@ TAG: goload-?
 DATE: 07/27/2016
 STAFF: lec 
 CHANGES:
+TR12345/GO-Noctua/GPAD/GPI
 TR12378/isoforms are now in their own file : see config/ISOFORM
 goamouse/goamouse.config.default/goamouse.py
 
