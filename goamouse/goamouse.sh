@@ -154,7 +154,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse"
 echo "Running GOA/Mouse inferred-from cache load" >> ${LOG}
 ${MGICACHELOAD}/inferredfrom.goaload >> ${LOG} 
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goamouse"
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.goaload"
 
 #
 # run postload cleanup and email logs
