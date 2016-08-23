@@ -237,6 +237,7 @@ def generateLookup():
 
 	if len(evidence) > 0:
 	    ecoLookupByEvidence[evidence] = n.ecoId
+	    ecoLookupByEco[n.ecoId] = evidence
 
 	evidence = findEvidenceByParent(n)
 

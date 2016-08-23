@@ -568,6 +568,7 @@ def readGAF(inFile):
 	    else:
 	        gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
 
+	    print evidence, gpadEvidence
             gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
 	        taxID, modDate, assignedBy))
 

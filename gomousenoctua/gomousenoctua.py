@@ -282,7 +282,7 @@ def readGPAD():
 	    continue
 
 	if evidenceCode in ecoLookupByEco:
-	    goEvidenceCode = ecoLookupByEco[evidenceCode][0]
+	    goEvidenceCode = ecoLookupByEco[evidenceCode]
 	else:
 	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
 	    continue
