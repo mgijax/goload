@@ -152,18 +152,10 @@ def processECO():
         #
         elif line.find('xref: GOECO:') == 0:
             tokens = line.split(' ')
-            evidence = tokens[1]
-            n.evidence.append(evidence.replace('GOECO:', ''))
+            evidence = tokens[1].replace('GOECO:', '')
+            n.evidence = evidence
 	    addToLookup = 1
 	    #print n.ecoId, line
-
-	elif line.find('synonym:') == 0:
-	    if line.find('EXACT [GO:') >= 0:
-                tokens = line.split('[GO:')
-                evidence = tokens[1]
-                n.evidence.append(evidence.replace(']', ''))
-	        addToLookup = 1
-		#print n.ecoId, line
 
         #
 	# list of typs of "tags" that need to be included in nodeLookup
@@ -241,26 +233,15 @@ def generateLookup():
     for r in nodeLookup:
 
 	n = nodeLookup[r]
+	evidence = n.evidence
 
-	# find evidence of term
-	# uses 'findEvidenceByParent() to iterate thru each parentId
+	if len(evidence) > 0:
+	    ecoLookupByEvidence[evidence] = n.ecoId
 
-	if len(n.evidence) == 0:
-	    evidence = findEvidenceByParent(n)
-        else:
-	    evidence = n.evidence
+	evidence = findEvidenceByParent(n)
 
-	#
-	# if no evidence was found, skip it
-	#
-	if len(evidence) == 0:
-	    continue
-
-	ecoLookupByEco[n.ecoId] = evidence
-
-	for e in evidence:
-	    if e not in ecoLookupByEvidence:
-		ecoLookupByEvidence[e] = n.ecoId
+	if len(evidence) > 0:
+	    ecoLookupByEco[n.ecoId] = evidence
 
     return ecoLookupByEco, ecoLookupByEvidence
 
