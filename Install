@@ -83,6 +83,7 @@ done
 
 # for goamouse only
 cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
+cp -r gomousenoctua/godelete.csh.config.default gomousenoctua/godelete.csh.config
 
 # remove old *pyc
 rm -rf lib/*pyc
