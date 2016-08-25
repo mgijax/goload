@@ -107,13 +107,13 @@ cd ${OUTPUTDIR}
 #
 # run annotation load with an empty file to remove previous data
 #
-echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
-rm -rf ${ANNOTINPUTFILE}
-touch ${ANNOTINPUTFILE}
-COMMON_CONFIG_CSH=${GOLOAD}/gomousenoctua/godelete.csh.config
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
-STAT=$?
-checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua"
+#echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
+#rm -rf ${ANNOTINPUTFILE}
+#touch ${ANNOTINPUTFILE}
+#COMMON_CONFIG_CSH=${GOLOAD}/gomousenoctua/godelete.csh.config
+#${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
+#STAT=$?
+#checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua"
 
 #
 # create input file
