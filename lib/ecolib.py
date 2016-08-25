@@ -52,6 +52,56 @@ class Node:
 #
 nodeLookup = {}
 
+ecoLookupByEvidence = {
+'EXP': 'ECO:0000269',
+'IBA': 'ECO:0000318',
+'IBD': 'ECO:0000319',
+'IC': 'ECO:0000305',
+'IDA': 'ECO:0000314',
+'IEA': 'ECO:0000501',
+'IEP': 'ECO:0000270',
+'IGC': 'ECO:0000317',
+'IGI': 'ECO:0000316',
+'IKR': 'ECO:0000320',
+'IMP': 'ECO:0000315',
+'IMR': 'ECO:0000320',
+'IPI': 'ECO:0000353',
+'IRD': 'ECO:0000321',
+'ISA': 'ECO:0000247',
+'ISM': 'ECO:0000255',
+'ISO': 'ECO:0000266',
+'ISS': 'ECO:0000250',
+'NAS': 'ECO:0000303',
+'ND': 'ECO:0000307',
+'RCA': 'ECO:0000245',
+'TAS': 'ECO:0000304'
+}
+
+ecoLookupByEco = {
+'ECO:0000269':'EXP',
+'ECO:0000318':'IBA',
+'ECO:0000319':'IBD',
+'ECO:0000305':'IC',
+'ECO:0000314':'IDA',
+'ECO:0000501':'IEA',
+'ECO:0000270':'IEP',
+'ECO:0000317':'IGC',
+'ECO:0000316':'IGI',
+'ECO:0000320':'IKR',
+'ECO:0000315':'IMP',
+'ECO:0000320':'IMR',
+'ECO:0000353':'IPI',
+'ECO:0000321':'IRD',
+'ECO:0000247':'ISA',
+'ECO:0000255':'ISM',
+'ECO:0000266':'ISO',
+'ECO:0000250':'ISS',
+'ECO:0000303':'NAS',
+'ECO:0000307':'ND',
+'ECO:0000245':'RCA',
+'ECO:0000304':'TAS'
+}
+
 #
 # Purpose: Reads the eco.obo file and returns a dictionary of:
 #	ecoLookupByEco : ecoId -> evidence
@@ -153,9 +203,18 @@ def processECO():
         elif line.find('xref: GOECO:') == 0:
             tokens = line.split(' ')
             evidence = tokens[1].replace('GOECO:', '')
-            n.evidence = evidence
+            n.evidence.append(evidence)
 	    addToLookup = 1
 	    #print n.ecoId, line
+
+
+        elif line.find('synonym:') == 0:
+            if line.find('EXACT [GO:') >= 0:
+                tokens = line.split('[GO:')
+                evidence = tokens[1].replace(']', '')
+                n.evidence.append(evidence)
+                addToLookup = 1 
+                #print n.ecoId, line
 
         #
 	# list of typs of "tags" that need to be included in nodeLookup
@@ -226,23 +285,25 @@ def findEvidenceByParent(n):
 #	ecoLookupByEvidence : evidence -> ecoId (the default ecoId of the evidence)
 #
 def generateLookup():
-
-    ecoLookupByEco = {}
-    ecoLookupByEvidence = {}
+    global ecoLookupByEvidence
+    global ecoLookupByEco
 
     for r in nodeLookup:
 
 	n = nodeLookup[r]
-	evidence = n.evidence
 
-	if len(evidence) > 0:
-	    ecoLookupByEvidence[evidence] = n.ecoId
-	    ecoLookupByEco[n.ecoId] = evidence
+	for evidence in n.evidence:
+
+	    if len(evidence) > 0:
+	        if evidence not in ecoLookupByEvidence:
+	            ecoLookupByEvidence[evidence] = n.ecoId
+	            ecoLookupByEco[n.ecoId] = evidence
 
 	evidence = findEvidenceByParent(n)
 
 	if len(evidence) > 0:
-	    ecoLookupByEco[n.ecoId] = evidence
+	    if n.ecoId not in ecoLookupByEco:
+	        ecoLookupByEco[n.ecoId] = evidence
 
     return ecoLookupByEco, ecoLookupByEvidence
 

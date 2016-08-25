@@ -100,6 +100,10 @@ ecoLookupByEvidence = {}
 # lookup file of Uberon to EMAPA
 uberonLookup = {}
 
+# mapping of load reference J: to GO_REF IDs
+# see _LogicalDB_key = 185 (GO_REF)
+goRefLookup = {}
+
 #
 # Purpose: Initialization
 #
@@ -113,6 +117,7 @@ def initialize():
     global ecoLookupByEco
     global ecoLookupByEvidence
     global uberonLookup
+    global goRefLookup
 
     #
     # open files
@@ -170,6 +175,25 @@ def initialize():
     #
     print 'reading uberon -> emapa translation file...'
     uberonLookup = uberonlib.processUberon() 
+
+    #
+    # lookup file of GO_REF->J:
+    #
+    results = db.sql('''select a1.accID as goref, a2.accID as jnum
+    	from ACC_Accession a1, ACC_Accession a2
+    	where a1._MGIType_key = 1
+    	and a1._LogicalDB_key = 185
+    	and a1._Object_key = a2._Object_key
+    	and a2._MGIType_key = 1
+    	and a2._LogicalDB_key = 1
+    	and a2.prefixPart = 'J:'
+	''', 'auto')
+
+    for r in results:
+        key = r['goref']
+        value = r['jnum']
+        goRefLookup[key] = value
+    print goRefLookup
 
     return 0
 
@@ -275,6 +299,10 @@ def readGPAD():
 		jnumID = mgiRefLookup[refID]
 		jnumIDFound = 1
 		 
+            if refID in goRefLookup:
+		jnumID = goRefLookup[refID]
+		jnumIDFound = 1
+
 	# if reference does not exist...skip it
 
 	if not jnumIDFound:
