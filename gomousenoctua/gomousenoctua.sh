@@ -106,6 +106,7 @@ cd ${OUTPUTDIR}
 
 #
 # run annotation load with an empty file to remove previous data
+# not needed right now
 #
 #echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
 #rm -rf ${ANNOTINPUTFILE}
