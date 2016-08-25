@@ -52,11 +52,17 @@ class Node:
 #
 nodeLookup = {}
 
+#
+# hard-coding the default evidence->eco
+# hard-coding the default eco->evidence
+#
+# only using the eco.obo file to handle the onotology/dag
+#
 ecoLookupByEvidence = {
 'EXP': 'ECO:0000269',
 'IBA': 'ECO:0000318',
 'IBD': 'ECO:0000319',
-'IC': 'ECO:0000305',
+'IC':  'ECO:0000305',
 'IDA': 'ECO:0000314',
 'IEA': 'ECO:0000501',
 'IEP': 'ECO:0000270',
@@ -72,34 +78,34 @@ ecoLookupByEvidence = {
 'ISO': 'ECO:0000266',
 'ISS': 'ECO:0000250',
 'NAS': 'ECO:0000303',
-'ND': 'ECO:0000307',
+'ND':  'ECO:0000307',
 'RCA': 'ECO:0000245',
 'TAS': 'ECO:0000304'
 }
 
 ecoLookupByEco = {
-'ECO:0000269':'EXP',
-'ECO:0000318':'IBA',
-'ECO:0000319':'IBD',
-'ECO:0000305':'IC',
-'ECO:0000314':'IDA',
-'ECO:0000501':'IEA',
-'ECO:0000270':'IEP',
-'ECO:0000317':'IGC',
-'ECO:0000316':'IGI',
-'ECO:0000320':'IKR',
-'ECO:0000315':'IMP',
-'ECO:0000320':'IMR',
-'ECO:0000353':'IPI',
-'ECO:0000321':'IRD',
-'ECO:0000247':'ISA',
-'ECO:0000255':'ISM',
-'ECO:0000266':'ISO',
-'ECO:0000250':'ISS',
-'ECO:0000303':'NAS',
-'ECO:0000307':'ND',
-'ECO:0000245':'RCA',
-'ECO:0000304':'TAS'
+'ECO:0000269':['EXP'],
+'ECO:0000318':['IBA'],
+'ECO:0000319':['IBD'],
+'ECO:0000305':['IC'],
+'ECO:0000314':['IDA'],
+'ECO:0000501':['IEA'],
+'ECO:0000270':['IEP'],
+'ECO:0000317':['IGC'],
+'ECO:0000316':['IGI'],
+'ECO:0000320':['IKR'],
+'ECO:0000315':['IMP'],
+'ECO:0000320':['IMR'],
+'ECO:0000353':['IPI'],
+'ECO:0000321':['IRD'],
+'ECO:0000247':['ISA'],
+'ECO:0000255':['ISM'],
+'ECO:0000266':['ISO'],
+'ECO:0000250':['ISS'],
+'ECO:0000303':['NAS'],
+'ECO:0000307':['ND'],
+'ECO:0000245':['RCA'],
+'ECO:0000304':['TAS']
 }
 
 #
@@ -292,13 +298,18 @@ def generateLookup():
 
 	n = nodeLookup[r]
 
+	# only add if we find a "new" evidence in the obo file
+	# which should not happen
 	for evidence in n.evidence:
-
 	    if len(evidence) > 0:
 	        if evidence not in ecoLookupByEvidence:
 	            ecoLookupByEvidence[evidence] = n.ecoId
 	            ecoLookupByEco[n.ecoId] = evidence
 
+	#
+	# use the ontology/dag to find the evidence
+	# for eco ids that are not the defaults
+	#
 	evidence = findEvidenceByParent(n)
 
 	if len(evidence) > 0:
