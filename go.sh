@@ -17,7 +17,7 @@ fi
 
 . ${MGICONFIG}/master.config.sh
 
-GOLOG=${DATALOADSOUTPUT}/go/goload.log
+GOLOG=${DATALOADSOUTPUT}/go/go.log
 rm -rf $GOLOG
 touch $GOLOG
  

@@ -17,25 +17,25 @@ fi
 
 . ${MGICONFIG}/master.config.sh
 
-GOLOG=${DATALOADSOUTPUT}/go/goload.log
+GOLOG=${DATALOADSOUTPUT}/go/godaily.log
 rm -rf $GOLOG
 touch $GOLOG
  
 date | tee -a $GOLOG
 
 echo 'runnning proisoformload...'
-${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG}
+${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
 
 echo 'generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG}
+${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 
 echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
-${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG}
+${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
 
 echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
-${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG}
+${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 
 echo 'running go_isoforms_display_load.csh' | tee -a ${GOLOG}
-${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG}
+${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG} || exit 1
 
