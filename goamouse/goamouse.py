@@ -319,7 +319,7 @@ def initialize():
 
     print 'reading existing GO annotations that have pub med ids....'
     results = db.sql('''
-	select a.accID as goID, t._Object_key, ec.abbreviation, \'PMID:\' || r.accID as refID 
+	select a.accID as goID, t._Object_key, ec.abbreviation, 'PMID:' || r.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
 	where t._AnnotType_key = 1000 
 	and t._Term_key = a._Object_key 
