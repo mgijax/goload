@@ -1,4 +1,12 @@
-TAG: goload-?
+dependencies:
+${MIRROR_WGET}/download_package ftp.pir.georgetown.edu.proisoform | tee -a $LOG || exit 1
+${MIRROR_WGET}/download_package pir.georgetown.edu.proisoform | tee -a $LOG || exit 1
+${MIRROR_WGET}/download_package build.berkeleybop.org.goload | tee -a $LOG || exit 1
+${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload | tee -a $LOG || exit 1
+${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload | tee -a $LOG || exit 1
+${MIRROR_WGET}/download_package ftp.geneontology.org.goload | tee -a $LOG || exit 1
+
+TAG: goload-6-0-6-?
 DATE: 07/27/2016
 STAFF: lec 
 CHANGES:

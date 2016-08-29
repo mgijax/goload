@@ -23,31 +23,34 @@ touch $GOLOG
  
 date | tee -a $GOLOG
 
-echo 'Generate GPI file (gomousenoctua depends on it)...'
+echo 'runnning proisoformload...'
+${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
+
+echo 'generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG}
+${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 
-echo '1:Run GO/Mouse/Noctua Load' | tee -a ${GOLOG}
-${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG}
+echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
+${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
 
-echo '2:Run GOA/Mouse Load' | tee -a ${GOLOG}
-${GOLOAD}/goamouse/goamouse.sh | tee -a ${GOLOG}
+echo '2:running GOA/Mouse Load' | tee -a ${GOLOG}
+${GOLOAD}/goamouse/goamouse.sh | tee -a ${GOLOG} || exit 1
 
-echo '3:Run GO/Rat Load' | tee -a ${GOLOG}
-${GOLOAD}/gorat/gorat.sh | tee -a ${GOLOG}
+echo '3:running GO/Rat Load' | tee -a ${GOLOG}
+${GOLOAD}/gorat/gorat.sh | tee -a ${GOLOG} || exit 1
 
-echo '4:Run GO/PAINT Load' | tee -a ${GOLOG}
-${GOLOAD}/gorefgen/gorefgen.sh | tee -a ${GOLOG}
+echo '4:running GO/PAINT Load' | tee -a ${GOLOG}
+${GOLOAD}/gorefgen/gorefgen.sh | tee -a ${GOLOG} || exit 1
 
-echo '5:Run GOA/Human Load' | tee -a ${GOLOG}
-${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG}
+echo '5:running GOA/Human Load' | tee -a ${GOLOG}
+${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG} || exit 1
 
-echo '6:Run GO/CFP Load' | tee -a ${GOLOG}
-${GOLOAD}/gocfp/gocfp.sh | tee -a ${GOLOG}
+echo '6:running GO/CFP Load' | tee -a ${GOLOG}
+${GOLOAD}/gocfp/gocfp.sh | tee -a ${GOLOG} || exit 1
 
 echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
-${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG}
+${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 
 echo 'running go_isoforms_display_load.csh' | tee -a ${GOLOG}
-${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG}
+${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG} || exit 1
 
