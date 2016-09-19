@@ -4,11 +4,12 @@
 #
 # goamouse.py
 #
-#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goaload
+#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
 #
 # Inputs:
 #
-#       ${INFILE_NAME_GAF}      the GAF file
+#       ${PROTEIN_SORTED}      the sorted GAF file
+#       ${ISOFORM_SORTED}      the sorted GAF file
 #
 #       The GAF file contains:
 #
@@ -31,7 +32,7 @@
 #
 #	TR 7904/7926
 #
-#	Takes the GOA file ${INFILE_NAME} and generates
+#	Takes the GOA file ${PROTEIN_SORTED} and generates
 #
 #		mgi.error
 #			file of GOA annotations that originated from MGI
@@ -57,7 +58,7 @@
 #		pubmedevi.error
 #			file of Evidence Codes + count of Annotations for those with PubMed IDs that are not in MGI
 #
-#		goa.mgi
+#		goamouse.gaf
 #			file of GOA annotations that can be appended to MGI GO association file
 #
 #		goa.annot
@@ -89,6 +90,9 @@
 #       goamouse.py
 #
 # History:
+#
+# lec	07/27/2016
+#	- TR12378/isoforms are now in their own file : see config/ISOFORM
 #
 # lec   11/05/2015
 #       - TR12070/properties translations:
@@ -124,16 +128,21 @@ import os
 import db
 import reportlib
 
+goloadpath = os.environ['GOLOAD'] + '/lib'
+sys.path.insert(0, goloadpath)
+import ecolib
+
 #db.setTrace()
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 
 #### Constants ###
 UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
-UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s"
+UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
 PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse marker: %s"
 
-mgiLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'
+gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
+gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
 # list of evidence codes that are skipped; that is, not loaded into MGI
@@ -141,26 +150,80 @@ skipEvidenceCodes = ['IEP']
 
 ### Globals ###
 
+inFileName = None
+goaPrefix = None
+unresolvedAErrorFile = None
+unresolvedBErrorFile = None
+unresolvedCErrorFile = None
+mgiErrorFile = None
+nopubmedFile = None
+pubmedAnnotFile = None
+pubmedErrorFile = None
+pubmedeviErrorFile = None
+dupErrorFile = None
+gafFile = None
+gpadFile = None
+annotFile = None
+uberonTextFile = None
+propertiesErrorFile = None
+
 assoc = {}	# dictionary of GOA ID:Marker MGI ID
 marker = {}	# dictionary of MGI Marker ID:Marker data
 mgiannot = {}	# dictionary of existing annotations:  Marker key, GO ID, Evidence Code, Pub Med ID
 newannot = {}	# dictionary of new annotations: Marker key, GO ID, Evidence Code, Pub Med ID
 goids = {}      # dictionary of secondary GO ID:primary GO ID
 
-annotByGOID = []
-annotByRef = []
+annotByGOID = []	# go annotation by go ids
+annotByRef = []		# go annotation by pub med ids
 pubmed = {}		# dictionary of pubmed->J:
 pubmedUnique = []	# list of unique pubmedids that are not in MGI
 pubmedEvidence = {}	# evidence code:count for those annotations with pubmedids that are not in MGI
+uberonLookup = {}	# uberon -> emapa lookup
 
-def main():
+# gpad file
+# translate dag to qualifier (col 3)
+dagQualifier = {'C':'part_of', 'P':'involved_in', 'F':'enables'}
+ecoLookupByEco = {} 
+ecoLookupByEvidence = {} 
+
+#
+# Initialize input/output files
+#
+def initialize():
+    global goaPrefix 
+    global unresolvedAErrorFile 
+    global unresolvedBErrorFile 
+    global unresolvedCErrorFile 
+    global mgiErrorFile 
+    global nopubmedFile 
+    global pubmedAnnotFile 
+    global pubmedErrorFile 
+    global pubmedeviErrorFile 
+    global dupErrorFile 
+    global gafFile 
+    global gpadFile 
+    global annotFile 
+    global uberonTextFile
+    global propertiesErrorFile 
+
+    global assoc
+    global marker
+    global mgiannot
+    global newannot
+    global goids
+    global annotByGOID
+    global annotByRef
+    global pubmed
+    global pubmedUnique
+    global pubmedEvidence
+    global uberonLookup
+    global ecoLookupByEco, ecoLookupByEvidence
+
     #
-    # Initialize input/output files
+    # open files
     #
 
-    inFileName = os.environ['INFILE_NAME']
     goaPrefix = os.environ['DELETEUSER']
-
     unresolvedAErrorFile = reportlib.init('unresolvedA', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     unresolvedBErrorFile = reportlib.init('unresolvedB', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     unresolvedCErrorFile = reportlib.init('unresolvedC', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -170,7 +233,8 @@ def main():
     pubmedErrorFile = reportlib.init('pubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     pubmedeviErrorFile = reportlib.init('pubmedevi', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     dupErrorFile = reportlib.init('duplicates', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    mgiFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.mgi')
+    gafFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gaf')
+    gpadFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
     annotFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
     uberonTextFile = reportlib.init('uberon', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.txt')
     propertiesErrorFile = reportlib.init('properties', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -179,7 +243,7 @@ def main():
     # read/store UBERON-to-EMAPA info
     #
 
-    print 'reading uberon/emapa file...'
+    print 'reading uberon/emapa obo file...'
 
     uberonIdValue = 'id: UBERON:'
     emapaXrefValue = 'xref: EMAPA:'
@@ -260,6 +324,7 @@ def main():
     # VEGA (85)
     #
 
+    print 'reading mouse markers annotatined to SwissProt/TrEMBL/RefSeq, etc....'
     results = db.sql('''
 	select m._Marker_key, m.mgiID, a.accID as goaID 
 	from markers m, ACC_Accession a 
@@ -279,8 +344,9 @@ def main():
     # to detect duplicate annotations
     #
 
+    print 'reading existing GO annotations that have pub med ids....'
     results = db.sql('''
-	select a.accID as goID, t._Object_key, ec.abbreviation, \'PMID:\' || r.accID as refID 
+	select a.accID as goID, t._Object_key, ec.abbreviation, 'PMID:' || r.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
 	where t._AnnotType_key = 1000 
 	and t._Term_key = a._Object_key 
@@ -313,6 +379,7 @@ def main():
     # J:72245
     #
 
+    print 'reading existing IEA GO annotations....'
     results = db.sql('''
 	select a.accID as goID, t._Object_key, ec.abbreviation, a.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
@@ -346,6 +413,7 @@ def main():
     # existing pubmed->j: relationships
     #
 
+    print 'reading existing pubmed->J: relationships....'
     results = db.sql('''
 	select a1.accID as jnumID, 'PMID:' || a2.accID as pubmedID 
 	from ACC_Accession a1, ACC_Accession a2 
@@ -363,11 +431,15 @@ def main():
         value = r['jnumID']
         pubmed[key] = value
 
-    #
-    # GOA annotations
-    #
+    # use goload/ecolib to lookup eco using evidence
+    ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
-    inFile = open(inFileName, 'r')
+    return 0
+
+#
+# Purpose : Read GAF file and generate Annotation file
+#
+def readGAF(inFile):
 
     for line in inFile.readlines():
 
@@ -379,7 +451,7 @@ def main():
 
         tokens = line[:-1].split('\t')
     #    databaseID = tokens[0]
-        databaseID = "MGI"
+        databaseID = 'MGI'
         goaID = tokens[1]		# translate to MGI value
         goaSymbol = tokens[2]		# translate to MGI value
         qualifierValue = tokens[3]
@@ -440,7 +512,7 @@ def main():
 
         # error if GOA id is not found in MGI
 
-        s = goaID.find("-")
+        s = goaID.find('-')
         if s >= 0:
 	    goaIDstrip = goaID[:s]
         else:
@@ -506,8 +578,27 @@ def main():
         # if this annotation is not loaded into MGI, then write it to the "to-append" file and continue
 
         if not loadMGI:
-            mgiFile.write(mgiLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
+
+	    # for gafFile
+
+            gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
 	        dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
+
+	    # for gpadFile, translate 'qualiferValue' and 'evidence'
+
+	    gpadQualifier = dagQualifier[dag]
+            if len(qualifierValue) > 0:
+                gpadQualifier = gpadQualifier + '|' + qualifierValue.strip()
+
+	    if evidence in ecoLookupByEvidence:
+	        gpadEvidence = ecoLookupByEvidence[evidence]
+	    else:
+	        gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
+
+	    print evidence, gpadEvidence
+            gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
+	        taxID, modDate, assignedBy))
+
 	    continue
 
         #
@@ -556,6 +647,13 @@ def main():
 
     inFile.close()
 
+    return 0
+
+#
+# write error files and close all files
+#
+def closeFiles():
+
     # write out all annotations
     for n in newannot.keys():
         inferredFrom = '|'.join(newannot[n])
@@ -569,8 +667,6 @@ def main():
     for p in pubmedEvidence.keys():
         pubmedeviErrorFile.write(p + ':\t' + str(pubmedEvidence[p]) + '\n')
 
-    # close files
-
     reportlib.finish_nonps(unresolvedAErrorFile)
     reportlib.finish_nonps(unresolvedBErrorFile)
     reportlib.finish_nonps(unresolvedCErrorFile)
@@ -580,10 +676,13 @@ def main():
     reportlib.finish_nonps(pubmedErrorFile)
     reportlib.finish_nonps(pubmedeviErrorFile)
     reportlib.finish_nonps(dupErrorFile)
-    reportlib.finish_nonps(mgiFile)
+    reportlib.finish_nonps(gafFile)
+    reportlib.finish_nonps(gpadFile)
     reportlib.finish_nonps(annotFile)
     reportlib.finish_nonps(uberonTextFile)
     reportlib.finish_nonps(propertiesErrorFile)
+
+    return 0
 
 ### Helper functions ###
 
@@ -691,14 +790,22 @@ def convertPropertiesIds(properties, uberonLookup={}):
 
     return properties, errors
 
-if __name__ == '__main__':
+#
+# main
+#
 
-        db.useOneConnection(1)
-        db.sql('start transaction', None)
+if initialize() != 0:
+    sys.exit(1)
 
-        # do main processing
-        main()
+for inFileName in (os.environ['PROTEIN_SORTED'], \
+	os.environ['ISOFORM_SORTED']):
+    inFile = open(inFileName, 'r')
+    print inFile
+    if readGAF(inFile) != 0:
+        sys.exit(1)
 
-        db.commit()
-	db.useOneConnection(0) 
-	
+#os.environ['COMPLEX_SORTED']
+#os.environ['RNA_SORTED']
+
+closeFiles()
+sys.exit(0)
