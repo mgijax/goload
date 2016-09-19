@@ -4,12 +4,11 @@
 #
 # goamouse.py
 #
-#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goload
+#       See http://prodwww.informatics.jax.org/wiki/index.php/sw:Goaload
 #
 # Inputs:
 #
-#       ${PROTEIN_SORTED}      the sorted GAF file
-#       ${ISOFORM_SORTED}      the sorted GAF file
+#       ${INFILE_NAME_GAF}      the GAF file
 #
 #       The GAF file contains:
 #
@@ -32,7 +31,7 @@
 #
 #	TR 7904/7926
 #
-#	Takes the GOA file ${PROTEIN_SORTED} and generates
+#	Takes the GOA file ${INFILE_NAME} and generates
 #
 #		mgi.error
 #			file of GOA annotations that originated from MGI
@@ -58,7 +57,7 @@
 #		pubmedevi.error
 #			file of Evidence Codes + count of Annotations for those with PubMed IDs that are not in MGI
 #
-#		goamouse.gaf
+#		goa.mgi
 #			file of GOA annotations that can be appended to MGI GO association file
 #
 #		goa.annot
@@ -90,9 +89,6 @@
 #       goamouse.py
 #
 # History:
-#
-# lec	07/27/2016
-#	- TR12378/isoforms are now in their own file : see config/ISOFORM
 #
 # lec   11/05/2015
 #       - TR12070/properties translations:
@@ -128,20 +124,16 @@ import os
 import db
 import reportlib
 
-goloadpath = os.environ['GOLOAD'] + '/lib'
-sys.path.insert(0, goloadpath)
-import ecolib
-import uberonlib
-
 #db.setTrace()
 db.setAutoTranslate(False)
 db.setAutoTranslateBE(False)
 
 #### Constants ###
+UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
+UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s"
 PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse marker: %s"
 
-gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
-gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
+mgiLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'
 annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
 # list of evidence codes that are skipped; that is, not loaded into MGI
@@ -149,78 +141,26 @@ skipEvidenceCodes = ['IEP']
 
 ### Globals ###
 
-inFileName = None
-goaPrefix = None
-unresolvedAErrorFile = None
-unresolvedBErrorFile = None
-unresolvedCErrorFile = None
-mgiErrorFile = None
-nopubmedFile = None
-pubmedAnnotFile = None
-pubmedErrorFile = None
-pubmedeviErrorFile = None
-dupErrorFile = None
-gafFile = None
-gpadFile = None
-annotFile = None
-propertiesErrorFile = None
-
 assoc = {}	# dictionary of GOA ID:Marker MGI ID
 marker = {}	# dictionary of MGI Marker ID:Marker data
 mgiannot = {}	# dictionary of existing annotations:  Marker key, GO ID, Evidence Code, Pub Med ID
 newannot = {}	# dictionary of new annotations: Marker key, GO ID, Evidence Code, Pub Med ID
 goids = {}      # dictionary of secondary GO ID:primary GO ID
 
-annotByGOID = []	# go annotation by go ids
-annotByRef = []		# go annotation by pub med ids
+annotByGOID = []
+annotByRef = []
 pubmed = {}		# dictionary of pubmed->J:
 pubmedUnique = []	# list of unique pubmedids that are not in MGI
 pubmedEvidence = {}	# evidence code:count for those annotations with pubmedids that are not in MGI
-uberonLookup = {}	# uberon -> emapa lookup
 
-# gpad file
-# translate dag to qualifier (col 3)
-dagQualifier = {'C':'part_of', 'P':'involved_in', 'F':'enables'}
-ecoLookupByEco = {} 
-ecoLookupByEvidence = {} 
-
-#
-# Initialize input/output files
-#
-def initialize():
-    global goaPrefix 
-    global unresolvedAErrorFile 
-    global unresolvedBErrorFile 
-    global unresolvedCErrorFile 
-    global mgiErrorFile 
-    global nopubmedFile 
-    global pubmedAnnotFile 
-    global pubmedErrorFile 
-    global pubmedeviErrorFile 
-    global dupErrorFile 
-    global gafFile 
-    global gpadFile 
-    global annotFile 
-    global propertiesErrorFile 
-
-    global assoc
-    global marker
-    global mgiannot
-    global newannot
-    global goids
-    global annotByGOID
-    global annotByRef
-    global pubmed
-    global pubmedUnique
-    global pubmedEvidence
-    global uberonLookup
-    global ecoLookupByEco, ecoLookupByEvidence
-
+def main():
     #
-    # open files
+    # Initialize input/output files
     #
 
+    inFileName = os.environ['INFILE_NAME']
     goaPrefix = os.environ['DELETEUSER']
+
     unresolvedAErrorFile = reportlib.init('unresolvedA', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     unresolvedBErrorFile = reportlib.init('unresolvedB', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     unresolvedCErrorFile = reportlib.init('unresolvedC', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -230,18 +170,41 @@ def initialize():
     pubmedErrorFile = reportlib.init('pubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     pubmedeviErrorFile = reportlib.init('pubmedevi', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
     dupErrorFile = reportlib.init('duplicates', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    gafFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gaf')
-    gpadFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
+    mgiFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.mgi')
     annotFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
+    uberonTextFile = reportlib.init('uberon', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.txt')
     propertiesErrorFile = reportlib.init('properties', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     #
     # read/store UBERON-to-EMAPA info
     #
 
-    print 'reading uberon/emapa obo file...'
-    uberonLookup = uberonlib.processUberon()
-    #print uberonLookup
+    print 'reading uberon/emapa file...'
+
+    uberonIdValue = 'id: UBERON:'
+    emapaXrefValue = 'xref: EMAPA:'
+
+    uberonFileName = os.environ['UBERONFILE']
+    uberonFile = open(uberonFileName, 'r')
+
+    uberonLookup = {}
+
+    for line in uberonFile.readlines():
+        # find [Term]
+        # find xref: EMAPA:
+        if line[:11] == uberonIdValue:
+            uberonId = line[4:-1]
+        elif line[:12] == emapaXrefValue:
+            emapaId = line[6:-1]
+            if uberonId not in uberonLookup:
+                uberonLookup[uberonId] = []
+            uberonLookup[uberonId].append(emapaId)
+        else:
+            continue
+
+    uberonFile.close()
+    for u in uberonLookup:
+        uberonTextFile.write(u + '\n')
 
     #
     # Mouse Markers
@@ -297,7 +260,6 @@ def initialize():
     # VEGA (85)
     #
 
-    print 'reading mouse markers annotatined to SwissProt/TrEMBL/RefSeq, etc....'
     results = db.sql('''
 	select m._Marker_key, m.mgiID, a.accID as goaID 
 	from markers m, ACC_Accession a 
@@ -317,9 +279,8 @@ def initialize():
     # to detect duplicate annotations
     #
 
-    print 'reading existing GO annotations that have pub med ids....'
     results = db.sql('''
-	select a.accID as goID, t._Object_key, ec.abbreviation, 'PMID:' || r.accID as refID 
+	select a.accID as goID, t._Object_key, ec.abbreviation, \'PMID:\' || r.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
 	where t._AnnotType_key = 1000 
 	and t._Term_key = a._Object_key 
@@ -352,7 +313,6 @@ def initialize():
     # J:72245
     #
 
-    print 'reading existing IEA GO annotations....'
     results = db.sql('''
 	select a.accID as goID, t._Object_key, ec.abbreviation, a.accID as refID 
 	from VOC_Annot t, ACC_Accession a, VOC_Evidence e, VOC_Term ec, ACC_Accession r 
@@ -386,7 +346,6 @@ def initialize():
     # existing pubmed->j: relationships
     #
 
-    print 'reading existing pubmed->J: relationships....'
     results = db.sql('''
 	select a1.accID as jnumID, 'PMID:' || a2.accID as pubmedID 
 	from ACC_Accession a1, ACC_Accession a2 
@@ -404,15 +363,11 @@ def initialize():
         value = r['jnumID']
         pubmed[key] = value
 
-    # use goload/ecolib to lookup eco using evidence
-    ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
+    #
+    # GOA annotations
+    #
 
-    return 0
-
-#
-# Purpose : Read GAF file and generate Annotation file
-#
-def readGAF(inFile):
+    inFile = open(inFileName, 'r')
 
     for line in inFile.readlines():
 
@@ -424,7 +379,7 @@ def readGAF(inFile):
 
         tokens = line[:-1].split('\t')
     #    databaseID = tokens[0]
-        databaseID = 'MGI'
+        databaseID = "MGI"
         goaID = tokens[1]		# translate to MGI value
         goaSymbol = tokens[2]		# translate to MGI value
         qualifierValue = tokens[3]
@@ -485,7 +440,7 @@ def readGAF(inFile):
 
         # error if GOA id is not found in MGI
 
-        s = goaID.find('-')
+        s = goaID.find("-")
         if s >= 0:
 	    goaIDstrip = goaID[:s]
         else:
@@ -551,27 +506,8 @@ def readGAF(inFile):
         # if this annotation is not loaded into MGI, then write it to the "to-append" file and continue
 
         if not loadMGI:
-
-	    # for gafFile
-
-            gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
+            mgiFile.write(mgiLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
 	        dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
-
-	    # for gpadFile, translate 'qualiferValue' and 'evidence'
-
-	    gpadQualifier = dagQualifier[dag]
-            if len(qualifierValue) > 0:
-                gpadQualifier = gpadQualifier + '|' + qualifierValue.strip()
-
-	    if evidence in ecoLookupByEvidence:
-	        gpadEvidence = ecoLookupByEvidence[evidence]
-	    else:
-	        gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
-
-	    print evidence, gpadEvidence
-            gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
-	        taxID, modDate, assignedBy))
-
 	    continue
 
         #
@@ -587,7 +523,7 @@ def readGAF(inFile):
         # start : column 16 (properties)
         #
 	
-	properties, errors = uberonlib.convertExtensions(properties, uberonLookup)
+	properties, errors = convertPropertiesIds(properties, uberonLookup)
 
 	if errors:
 	    for error in errors:
@@ -620,13 +556,6 @@ def readGAF(inFile):
 
     inFile.close()
 
-    return 0
-
-#
-# write error files and close all files
-#
-def closeFiles():
-
     # write out all annotations
     for n in newannot.keys():
         inferredFrom = '|'.join(newannot[n])
@@ -640,6 +569,8 @@ def closeFiles():
     for p in pubmedEvidence.keys():
         pubmedeviErrorFile.write(p + ':\t' + str(pubmedEvidence[p]) + '\n')
 
+    # close files
+
     reportlib.finish_nonps(unresolvedAErrorFile)
     reportlib.finish_nonps(unresolvedBErrorFile)
     reportlib.finish_nonps(unresolvedCErrorFile)
@@ -649,29 +580,125 @@ def closeFiles():
     reportlib.finish_nonps(pubmedErrorFile)
     reportlib.finish_nonps(pubmedeviErrorFile)
     reportlib.finish_nonps(dupErrorFile)
-    reportlib.finish_nonps(gafFile)
-    reportlib.finish_nonps(gpadFile)
+    reportlib.finish_nonps(mgiFile)
     reportlib.finish_nonps(annotFile)
+    reportlib.finish_nonps(uberonTextFile)
     reportlib.finish_nonps(propertiesErrorFile)
 
-    return 0
+### Helper functions ###
 
-#
-# main
-#
+def queryMouseAccId(logicalDBKey, id):
+    #
+    # Queries mouse marker accession id of given accession id/logicalDBKey
+    # 	returns list of MGI IDs
+    #
 
-if initialize() != 0:
-    sys.exit(1)
+    queryMouseAccIdSQL = ''' 
+    	select a2.accID
+    	from acc_accession a1, acc_accession a2
+    	where a1._logicaldb_key = %s
+    	and a1.accid = '%s'
+    	and a1._object_key = a2._object_key
+    	and a2._mgitype_key = 2 
+    	and a2._logicaldb_key = 1 
+    	and a2.prefixPart = 'MGI:'
+    	and a2.preferred = 1 
+    	'''
 
-for inFileName in (os.environ['PROTEIN_SORTED'], \
-	os.environ['ISOFORM_SORTED']):
-    inFile = open(inFileName, 'r')
-    print inFile
-    if readGAF(inFile) != 0:
-        sys.exit(1)
+    return [r['accid'] for r in db.sql( queryMouseAccIdSQL % (logicalDBKey, id) , 'auto')]
 
-#os.environ['COMPLEX_SORTED']
-#os.environ['RNA_SORTED']
+def queryNonMouseAccId(logicalDBKey, id):
+    #
+    # Queries non-mouse marker of given accession id/logicalDBKey
+    # 	returns marker symbol, organism
+    #
 
-closeFiles()
-sys.exit(0)
+    queryNonMouseAccIdSQL = ''' 
+    	select m.symbol || ',' || o.commonname as symbol
+    	from acc_accession a1, mrk_marker m, mgi_organism o
+    	where a1._logicaldb_key = %s
+    	and a1.accid = '%s'
+    	and a1._object_key = m._marker_key
+    	and m._organism_key != 1
+    	and m._organism_key = o._organism_key
+    	'''
+
+    return [r['symbol'] for r in db.sql( queryNonMouseAccIdSQL % (logicalDBKey, id) , 'auto')]
+
+def convertPropertiesIds(properties, uberonLookup={}):
+    #
+    # Converts properties ids (column 16):
+    #
+    # 	UBERON: -> EMAPA:, uberonLookup
+    # 	ENSEMBL: -> MGI:, queryMouseAccId()
+    # 	NCBI_Gene: -> MGI:, queryMouseAccId()
+    # 
+    #   Returns converted properties
+    #   Returns list of error messages []
+    #
+
+    ensemblPrefix = 'ENSEMBL:'
+    ncbiPrefix = 'NCBI_Gene:'
+    uberonPrefix = 'UBERON:'
+    ensembl_ldb = 60
+    ncbi_ldb = 55
+    
+    errors = []
+
+    pStart = properties.split('(')
+    for p in pStart:
+
+	pEnd = p.split(')')
+
+	for e in pEnd:
+
+	    # found uberon id
+	    if e.find(uberonPrefix) >= 0:
+		if e in uberonLookup:
+		    u = uberonLookup[e]
+		    # found > 1 emapa
+		    if len(u) > 1:
+			errors.append(UBERON_MAPPING_MULTIPLES_ERROR % (e, str(u)))
+		    # replace UBERON id with EMAPA id
+		    else:
+			properties = properties.replace(e, u[0])
+		# did not find uberon id
+		else:
+		    errors.append(UBERON_MAPPING_MISSING_ERROR % (e))
+
+	    # found ensembl id
+	    if e.find(ensemblPrefix) >= 0:
+		id = e.replace(ensemblPrefix, '')
+		mgiIds = queryMouseAccId(ensembl_ldb, id)
+		if len(mgiIds) != 1:
+		    errors.append(PROPERTIES_ACCID_INVALID_ERROR % (e))
+		else:
+		    properties = properties.replace(e, mgiIds[0])
+
+	    # found ncbi id
+	    elif e.find(ncbiPrefix) >= 0:
+		id = e.replace(ncbiPrefix, '')
+		mgiIds = queryMouseAccId(ncbi_ldb, id)
+		if len(mgiIds) != 1:
+		    symbol = queryNonMouseAccId(ncbi_ldb, id)
+		    if len(symbol) > 0:
+		        e = e + ',' + symbol[0]
+		    errors.append(PROPERTIES_ACCID_INVALID_ERROR % (e))
+		else:
+		    properties = properties.replace(e, mgiIds[0])
+
+	    # else, do nothing
+
+    return properties, errors
+
+if __name__ == '__main__':
+
+        db.useOneConnection(1)
+        db.sql('start transaction', None)
+
+        # do main processing
+        main()
+
+        db.commit()
+	db.useOneConnection(0) 
+	
