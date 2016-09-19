@@ -6,7 +6,8 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload | tee -a $LOG 
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload | tee -a $LOG || exit 1
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload | tee -a $LOG || exit 1
 
-TAG: goload-6-0-6-2
+TAG: goload-6-0-6-4
+TAG: goload-6-0-6-3
 TAG: goload-6-0-6-2
 TAG: goload-6-0-6-1
 DATE: 09/12/2016
