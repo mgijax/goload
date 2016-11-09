@@ -326,8 +326,8 @@ if __name__ == '__main__':
     print 'rows:', len(ecoLookupByEvidence)
 
     for e in ecoLookupByEco:
-        print e, ecoLookupByEco[e]
+        print e, ecoLookupByEco[e][0]
 
     for e in ecoLookupByEvidence:
-        print e, ecoLookupByEvidence[e]
+        print ecoLookupByEvidence[e], e
 
