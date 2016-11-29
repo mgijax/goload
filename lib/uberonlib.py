@@ -68,18 +68,25 @@ def processUberon():
     for r in results:
         primaryEmapa.append(r['accID'])
 
+    idValue = 'id: '
     uberonIdValue = 'id: UBERON:'
     emapaXrefValue = 'xref: EMAPA:'
+    foundUberon = 0
 
     for line in uberonFile.readlines():
 
         # find [Term]
         # find xref: EMAPA:
 
-        if line[:11] == uberonIdValue:
-            uberonId = line[4:-1]
+        if line == '[Term]':
+	    foundUberon = 0
 
-        elif line[:12] == emapaXrefValue:
+        elif line[:11] == uberonIdValue:
+            uberonId = line[4:-1]
+	    foundUberon = 1
+
+        elif foundUberon and line[:12] == emapaXrefValue:
+
             emapaId = line[6:-1]
 
 	    # only convert to primary EMAPA
