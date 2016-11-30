@@ -131,6 +131,7 @@ import reportlib
 goloadpath = os.environ['GOLOAD'] + '/lib'
 sys.path.insert(0, goloadpath)
 import ecolib
+import uberonlib
 
 #db.setTrace()
 db.setAutoTranslate(False)
@@ -238,37 +239,6 @@ def initialize():
     annotFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
     uberonTextFile = reportlib.init('uberon', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.txt')
     propertiesErrorFile = reportlib.init('properties', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-
-    #
-    # read/store UBERON-to-EMAPA info
-    #
-
-    print 'reading uberon/emapa obo file...'
-
-    uberonIdValue = 'id: UBERON:'
-    emapaXrefValue = 'xref: EMAPA:'
-
-    uberonFileName = os.environ['UBERONFILE']
-    uberonFile = open(uberonFileName, 'r')
-
-    uberonLookup = {}
-
-    for line in uberonFile.readlines():
-        # find [Term]
-        # find xref: EMAPA:
-        if line[:11] == uberonIdValue:
-            uberonId = line[4:-1]
-        elif line[:12] == emapaXrefValue:
-            emapaId = line[6:-1]
-            if uberonId not in uberonLookup:
-                uberonLookup[uberonId] = []
-            uberonLookup[uberonId].append(emapaId)
-        else:
-            continue
-
-    uberonFile.close()
-    for u in uberonLookup:
-        uberonTextFile.write(u + '\n')
 
     #
     # Mouse Markers
@@ -431,7 +401,16 @@ def initialize():
         value = r['jnumID']
         pubmed[key] = value
 
-    # use goload/ecolib to lookup eco using evidence
+    #
+    # use goload/lib/uberonlib to lookup uberon
+    #
+    print 'reading uberon/emapa obo file...'
+    uberonLookup = uberonlib.processUberon()
+    for u in uberonLookup:
+        uberonTextFile.write(u + '\n')
+
+    # use goload/lib/ecolib to lookup eco using evidence
+    print 'reading eco obo file...'
     ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
     return 0
@@ -595,7 +574,7 @@ def readGAF(inFile):
 	    else:
 	        gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
 
-	    print evidence, gpadEvidence
+	    #print evidence, gpadEvidence
             gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
 	        taxID, modDate, assignedBy))
 
@@ -800,7 +779,7 @@ if initialize() != 0:
 for inFileName in (os.environ['PROTEIN_SORTED'], \
 	os.environ['ISOFORM_SORTED']):
     inFile = open(inFileName, 'r')
-    print inFile
+    #print inFile
     if readGAF(inFile) != 0:
         sys.exit(1)
 

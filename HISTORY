@@ -6,6 +6,12 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload | tee -a $LOG 
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload | tee -a $LOG || exit 1
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload | tee -a $LOG || exit 1
 
+TAG: goload-6-0-6-7
+DATE: 11/30/2016
+STAFF: lec 
+CHANGES:
+goamouse - use lib/ubersonlib.py
+
 TAG: goload-6-0-6-6
 DATE: 11/29/2016
 STAFF: lec 
