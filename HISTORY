@@ -6,6 +6,12 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload | tee -a $LOG 
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload | tee -a $LOG || exit 1
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload | tee -a $LOG || exit 1
 
+TAG: goload-6-0-6-8
+DATE: 12/08/2016
+STAFF: lec 
+CHANGES:
+TR12474/gocfp/gocfp.config.default change
+
 TAG: goload-6-0-6-7
 DATE: 11/30/2016
 STAFF: lec 
