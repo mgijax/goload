@@ -139,7 +139,7 @@ and not exists (select 1 from MGI_Reference_Assoc b
 refcount = 0
 markercount = 0
 
-annotFile = open(os.environ['OUTPUTDIR'] + '/goamouse.annot.post', 'r')
+annotFile = open(os.environ['ANNOTPOSTFILE'], 'r')
 for line in annotFile.readlines():
 
     line = line[:-1]
