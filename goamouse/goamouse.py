@@ -225,20 +225,48 @@ def initialize():
     #
 
     goaPrefix = os.environ['DELETEUSER']
-    unresolvedAErrorFile = reportlib.init('unresolvedA', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    unresolvedBErrorFile = reportlib.init('unresolvedB', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    unresolvedCErrorFile = reportlib.init('unresolvedC', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    mgiErrorFile = reportlib.init('mgi', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    nopubmedFile = reportlib.init('nopubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    pubmedAnnotFile = reportlib.init('pubmedannot', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    pubmedErrorFile = reportlib.init('pubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    pubmedeviErrorFile = reportlib.init('pubmedevi', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    dupErrorFile = reportlib.init('duplicates', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
-    gafFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gaf')
-    gpadFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
-    annotFile = reportlib.init('goamouse', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
-    uberonTextFile = reportlib.init('uberon', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.txt')
-    propertiesErrorFile = reportlib.init('properties', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    unresolvedAErrorFile = reportlib.init('unresolvedA', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    unresolvedBErrorFile = reportlib.init('unresolvedB', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    unresolvedCErrorFile = reportlib.init('unresolvedC', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    mgiErrorFile = reportlib.init('mgi', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    nopubmedFile = reportlib.init('nopubmed', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    pubmedAnnotFile = reportlib.init('pubmedannot', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    pubmedErrorFile = reportlib.init('pubmed', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    pubmedeviErrorFile = reportlib.init('pubmedevi', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    dupErrorFile = reportlib.init('duplicates', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    gafFile = reportlib.init('goamouse', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gaf')
+
+    gpadFile = reportlib.init('goamouse', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
+
+    annotFile = reportlib.init('goamouse', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
+
+    uberonTextFile = reportlib.init('uberon', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.txt')
+
+    propertiesErrorFile = reportlib.init('properties', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     #
     # Mouse Markers
@@ -389,7 +417,7 @@ def initialize():
 	from ACC_Accession a1, ACC_Accession a2 
 	where a1._MGIType_key = 1 
 	and a1._LogicalDB_key = 1 
-	and a1.prefixPart = \'J:\' 
+	and a1.prefixPart = 'J:' 
 	and a1.preferred = 1 
 	and a1._Object_key = a2._Object_key 
 	and a2._MGIType_key = 1 

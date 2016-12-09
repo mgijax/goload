@@ -149,6 +149,23 @@ STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse"
 
 #
+# generate post-processing file
+#
+echo "Generating post-processing file" >> ${LOG}
+rm -rf ${OUTPUTDIR}/goamouse.annot.post
+cut -f2,3,7 ${OUTPUTDIR}/goamouse.annot | sort | uniq > ${OUTPUTDIR}/goamouse.annot.post
+STAT=$?
+checkStatus ${STAT} "${OUTPUTDIR}/goamouse.annot.post"
+
+#
+# process ${OUTPUTDIR}/goamouse.annot.post
+#
+echo "Processing post-process file" >> ${LOG}
+${GOLOAD}/goamousepost >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "${GOLOAD}/goamouse/goamousepost.py"
+
+#
 # run inferred-from cache
 #
 echo "Running GOA/Mouse inferred-from cache load" >> ${LOG}
