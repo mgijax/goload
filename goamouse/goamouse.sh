@@ -161,7 +161,7 @@ checkStatus ${STAT} "${OUTPUTDIR}/goamouse.annot.post"
 # process ${OUTPUTDIR}/goamouse.annot.post
 #
 echo "Processing post-process file" >> ${LOG}
-${GOLOAD}/goamousepost.py >> ${LOG}
+${GOLOAD}/goamouse/goamousepost.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goamouse/goamousepost.py"
 
