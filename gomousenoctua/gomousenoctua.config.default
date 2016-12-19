@@ -49,7 +49,7 @@ INFILE_NAME_ERROR=${INPUTDIR}/gomousenoctua.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
 export INFILE_NAME_GZ INFILE_NAME_GPAD INFILE_NAME INFILE_NAME_ERROR
 
-ECOFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/eco/eco.obo
+ECOFILE=${DATADOWNLOADS}/raw.githubusercontent.com/evidenceontology/evidenceontology/master/gaf-eco-mapping-derived.txt
 export ECOFILE
 
 UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
