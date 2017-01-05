@@ -23,9 +23,6 @@ import sys
 import os
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 # uberon formatted file
 uberonFileName = None
 # uberon file pointer

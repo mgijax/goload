@@ -1,10 +1,16 @@
 dependencies:
-${MIRROR_WGET}/download_package ftp.pir.georgetown.edu.proisoform | tee -a $LOG || exit 1
-${MIRROR_WGET}/download_package pir.georgetown.edu.proisoform | tee -a $LOG || exit 1
-${MIRROR_WGET}/download_package build.berkeleybop.org.goload | tee -a $LOG || exit 1
-${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload | tee -a $LOG || exit 1
-${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload | tee -a $LOG || exit 1
-${MIRROR_WGET}/download_package ftp.geneontology.org.goload | tee -a $LOG || exit 1
+${MIRROR_WGET}/download_package ftp.pir.georgetown.edu.proisoform 
+${MIRROR_WGET}/download_package pir.georgetown.edu.proisoform 
+${MIRROR_WGET}/download_package build.berkeleybop.org.goload 
+${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload 
+${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
+${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
+
+TAG: goload-6-0-7-1
+DATE: 01/05/2017
+STAFF: lec 
+CHANGES:
+1) TR12069/obsolete db.setAutoTranslate()
 
 TAG: goload-6-0-6-11
 DATE: 12/19/2016

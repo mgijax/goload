@@ -69,9 +69,6 @@ import os
 import string
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 # GAF file from the dataloads directory
 inFileName = None
 # GAF file pointer

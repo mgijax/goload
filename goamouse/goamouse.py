@@ -134,8 +134,6 @@ import ecolib
 import uberonlib
 
 #db.setTrace()
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
 
 #### Constants ###
 UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"

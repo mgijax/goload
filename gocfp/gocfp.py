@@ -73,9 +73,6 @@ import os
 import string
 import db
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 # GOC GAF file from the dataloads directory
 inFileName = None
 # GOC GAF file pointer

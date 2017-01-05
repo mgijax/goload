@@ -61,9 +61,6 @@ sys.path.insert(0, goloadpath)
 import ecolib
 import uberonlib
 
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
-
 # GPAD file from the dataloads directory
 inFileName = None
 # GPAD file pointer
