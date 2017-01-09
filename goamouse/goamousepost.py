@@ -32,8 +32,6 @@ import db
 import reportlib
 
 #db.setTrace()
-db.setAutoTranslate(False)
-db.setAutoTranslateBE(False)
 
 #
 # in case we ever need to delete the GOA_ associations...
