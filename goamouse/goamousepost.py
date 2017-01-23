@@ -147,7 +147,10 @@ for line in annotFile.readlines():
     refID = tokens[1]
     assignedBy = tokens[2]
     
-    assignedByKey = assignedByLookup[assignedBy][0]
+    if assignedBy in assignedByLookup:
+        assignedByKey = assignedByLookup[assignedBy][0]
+    else:
+        continue
 
     #  if this J: does not have the "selected" bit on, then add it
     if refID in refNotExists:
