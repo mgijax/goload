@@ -54,3 +54,7 @@ ${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 echo 'running go_isoforms_display_load.csh' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG} || exit 1
 
+echo 'running BIB_updateWFStatusGO' | tee -a ${GOLOG}
+cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a ${GOLOG}
+select BIB_updateWFStatusGO();
+EOSQL
