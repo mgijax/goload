@@ -91,6 +91,10 @@
 #
 # History:
 #
+# sc    09/29/2017
+#	- TR12646 if a UniProt id is associated with more than one marker in MGI, 
+#	    the annotation should not be loaded
+#
 # lec	07/27/2016
 #	- TR12378/isoforms are now in their own file : see config/ISOFORM
 #
@@ -155,6 +159,7 @@ unresolvedAErrorFile = None
 unresolvedBErrorFile = None
 unresolvedCErrorFile = None
 mgiErrorFile = None
+multiUniprotErrorFile = None
 nopubmedFile = None
 pubmedAnnotFile = None
 pubmedErrorFile = None
@@ -168,6 +173,7 @@ propertiesErrorFile = None
 
 assoc = {}	# dictionary of GOA ID:Marker MGI ID
 marker = {}	# dictionary of MGI Marker ID:Marker data
+mrkMultiUniprot = []	# list of markers with multiple uniprot IDs
 mgiannot = {}	# dictionary of existing annotations:  Marker key, GO ID, Evidence Code, Pub Med ID
 newannot = {}	# dictionary of new annotations: Marker key, GO ID, Evidence Code, Pub Med ID
 goids = {}      # dictionary of secondary GO ID:primary GO ID
@@ -194,6 +200,7 @@ def initialize():
     global unresolvedBErrorFile 
     global unresolvedCErrorFile 
     global mgiErrorFile 
+    global multiUniprotErrorFile
     global nopubmedFile 
     global pubmedAnnotFile 
     global pubmedErrorFile 
@@ -207,6 +214,7 @@ def initialize():
 
     global assoc
     global marker
+    global mrkMultiUniprot
     global mgiannot
     global newannot
     global goids
@@ -235,6 +243,9 @@ def initialize():
 
     mgiErrorFile = reportlib.init('mgi', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    multiUniprotErrorFile = reportlib.init('multiUniprot', \
+	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     nopubmedFile = reportlib.init('nopubmed', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -320,7 +331,7 @@ def initialize():
     # VEGA (85)
     #
 
-    print 'reading mouse markers annotatined to SwissProt/TrEMBL/RefSeq, etc....'
+    print 'reading mouse markers annotated to SwissProt/TrEMBL/RefSeq, etc....'
     results = db.sql('''
 	select m._Marker_key, m.mgiID, a.accID as goaID 
 	from markers m, ACC_Accession a 
@@ -335,6 +346,26 @@ def initialize():
 	    assoc[key] = []
         assoc[key].append(value)
 
+    # mouse markers associated with > 1 uniprot id (swiss-prot, trembl)
+    db.sql('''select  accid as uniprotID
+	into temporary table multiMarker
+	from Acc_accession
+	where _LogicalDB_key in (13, 41)
+	and _MGItype_key = 2
+	group by accid
+	having count(*) > 1''', None)
+    db.sql('''create index idx1 on multiMarker(uniprotID)''', None)
+
+    results = db.sql('''select m.symbol, a.*
+	from ACC_Accession a, multiMarker mm, MRK_Marker m
+	where a.accid = mm.uniprotID
+	and a._MGIType_key = 2
+	and a._LOgicalDB_key in (13, 41)
+	and a._Object_key = m._Marker_key
+	and m._Organism_key = 1
+	order by a.accid''', 'auto')
+    for r in results:
+	mrkMultiUniprot.append(r['symbol'])
     #
     # existing GO annotations that have pub med ids
     # to detect duplicate annotations
@@ -537,7 +568,10 @@ def readGAF(inFile):
 
         m = marker[mgiID]
         markerKey = m['_Marker_key']
-
+        
+	if m['symbol'] in  mrkMultiUniprot:
+	    multiUniprotErrorFile.write(line)
+	    continue
         # translate secondary GO ids to primary
         if goID in goids:
 	    goID = goids[goID]
@@ -585,7 +619,7 @@ def readGAF(inFile):
         if not loadMGI:
 
 	    # for gafFile
-
+	    print 'symbol to gafFile: %s' % m['symbol']
             gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
 	        dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
 
@@ -676,6 +710,7 @@ def closeFiles():
     reportlib.finish_nonps(unresolvedBErrorFile)
     reportlib.finish_nonps(unresolvedCErrorFile)
     reportlib.finish_nonps(mgiErrorFile)
+    reportlib.finish_nonps(multiUniprotErrorFile)
     reportlib.finish_nonps(nopubmedFile)
     reportlib.finish_nonps(pubmedAnnotFile)
     reportlib.finish_nonps(pubmedErrorFile)
@@ -805,7 +840,6 @@ if initialize() != 0:
 for inFileName in (os.environ['PROTEIN_SORTED'], \
 	os.environ['ISOFORM_SORTED']):
     inFile = open(inFileName, 'r')
-    #print inFile
     if readGAF(inFile) != 0:
         sys.exit(1)
 
