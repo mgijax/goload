@@ -159,7 +159,7 @@ unresolvedAErrorFile = None
 unresolvedBErrorFile = None
 unresolvedCErrorFile = None
 mgiErrorFile = None
-multiUniprotErrorFile = None
+multiGeneErrorFile = None
 nopubmedFile = None
 pubmedAnnotFile = None
 pubmedErrorFile = None
@@ -173,7 +173,7 @@ propertiesErrorFile = None
 
 assoc = {}	# dictionary of GOA ID:Marker MGI ID
 marker = {}	# dictionary of MGI Marker ID:Marker data
-mrkMultiUniprot = []	# list of markers with multiple uniprot IDs
+uniprotMultiGene = []	# list of markers with N(genes):1(uniprot)
 mgiannot = {}	# dictionary of existing annotations:  Marker key, GO ID, Evidence Code, Pub Med ID
 newannot = {}	# dictionary of new annotations: Marker key, GO ID, Evidence Code, Pub Med ID
 goids = {}      # dictionary of secondary GO ID:primary GO ID
@@ -200,7 +200,7 @@ def initialize():
     global unresolvedBErrorFile 
     global unresolvedCErrorFile 
     global mgiErrorFile 
-    global multiUniprotErrorFile
+    global multiGeneErrorFile
     global nopubmedFile 
     global pubmedAnnotFile 
     global pubmedErrorFile 
@@ -214,7 +214,7 @@ def initialize():
 
     global assoc
     global marker
-    global mrkMultiUniprot
+    global uniprotMultiGene
     global mgiannot
     global newannot
     global goids
@@ -244,7 +244,7 @@ def initialize():
     mgiErrorFile = reportlib.init('mgi', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
-    multiUniprotErrorFile = reportlib.init('multiUniprot', \
+    multiGeneErrorFile = reportlib.init('multiGene', \
 	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     nopubmedFile = reportlib.init('nopubmed', \
@@ -346,18 +346,18 @@ def initialize():
 	    assoc[key] = []
         assoc[key].append(value)
 
-    # mouse markers associated with > 1 uniprot id (swiss-prot, trembl)
+    # uniprot IDs (swiss-prot, trembl) associated with > 1 mouse marker N(mgi):1(uniprot)
     db.sql('''select  accid as uniprotID
-	into temporary table multiMarker
+	into temporary table multiGene
 	from Acc_accession
 	where _LogicalDB_key in (13, 41)
 	and _MGItype_key = 2
 	group by accid
 	having count(*) > 1''', None)
-    db.sql('''create index idx1 on multiMarker(uniprotID)''', None)
+    db.sql('''create index idx1 on multiGene(uniprotID)''', None)
 
     results = db.sql('''select m.symbol, a.*
-	from ACC_Accession a, multiMarker mm, MRK_Marker m
+	from ACC_Accession a, multiGene mm, MRK_Marker m
 	where a.accid = mm.uniprotID
 	and a._MGIType_key = 2
 	and a._LOgicalDB_key in (13, 41)
@@ -365,7 +365,7 @@ def initialize():
 	and m._Organism_key = 1
 	order by a.accid''', 'auto')
     for r in results:
-	mrkMultiUniprot.append(r['symbol'])
+	uniprotMultiGene.append(r['symbol'])
     #
     # existing GO annotations that have pub med ids
     # to detect duplicate annotations
@@ -558,7 +558,7 @@ def readGAF(inFile):
 	    unresolvedBErrorFile.write(line)
 	    continue
         else:
-            # error if GOA id maps to more than one MGI Marker
+            # error if GOA id maps to more than one MGI Gene
     
             if len(assoc[goaIDstrip]) > 1:
 	        unresolvedAErrorFile.write(line)
@@ -568,9 +568,10 @@ def readGAF(inFile):
 
         m = marker[mgiID]
         markerKey = m['_Marker_key']
-        
-	if m['symbol'] in  mrkMultiUniprot:
-	    multiUniprotErrorFile.write(line)
+
+        # error if  uniprot ID resolves to >1 MGI gene
+	if m['symbol'] in  uniprotMultiGene:
+	    multiGeneErrorFile.write(line)
 	    continue
         # translate secondary GO ids to primary
         if goID in goids:
@@ -710,7 +711,7 @@ def closeFiles():
     reportlib.finish_nonps(unresolvedBErrorFile)
     reportlib.finish_nonps(unresolvedCErrorFile)
     reportlib.finish_nonps(mgiErrorFile)
-    reportlib.finish_nonps(multiUniprotErrorFile)
+    reportlib.finish_nonps(multiGeneErrorFile)
     reportlib.finish_nonps(nopubmedFile)
     reportlib.finish_nonps(pubmedAnnotFile)
     reportlib.finish_nonps(pubmedErrorFile)
