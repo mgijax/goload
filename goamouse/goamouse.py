@@ -38,10 +38,10 @@
 #			file of GOA annotations that originated from MGI
 #
 #		unresolvedA.error
-#			file of GOA annotations where UniProtID resolves to more than one MGI Marker
+#			file of GOA annotations where GOA ID resolves to more than one MGI Marker
 #	
 #		unresolvedB.error
-#			file of GOA annotations where UniProtID don't resolve to a MGI Marker
+#			file of GOA annotations where GOA ID doesn't resolve to a MGI Marker
 #
 #		unresolvedC.error
 #			file of GOA annotations where GO id is a root id (GO:0003674, GO:0008150, GO:0005575)
