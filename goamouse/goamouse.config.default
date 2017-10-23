@@ -83,9 +83,6 @@ UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
 UBERONTEXTFILE=${OUTPUTDIR}/uberon.txt
 export UBERONFILE UBERONTEXTFILE
 
-ANNOTPOSTFILE=${OUTPUTDIR}/goamouse.annot.post
-export ANNOTPOSTFILE
-
 # Complete path name of the log files
 LOG_FILE=${LOGDIR}/goamouse.log
 LOG_PROC=${LOGDIR}/goamouse.proc.log
