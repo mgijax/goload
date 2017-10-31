@@ -6,8 +6,8 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 
-TAG: goload-6-0-11-?
-DATE: 10/25/2017
+TAG: goload-6-0-11-3
+DATE: 10/31/2017
 STAFF: lec
 CHANGES: 
 TR12664/goamousenoctua/noctua-model-id
