@@ -91,6 +91,9 @@
 #
 # History:
 #
+# lec	11/01/2017
+#	- TR12602/UniProtDB/column 17 translated to PR via mgi.gpi file
+#
 # sc    09/29/2017
 #	- TR12646 if a UniProt id is associated with more than one marker in MGI, 
 #	    the annotation should not be loaded
@@ -192,6 +195,14 @@ ecoLookupByEco = {}
 ecoLookupByEvidence = {} 
 
 #
+# use gpi file to build gpiLookup of UniProtKB:xxxx -> PR:xxxx relationship
+#
+gpiSet = ['PR']
+gpiFileName = None
+gpiFile = None
+gpiLookup = {}
+
+#
 # Initialize input/output files
 #
 def initialize():
@@ -226,11 +237,15 @@ def initialize():
     global uberonLookup
     global ecoLookupByEco, ecoLookupByEvidence
 
+    global gpiFileName, gpiFile, gpiLookup
+
     #
     # open files
     #
 
     goaPrefix = os.environ['DELETEUSER']
+    gpiFileName = os.environ['GPIFILE']
+    gpiFile = open(gpiFileName, 'r')
 
     unresolvedAErrorFile = reportlib.init('unresolvedA', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -470,6 +485,22 @@ def initialize():
     print 'reading eco obo file...'
     ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
+
+    #
+    # read/store UniProtDB-to-PR
+    #
+    print 'reading PR -> UniProtKB translation using gpi file...'
+    for line in gpiFile.readlines():
+        if line[:1] == '!':
+            continue
+        tokens = line[:-1].split('\t')
+        if tokens[0] in gpiSet:
+            key = tokens[8]
+            value = tokens[0] + ':' + tokens[1]
+            if key not in gpiLookup:
+                gpiLookup[key] = []
+            gpiLookup[key].append(value)
+
     return 0
 
 #
@@ -620,7 +651,7 @@ def readGAF(inFile):
         if not loadMGI:
 
 	    # for gafFile
-	    print 'symbol to gafFile: %s' % m['symbol']
+	    #print 'symbol to gafFile: %s' % m['symbol']
             gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
 	        dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
 
@@ -643,9 +674,15 @@ def readGAF(inFile):
 
         #
         # collect all annotations, collapsing the same annotation of different inferredFrom into one record
+	#
+
+	#
+	# if isoformValue == UniProtKB in gpiLookup, then set isoformValue = PR
         #
 
         if len(isoformValue) > 0:
+	    if isoformValue in gpiLookup:
+	        isoformValue = gpiLookup[isoformValue][0]
 	    mgiproperties = 'gene product&=&' + isoformValue
         else:
 	    mgiproperties = ''
