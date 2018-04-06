@@ -1,10 +1,19 @@
 dependencies:
-${MIRROR_WGET}/download_package ftp.pir.georgetown.edu.proisoform 
 ${MIRROR_WGET}/download_package pir.georgetown.edu.proisoform 
 ${MIRROR_WGET}/download_package build.berkeleybop.org.goload 
 ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload 
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
+
+TAG: goload-6-0-12-1
+DATE: 04/06/2018
+STAFF: lec
+CHANGES: 
+TR12834/new GO qualifiers & pr.gpad file
+includes changes to:
+mirror_wget/build.berkeleybop.org.gpad.goload
+reports_db/daily/GO_gene_association.py
+lib_py_report/go_annot_extensions.py/add 'model-state' to excluded set
 
 TAG: goload-6-0-11-4
 DATE: 03/20/2018

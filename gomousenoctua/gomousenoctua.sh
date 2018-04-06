@@ -100,8 +100,8 @@ preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
-
-cp ${INFILE_NAME_GZ} ${INPUTDIR}
+cp ${MGIINFILE_NAME_GZ} ${INPUTDIR}
+cp ${PRINFILE_NAME_GZ} ${INPUTDIR}
 
 # temporary fix
 # TR12664/rename lego-model-id to noctua-model-id 
