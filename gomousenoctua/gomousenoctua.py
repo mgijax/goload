@@ -117,8 +117,8 @@ goqualifiersLookup = [
 'acts_upstream_of_or_within,_positive_effect',
 'acts_upstream_of_or_within,_negative_effect',
 'acts_upstream_of',
-'acts_upstream_of,_positive_effect',
-'acts_upstream_of,_negative_effect',
+'acts_upstream_of__positive_effect',
+'acts_upstream_of__negative_effect',
 'involved_in'
 ]
 
