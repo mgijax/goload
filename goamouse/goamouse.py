@@ -343,7 +343,6 @@ def initialize():
     # TrEMBL (41)
     # RefSeq (27)
     # ENSEMBL (60)
-    # VEGA (85)
     #
 
     print 'reading mouse markers annotated to SwissProt/TrEMBL/RefSeq, etc....'
@@ -351,7 +350,7 @@ def initialize():
 	select m._Marker_key, m.mgiID, a.accID as goaID 
 	from markers m, ACC_Accession a 
 	where m._Marker_key = a._Object_key 
-	and a._LogicalDB_key in (13, 41, 27, 60, 85) 
+	and a._LogicalDB_key in (13, 41, 27, 60) 
 	and a._MGIType_key = 2 
 	''', 'auto')
     for r in results:

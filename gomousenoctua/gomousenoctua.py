@@ -90,7 +90,7 @@ mgiRefLookup = {}
 #
 # use gpi file to build gpiLookup of object:MGI:xxxx relationship
 #
-gpiSet = ['PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA']
+gpiSet = ['PR', 'EMBL', 'ENSEMBL', 'RefSeq']
 gpiFileName = None
 gpiFile = None
 gpiLookup = {}
