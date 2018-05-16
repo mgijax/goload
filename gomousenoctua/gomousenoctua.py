@@ -22,7 +22,7 @@
 #               field 7:  Inferred From  (With)
 #		field 8 : Interacting taxon ID
 #		field 9 : Date (yyymmdd)
-#		field 10: Assigned By (GO_Noctua, MGI, other)
+#		field 10: Assigned By (NOCTUA_, MGI, other)
 #		field 11: Annotation Extension
 #		field 12: Annotation Properties
 #
@@ -49,10 +49,10 @@
 # History:
 #
 # lec	03/28/2018
-#	TR12834/GO_Noctua changes
+#	TR12834/Noctua changes
 #
 # lec   06/09/2016
-#       TR12345/load GO_Noctua GPAD file
+#       TR12345/load Noctua GPAD file
 #
 '''
 
@@ -242,7 +242,7 @@ def readGPAD(gpadInFile):
     # field 7:  Inferred From  (With)
     # field 8 : Interacting taxon ID
     # field 9 : Date (yyymmdd)
-    # field 10: Assigned By (GO_Noctua)
+    # field 10: Assigned By (NOCTUA_)
     # field 11: Annotation Extension
     # field 12: Annotation Properties
 
@@ -400,9 +400,6 @@ def readGPAD(gpadInFile):
 	# write data to the annotation file
 	# note that the annotation load will qc duplicate annotations itself
 	# (dbobjectID, goID, goEvidenceCode, jnumID)
-
-	if createdBy in ('GO_Noctua'):
-	    createdBy = 'MGI'
 
 	# attached prefix
 	createdBy = 'NOCTUA_' + createdBy
