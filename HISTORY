@@ -11,6 +11,11 @@ STAFF: lec
 CHANGES: TR12734/GeneFeVah
 remove VEGA
 
+TAG: goload-6-0-12-4
+DATE: 05/17/2018
+STAFF: lec
+CHANGES TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
+
 TAG: goload-6-0-12-3
 TAG: goload-6-0-12-2
 TAG: goload-6-0-12-1

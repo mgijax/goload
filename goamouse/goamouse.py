@@ -91,6 +91,10 @@
 #
 # History:
 #
+#
+# lec   05/17/2018
+#       - TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
+#
 # lec	11/01/2017
 #	- TR12602/UniProtDB/column 17 translated to PR via mgi.gpi file
 #
@@ -713,6 +717,31 @@ def readGAF(inFile):
 	    mgiproperties = mgiproperties + '&==&' + properties
         else:
     	    mgiproperties = properties
+
+	#
+	# if mgiassignedBy does not exist in MGI_User, then add it
+	# add GOA_ and NOCTUA_ at the same time
+	#
+	results = db.sql('''select * from MGI_User where login = '%s' ''' % (mgiassignedBy), 'auto')
+	if len(results) == 0:
+	    addSQL = '''
+	    	insert into MGI_User values (
+		(select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+		)''' % (mgiassignedBy, mgiassignedBy)
+	    print 'adding new MGI_User...'
+	    print addSQL
+	    db.sql(addSQL, 'auto')
+	    db.commit()
+	    addNoctua = mgiassignedBy
+	    addNoctua = addNoctua.replace('GOA', 'NOCTUA')
+	    addSQL = '''
+	    	insert into MGI_User values (
+		(select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+		)''' % (addNoctua, addNoctua)
+	    print 'adding new MGI_User...'
+	    print addSQL
+	    db.sql(addSQL, 'auto')
+	    db.commit()
 
         n = (goID, mgiID, jnumID, evidence, qualifierValue, mgiassignedBy, modDate, mgiproperties)
 
