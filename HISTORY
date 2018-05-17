@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 
+TAG: goload-6-0-12-4
+DATE: 05/17/2018
+STAFF: lec
+CHANGES TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
+
 TAG: goload-6-0-12-3
 TAG: goload-6-0-12-2
 TAG: goload-6-0-12-1
