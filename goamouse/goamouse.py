@@ -206,6 +206,9 @@ gpiFileName = None
 gpiFile = None
 gpiLookup = {}
 
+# user lookup
+userLookup = []
+
 #
 # Initialize input/output files
 #
@@ -242,6 +245,8 @@ def initialize():
     global ecoLookupByEco, ecoLookupByEvidence
 
     global gpiFileName, gpiFile, gpiLookup
+
+    global userLookup
 
     #
     # open files
@@ -504,12 +509,21 @@ def initialize():
                 gpiLookup[key] = []
             gpiLookup[key].append(value)
 
+    #
+    # read/store GOA_, NOCTUA_ MGI_User
+    #
+    print 'reading MGI_User...'
+    results = db.sql('''select login from MGI_User where login like 'GOA_%' or login like 'NOCTUA_%' ''', 'auto')
+    for r in results:
+        userLookup.append(r['login'])
+
     return 0
 
 #
 # Purpose : Read GAF file and generate Annotation file
 #
 def readGAF(inFile):
+    global userLookup
 
     for line in inFile.readlines():
 
@@ -722,8 +736,7 @@ def readGAF(inFile):
 	# if mgiassignedBy does not exist in MGI_User, then add it
 	# add GOA_ and NOCTUA_ at the same time
 	#
-	results = db.sql('''select * from MGI_User where login = '%s' ''' % (mgiassignedBy), 'auto')
-	if len(results) == 0:
+	if mgiassignedBy not in userLookup:
 	    addSQL = '''
 	    	insert into MGI_User values (
 		(select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
@@ -732,6 +745,7 @@ def readGAF(inFile):
 	    print addSQL
 	    db.sql(addSQL, 'auto')
 	    db.commit()
+	    userLookup.append(mgiassignedBy)
 	    addNoctua = mgiassignedBy
 	    addNoctua = addNoctua.replace('GOA', 'NOCTUA')
 	    addSQL = '''
@@ -742,6 +756,7 @@ def readGAF(inFile):
 	    print addSQL
 	    db.sql(addSQL, 'auto')
 	    db.commit()
+	    userLookup.append(addNoctua)
 
         n = (goID, mgiID, jnumID, evidence, qualifierValue, mgiassignedBy, modDate, mgiproperties)
 
