@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 
+TAG: goload-6-0-12-10
+DATE: 08/07/2018
+STAFF: lec
+CHANGES TR12910/goamouse/ change order of qualfier (col 3)
+
 TAG: goload-6-0-12-9
 TAG: goload-6-0-12-8
 TAG: goload-6-0-12-7
