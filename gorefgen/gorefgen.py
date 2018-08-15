@@ -245,21 +245,19 @@ def readGAF():
 	    qualifier = 'NOT'
 
 	#
-	# per TR12918/load all inferred from
-	#
 	# only interested in: PANTHER:
 	#
-	#allInferredFrom = tokens[7].split('|')
-	#inferredFrom = []
-	#for i in allInferredFrom:
-        #    if i.find('PANTHER:') >= 0:
-        #        inferredFrom.append(i)
+	allInferredFrom = tokens[7].split('|')
+	inferredFrom = []
+	for i in allInferredFrom:
+            if i.find('PANTHER:') >= 0:
+                inferredFrom.append(i)
 
 	# write data to the annotation file
 	# note that the annotation load will qc duplicate annotations itself
 	# (mgiID, goID, evidenceCode, jnumID)
 
-	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(allInferredFrom), qualifier, createdBy, modDate))
+	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(inferredFrom), qualifier, createdBy, modDate))
 
     return 0
 
