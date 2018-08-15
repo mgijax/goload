@@ -676,7 +676,7 @@ def readGAF(inFile):
 
 	    gpadQualifier = dagQualifier[dag]
             if len(qualifierValue) > 0:
-                gpadQualifier = gpadQualifier + '|' + qualifierValue.strip()
+                gpadQualifier = qualifierValue.strip() + '|' + gpadQualifier
 
 	    if evidence in ecoLookupByEvidence:
 	        gpadEvidence = ecoLookupByEvidence[evidence]

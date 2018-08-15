@@ -12,15 +12,23 @@
 #	${JNUMBER}		the J number to use for the annotation load
 #
 # 	The GAF file contains:
-#
-# 		field 1: Database ID (MGI)
-# 		field 2: MGI ID
-#		field 5: GO ID
-#		field 6: MGI:MGI:#### (reference) (ignore)
-#	        field 7: Evidence code (always ISS)
-#	        field 8: With (inferred from)
-#		field 14: Modification Date
-#		field 15: Assigned By
+#       1.  DB                       MGI
+#       2.  DB Object ID             MGI:xxxx
+#       3.  DB Object Symbol 
+#       4.  Qualifier
+#       5.  GO ID                    GO:xxxx
+#       6.  DB:Reference(s)          MGI:MGI:xxxx|PMID:xxxx : PMID:21873635
+#       7.  Evidence Code            3-digit (not ECO:xxxx)
+#       8.  With (or)From            optional
+#       9.  Aspect (GO DAG Abbreviation (F, P, C)) 
+#       10. DB Object Name           optional
+#       11. DB Object Synonym(s)     optional
+#       12. DB Object Type
+#       13. Taxon                    taxon:10090
+#       14. Date                     YYYYMMDD
+#       15. Assigned By
+#       16. Annotation Extension     same as GPAD/col 11
+#       17. Gene Product Form ID     Isorform
 #
 # Outputs:
 #
@@ -32,7 +40,7 @@
 #		field 1: GO ID 		GAF field 5
 #		field 2: MGI ID 	GAF field 2
 #		field 3: J:
-#		field 4: Evidence Code 	GAF field 7 (IC)
+#		field 4: Evidence Code 	GAF field 7
 #		field 5: Inferred From	GAF field 8
 #		field 6: Qualifier 	GAF field 4
 #		field 7: Editor 	GAF field 15
@@ -44,11 +52,8 @@
 #
 #	for each row in the GAF file (INFILE_NAME_GAF):
 #
-#	    skip if qualifier = "NOT"
-#
-#	    field 8 (With/Inferred From) contains:
-#
-#	 	PANTHER ids
+#	    field 6 (DB:Reference(s)) = PMID:21873635
+#	    field 8 (With/Inferred From) contains PANTHER ids
 #
 #	    note that the annotation loader checks for duplciates
 #	    (mgiID, goID, evidence code, jnumID)
@@ -59,6 +64,9 @@
 #       gorefgen.py
 #
 # History:
+#
+# lec	08/13/2018
+#	- TR12918/new PAINT input file
 #
 # lec	01/14/2014
 #	- TR11570/11571/qualifier contains "_" in both input and MGI
@@ -200,85 +208,56 @@ def readGAF():
 
         tokens = string.split(line[:-1],'\t')
 
+	#       1.  DB                       MGI
+	#       2.  DB Object ID             MGI:xxxx
+	#       4.  Qualifier
+	#       5.  GO ID                    GO:xxxx
+	#       6.  DB:Reference(s)          MGI:MGI:xxxx|PMID:xxxx : PMID:21873635
+	#       7.  Evidence Code            3-digit (not ECO:xxxx)
+	#       8.  With (or)From            optional
+	#       14. Date                     YYYYMMDD
+	#       15. Assigned By
 	#
-        # field 1: Database ID (MGI)
-        # field 2: MGI ids
-        # field 4: Qualifier
-        # field 5: GO ID
-        # field 6: MGI:MGI:#### (reference) (ignore)
-        # field 7: Evidence code (always ISS)
-        # field 8: With (inferred from)
-        # field 14: Modification Date
-        # field 15: Assigned By
-        #
 
 	databaseID = tokens[0]
 	mgiID = tokens[1]
-	qualifier = tokens[3]
+	qualifier = tokens[3].lower()
 	goID = tokens[4]
+	dbRef = tokens[5]
 	evidenceCode = tokens[6]
 	modDate = tokens[13]
 	createdBy = tokens[14]
 
-	# inferred-from may contain '|' or ','
-	allInferredFrom = tokens[7].split('\||,')
-
-	#
-	# skip if qualifier = "NOT"
-	#
-
-        if qualifier in ['NOT']:
+        if dbRef not in ['PMID:21873635']:
 	    continue
-
-	#
-	# skip if mgiID is not an MGI id
-	#
-
+	
         if mgiID.find('MGI:') < 0:
 	    continue
 
-	#
-	# skip if mgiID is not of type 'gene'
-	#
-
 	if mgiID not in markerList:
 	    continue
-
-	#
-	# skip if evidenceCode is not valid
-	#
 
 	if evidenceCode not in evidenceCodeList:
 	    print 'Invalid Evidence Code:  ', evidenceCode
 	    continue
 
-	#
-	# only interested in:
-	#
-	#	Panther IDs (PANTHER:PTHR24316_AN0)
-	#
+        if qualifier in ['not']:
+	    qualifier = 'NOT'
 
+	#
+	# only interested in: PANTHER:
+	#
+	allInferredFrom = tokens[7].split('|')
 	inferredFrom = []
 	for i in allInferredFrom:
             if i.find('PANTHER:') >= 0:
-	        # split once more to remove the _A### stuff
-		pthID = i.split('_')
-                inferredFrom.append(pthID[0])
-
-	#
-	# TR10339/new evidence codes added/remove default 'ISS'
-	# convert all evidence codes to ISS
-	# (orignally: IMR, IRD, IAS -> ISS)
-	#if evidenceCode in ('IMR', 'IRD', 'IAS'):
-	#evidenceCode = 'ISS'
-	#
+                inferredFrom.append(i)
 
 	# write data to the annotation file
 	# note that the annotation load will qc duplicate annotations itself
 	# (mgiID, goID, evidenceCode, jnumID)
 
-	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, \
-		   '|'.join(inferredFrom), qualifier, createdBy, modDate))
+	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(inferredFrom), qualifier, createdBy, modDate))
 
     return 0
 
