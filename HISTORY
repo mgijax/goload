@@ -6,6 +6,12 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-13-1
+DATE: 09/04/2018
+STAFF: lec 
+TR12734/GenFeVah merge
+remove VEGA
+
 TAG: goload-6-0-12-12
 TAG: goload-6-0-12-11
 DATE: 08/15/2018
@@ -16,12 +22,6 @@ TAG: goload-6-0-12-10
 DATE: 08/07/2018
 STAFF: lec
 CHANGES TR12910/goamouse/ change order of qualfier (col 3)
-
-TAG: goload-6-0-13-?
-DATE: 05/03/2018
-STAFF: lec
-CHANGES: TR12734/GeneFeVah
-remove VEGA
 
 TAG: goload-6-0-12-9
 TAG: goload-6-0-12-8
