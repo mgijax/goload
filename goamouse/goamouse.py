@@ -168,6 +168,7 @@ unresolvedCErrorFile = None
 mgiErrorFile = None
 multiGeneErrorFile = None
 nopubmedFile = None
+paintFile = None
 pubmedAnnotFile = None
 pubmedErrorFile = None
 pubmedeviErrorFile = None
@@ -220,6 +221,7 @@ def initialize():
     global mgiErrorFile 
     global multiGeneErrorFile
     global nopubmedFile 
+    global paintFile
     global pubmedAnnotFile 
     global pubmedErrorFile 
     global pubmedeviErrorFile 
@@ -272,6 +274,9 @@ def initialize():
 	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     nopubmedFile = reportlib.init('nopubmed', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    paintFile = reportlib.init('paint', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     pubmedAnnotFile = reportlib.init('pubmedannot', \
@@ -581,6 +586,14 @@ def readGAF(inFile):
 	    unresolvedCErrorFile.write(line)
 	    continue
 
+	#
+	# skip if infferredFrom contains "PANTHER"
+	# as these are loaded via gorefgen/PAINT
+	#
+	if inferredFrom.find('PANTHER') >= 0:
+	    paintFile.write(line)
+	    continue;
+
         #
         # translate GOA "Refs" to MGI J: so we can check for duplicates
         #
@@ -793,6 +806,7 @@ def closeFiles():
     reportlib.finish_nonps(mgiErrorFile)
     reportlib.finish_nonps(multiGeneErrorFile)
     reportlib.finish_nonps(nopubmedFile)
+    reportlib.finish_nonps(paintFile)
     reportlib.finish_nonps(pubmedAnnotFile)
     reportlib.finish_nonps(pubmedErrorFile)
     reportlib.finish_nonps(pubmedeviErrorFile)
