@@ -6,6 +6,12 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-13-3
+DATE: 01/28/2019
+STAFF: lec 
+CHANGES:
+TR13011/see mirror_wget/noctua location changed
+
 TAG: goload-6-0-13-2
 DATE: 01/22/2019
 STAFF: lec 
