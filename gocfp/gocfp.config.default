@@ -42,8 +42,8 @@ LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
-INFILE_NAME_GZ=${DATADOWNLOADS}/build.berkeleybop.org/job/gaf-check-mgi/lastSuccessfulBuild/artifact/gene_association.mgi.inf.gaf
-INFILE_NAME_GAF=${INPUTDIR}/gene_association.mgi.inf.gaf
+INFILE_NAME_GZ=${DATADOWNLOADS}/snapshot.geneontology.org/products/annotations/mgi-prediction.gaf
+INFILE_NAME_GAF=${INPUTDIR}/mgi-prediction.gaf
 INFILE_NAME=${INPUTDIR}/gocfp.annot
 INFILE_NAME_ERROR=${INPUTDIR}/gocfp.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
