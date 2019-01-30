@@ -6,6 +6,7 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-13-7
 TAG: goload-6-0-13-6
 DATE: 01/30/2019
 STAFF: lec 
