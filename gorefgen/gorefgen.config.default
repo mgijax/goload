@@ -61,7 +61,7 @@ export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
 
 # The name of the job stream for the load
 JOBSTREAM=gorefgenload
-JNUMBER="J:161428"
+JNUMBER="J:265628"
 export JOBSTREAM JNUMBER
 
 ###########################################################################

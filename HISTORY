@@ -6,6 +6,13 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-13-9
+DATE: 02/05/2019
+STAFF: lec 
+CHANGES:
+TR13035/gorefgen/gorefgen.config.default
+changed from J:161428 to J:265638
+
 TAG: goload-6-0-13-8
 DATE: 01/30/2019
 STAFF: lec 
