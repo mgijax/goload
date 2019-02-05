@@ -11,7 +11,7 @@ setenv ANNOTMODE                new
 #setenv ANNOTMODE                preview
 setenv ANNOTTYPENAME            "GO/Marker"
 setenv ANNOTPROPERTY            82
-setenv DELETEREFERENCE          "J:161428"
+setenv DELETEREFERENCE          "J:265628"
 setenv DELETEUSER               GO_Central
 setenv ANNOTOBSOLETE            0
 setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/gorefgen.annot
