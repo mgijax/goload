@@ -42,8 +42,8 @@ LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
-INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/gene_association.rgd.gz
-INFILE_NAME_GAF=${INPUTDIR}/gene_association.rgd
+INFILE_NAME_GZ=${DATADOWNLOADS}/current.geneontology.org/annotations/rgd.gaf.gz
+INFILE_NAME_GAF=${INPUTDIR}/rgd.gaf
 INFILE_NAME=${INPUTDIR}/gorat.annot
 INFILE_NAME_ERROR=${INPUTDIR}/gorat.annot.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR 
