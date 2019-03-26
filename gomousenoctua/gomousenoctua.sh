@@ -100,14 +100,12 @@ preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
 cd ${INPUTDIR}
-
-cp ${INFILE_NAME_GZ} ${INPUTDIR}
-
-# temporary fix
-# TR12664/rename lego-model-id to noctua-model-id 
-# remove when noctua-model-id goes live
-mv mgi.gpad mgi.gpad.orig
-sed 's/lego-model-id/noctua-model-id/g' mgi.gpad.orig > mgi.gpad
+cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${MGIINFILE_NAME_GPAD}
+gunzip ${MGIINFILE_NAME_GZ}
+cp ${FROM_PRINFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${PRINFILE_NAME_GPAD}
+gunzip ${PRINFILE_NAME_GZ}
 
 cd ${OUTPUTDIR}
 

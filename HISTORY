@@ -1,18 +1,93 @@
 dependencies:
-${MIRROR_WGET}/download_package ftp.pir.georgetown.edu.proisoform 
 ${MIRROR_WGET}/download_package pir.georgetown.edu.proisoform 
-${MIRROR_WGET}/download_package build.berkeleybop.org.goload 
-${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload 
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
+${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
+${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
-TAG: goload-6-0-13-1
+TAG: goload-6-0-13-11
 DATE: 03/26/2018
 STAFF: sc
 CHANGES:TR13059 - new url/filename for go rat load
 
-TAG: goload-6-0-11-?
-DATE: 11/02/2017
+TAG: goload-6-0-13-10
+TAG: goload-6-0-13-9
+DATE: 02/05/2019
+STAFF: lec 
+CHANGES:
+TR13035/gorefgen/gorefgen.config.default
+changed from J:161428 to J:265638
+
+TAG: goload-6-0-13-8
+DATE: 01/30/2019
+STAFF: lec 
+CHANGES:
+TR13011/see mirror_wget/noctua location change
+
+TAG: goload-6-0-13-7
+TAG: goload-6-0-13-6
+DATE: 01/30/2019
+STAFF: lec 
+CHANGES:
+TR13029/see mirror_wget/gocfp location change
+
+TAG: goload-6-0-13-5
+TAG: goload-6-0-13-4
+TAG: goload-6-0-13-3
+DATE: 01/28/2019
+STAFF: lec 
+CHANGES:
+TR13011/see mirror_wget/noctua location changed
+on hold/input file has user/login issue
+
+TAG: goload-6-0-13-2
+DATE: 01/22/2019
+STAFF: lec 
+CHANGES:
+TR12976/boock PAINT annotations from GOA mouse load
+
+TAG: goload-6-0-13-1
+DATE: 09/04/2018
+STAFF: lec 
+TR12734/GenFeVah merge
+remove VEGA
+
+TAG: goload-6-0-12-12
+TAG: goload-6-0-12-11
+DATE: 08/15/2018
+STAFF: lec
+CHANGES TR12918/PAINT/gorefgen
+
+TAG: goload-6-0-12-10
+DATE: 08/07/2018
+STAFF: lec
+CHANGES TR12910/goamouse/ change order of qualfier (col 3)
+
+TAG: goload-6-0-12-9
+TAG: goload-6-0-12-8
+TAG: goload-6-0-12-7
+TAG: goload-6-0-12-6
+TAG: goload-6-0-12-5
+TAG: goload-6-0-12-4
+DATE: 05/17/2018
+STAFF: lec
+CHANGES TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
+
+TAG: goload-6-0-12-3
+TAG: goload-6-0-12-2
+TAG: goload-6-0-12-1
+DATE: 04/06/2018, 04/26/2018
+STAFF: lec
+CHANGES: 
+TR12834/new GO qualifiers & pr.gpad file
+includes changes to:
+mirror_wget/build.berkeleybop.org.gpad.goload
+reports_db/daily/GO_gene_association.py
+lib_py_report/go_annot_extensions.py/add 'model-state' to excluded set
+
+TAG: goload-6-0-11-4
+DATE: 03/20/2018
+>>>>>>> f5fcb6434463de5f3b560c479a76bdd598e84940
 STAFF: lec
 CHANGES: 
 TR12602/UniProtDB/column 17 translated to PR via mgi.gpi file

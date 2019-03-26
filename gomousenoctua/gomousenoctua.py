@@ -8,7 +8,8 @@
 #
 # Inputs:
 #
-#       ${INFILE_NAME_GPAD}      the GPAD file
+#       ${MGIINFILE_NAME_GPAD}     the MGI GPAD file
+#       ${PRINFILE_NAME_GPAD}      the PR GPAD file
 #
 #       The GPAD file contains:
 #
@@ -21,7 +22,7 @@
 #               field 7:  Inferred From  (With)
 #		field 8 : Interacting taxon ID
 #		field 9 : Date (yyymmdd)
-#		field 10: Assigned By (GO_Noctua)
+#		field 10: Assigned By (NOCTUA_, MGI, other)
 #		field 11: Annotation Extension
 #		field 12: Annotation Properties
 #
@@ -47,8 +48,11 @@
 #
 # History:
 #
+# lec	03/28/2018
+#	TR12834/Noctua changes
+#
 # lec   06/09/2016
-#       TR12345/load GO_Noctua GPAD file
+#       TR12345/load Noctua GPAD file
 #
 '''
 
@@ -61,10 +65,12 @@ sys.path.insert(0, goloadpath)
 import ecolib
 import uberonlib
 
-# GPAD file from the dataloads directory
-inFileName = None
+# GPAD files from the dataloads directory
+mgiInFileName = None
+prInFileName = None
 # GPAD file pointer
-inFile = None
+mgiInFile = None
+prInFile = None
 
 # annotation formatted file
 annotFileName = None
@@ -84,7 +90,7 @@ mgiRefLookup = {}
 #
 # use gpi file to build gpiLookup of object:MGI:xxxx relationship
 #
-gpiSet = ['PR', 'EMBL', 'ENSEMBL', 'RefSeq', 'VEGA']
+gpiSet = ['PR', 'EMBL', 'ENSEMBL', 'RefSeq']
 gpiFileName = None
 gpiFile = None
 gpiLookup = {}
@@ -102,11 +108,27 @@ uberonLookup = {}
 goRefLookup = {}
 
 #
+# mgi.gpad/col 3
+#
+goqualifiersLookup = [
+'enables', 
+'part_of', 
+'acts_upstream_of_or_within',
+'acts_upstream_of_or_within,_positive_effect',
+'acts_upstream_of_or_within,_negative_effect',
+'acts_upstream_of',
+'acts_upstream_of_positive_effect',
+'acts_upstream_of_negative_effect',
+'involved_in'
+]
+
+#
 # Purpose: Initialization
 #
 def initialize():
 
-    global inFileName, inFile
+    global mgiInFileName, mgiInFile
+    global prInFileName, prInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
     global mgiRefLookup
@@ -120,12 +142,14 @@ def initialize():
     # open files
     #
 
-    inFileName = os.environ['INFILE_NAME_GPAD']
+    mgiInFileName = os.environ['MGIINFILE_NAME_GPAD']
+    prInFileName = os.environ['PRINFILE_NAME_GPAD']
     gpiFileName = os.environ['GPIFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
 
-    inFile = open(inFileName, 'r')
+    mgiInFile = open(mgiInFileName, 'r')
+    prInFile = open(prInFileName, 'r')
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
@@ -195,12 +219,12 @@ def initialize():
     return 0
 
 #
-# Purpose: Read GPAD file and generate Annotation file
+# Purpose: Read MGI GPAD file and generate Annotation file
 #
-def readGPAD():
+def readGPAD(gpadInFile):
 
     #
-    #	for each row in the GPAD file (INFILE_NAME_GPAD):
+    #	for each row in the GPAD file (MGIINFILE_NAME_GPAD, PRINFILE_NAME_GPAD):
     #
     #           if the reference does not exist in MGI (using mgiRefLookup)
     #                   write the record to the error file (INFILE_NAME_ERROR)
@@ -218,7 +242,7 @@ def readGPAD():
     # field 7:  Inferred From  (With)
     # field 8 : Interacting taxon ID
     # field 9 : Date (yyymmdd)
-    # field 10: Assigned By (GO_Noctua)
+    # field 10: Assigned By (NOCTUA_)
     # field 11: Annotation Extension
     # field 12: Annotation Properties
 
@@ -228,9 +252,9 @@ def readGPAD():
     # field 10: logicalDB : MGI
     annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\tMGI\t%s\n' 
 
-    print 'reading GPAD...'
+    print 'reading MGI GPAD...'
 
-    for line in inFile.readlines():
+    for line in gpadInFile.readlines():
 
 	if line[0] == '!':
 	    continue
@@ -255,7 +279,7 @@ def readGPAD():
         # skip if the GO id is a root term:  GO:0003674, GO:0008150, GO:0005575
         #
 
-        if createdBy == 'GO_Noctua' and goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
+        if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
             errorFile.write('Root Id is used : %s\n%s\n****\n' % (goID, line))
             continue
 
@@ -279,7 +303,7 @@ def readGPAD():
 	    if dbobjectID in gpiLookup:
 	        dbobjectID = gpiLookup[dbobjectID][0]
             else:
-	        errorFile.write('object is not in object lookup(gpi file): %s\n%s\n****\n' % (dbobjectID, line))
+	        errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (dbobjectID, line))
 	        continue
 
 	# translate references (MGI/PMID) to J numbers (J:)
@@ -338,9 +362,13 @@ def readGPAD():
 	#
 	# for qualifier:
 	#
-	# if qualifier in ('part_of', 'enables', 'involves_in':
+	# if qualifier in goqualifiersLookup:
+	#
 	#	a) store as annotload/column 11/Property
-	#	b) append to 'properties' as:
+	#
+	#	b) append to 'properties'
+	#
+	#	for example:
 	#		go_qualifier=part_of
 	#		go_qualifier=enables
 	#		go_qualifier=involved_in
@@ -350,7 +378,7 @@ def readGPAD():
 	#
 	goqualifiers = []
 	for g in qualifier.split('|'):
-	    if g in ('part_of', 'enables', 'involved_in'):
+	    if g in goqualifiersLookup:
 	        if len(properties) > 0:
 	            properties = properties + '|'
 	    	properties = properties + 'go_qualifier=' + g
@@ -373,9 +401,8 @@ def readGPAD():
 	# note that the annotation load will qc duplicate annotations itself
 	# (dbobjectID, goID, goEvidenceCode, jnumID)
 
-	# if using mgd-generated GPAD to run a test, then set createdBy = 'GO_Noctua'
-	# or else the createdBy in the input file will generate errors.
-	createdBy = 'GO_Noctua'
+	# attached prefix
+	createdBy = 'NOCTUA_' + createdBy
 
 	annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
 		'|'.join(goqualifiers), createdBy, modDate, properties))
@@ -387,7 +414,8 @@ def readGPAD():
 #
 def closeFiles():
 
-    inFile.close()
+    mgiInFile.close()
+    prInFile.close()
     annotFile.close()
     errorFile.close()
     return 0
@@ -399,7 +427,10 @@ def closeFiles():
 if initialize() != 0:
     sys.exit(1)
 
-if readGPAD() != 0:
+if readGPAD(mgiInFile) != 0:
+    sys.exit(1)
+
+if readGPAD(prInFile) != 0:
     sys.exit(1)
 
 closeFiles()

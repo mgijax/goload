@@ -91,6 +91,13 @@
 #
 # History:
 #
+#
+# lec   05/17/2018
+#       - TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
+#
+# lec	11/01/2017
+#	- TR12602/UniProtDB/column 17 translated to PR via mgi.gpi file
+#
 # sc    09/29/2017
 #	- TR12646 if a UniProt id is associated with more than one marker in MGI, 
 #	    the annotation should not be loaded
@@ -161,6 +168,7 @@ unresolvedCErrorFile = None
 mgiErrorFile = None
 multiGeneErrorFile = None
 nopubmedFile = None
+paintFile = None
 pubmedAnnotFile = None
 pubmedErrorFile = None
 pubmedeviErrorFile = None
@@ -192,6 +200,17 @@ ecoLookupByEco = {}
 ecoLookupByEvidence = {} 
 
 #
+# use gpi file to build gpiLookup of UniProtKB:xxxx -> PR:xxxx relationship
+#
+gpiSet = ['PR']
+gpiFileName = None
+gpiFile = None
+gpiLookup = {}
+
+# user lookup
+userLookup = []
+
+#
 # Initialize input/output files
 #
 def initialize():
@@ -202,6 +221,7 @@ def initialize():
     global mgiErrorFile 
     global multiGeneErrorFile
     global nopubmedFile 
+    global paintFile
     global pubmedAnnotFile 
     global pubmedErrorFile 
     global pubmedeviErrorFile 
@@ -226,11 +246,17 @@ def initialize():
     global uberonLookup
     global ecoLookupByEco, ecoLookupByEvidence
 
+    global gpiFileName, gpiFile, gpiLookup
+
+    global userLookup
+
     #
     # open files
     #
 
     goaPrefix = os.environ['DELETEUSER']
+    gpiFileName = os.environ['GPIFILE']
+    gpiFile = open(gpiFileName, 'r')
 
     unresolvedAErrorFile = reportlib.init('unresolvedA', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
@@ -248,6 +274,9 @@ def initialize():
 	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     nopubmedFile = reportlib.init('nopubmed', \
+    	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
+
+    paintFile = reportlib.init('paint', \
     	outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     pubmedAnnotFile = reportlib.init('pubmedannot', \
@@ -328,7 +357,6 @@ def initialize():
     # TrEMBL (41)
     # RefSeq (27)
     # ENSEMBL (60)
-    # VEGA (85)
     #
 
     print 'reading mouse markers annotated to SwissProt/TrEMBL/RefSeq, etc....'
@@ -336,7 +364,7 @@ def initialize():
 	select m._Marker_key, m.mgiID, a.accID as goaID 
 	from markers m, ACC_Accession a 
 	where m._Marker_key = a._Object_key 
-	and a._LogicalDB_key in (13, 41, 27, 60, 85) 
+	and a._LogicalDB_key in (13, 41, 27, 60) 
 	and a._MGIType_key = 2 
 	''', 'auto')
     for r in results:
@@ -470,12 +498,37 @@ def initialize():
     print 'reading eco obo file...'
     ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
+
+    #
+    # read/store UniProtDB-to-PR
+    #
+    print 'reading PR -> UniProtKB translation using gpi file...'
+    for line in gpiFile.readlines():
+        if line[:1] == '!':
+            continue
+        tokens = line[:-1].split('\t')
+        if tokens[0] in gpiSet:
+            key = tokens[8]
+            value = tokens[0] + ':' + tokens[1]
+            if key not in gpiLookup:
+                gpiLookup[key] = []
+            gpiLookup[key].append(value)
+
+    #
+    # read/store GOA_, NOCTUA_ MGI_User
+    #
+    print 'reading MGI_User...'
+    results = db.sql('''select login from MGI_User where login like 'GOA_%' or login like 'NOCTUA_%' ''', 'auto')
+    for r in results:
+        userLookup.append(r['login'])
+
     return 0
 
 #
 # Purpose : Read GAF file and generate Annotation file
 #
 def readGAF(inFile):
+    global userLookup
 
     for line in inFile.readlines():
 
@@ -532,6 +585,14 @@ def readGAF(inFile):
         if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
 	    unresolvedCErrorFile.write(line)
 	    continue
+
+	#
+	# skip if infferredFrom contains "PANTHER"
+	# as these are loaded via gorefgen/PAINT
+	#
+	if inferredFrom.find('PANTHER') >= 0:
+	    paintFile.write(line)
+	    continue;
 
         #
         # translate GOA "Refs" to MGI J: so we can check for duplicates
@@ -620,7 +681,7 @@ def readGAF(inFile):
         if not loadMGI:
 
 	    # for gafFile
-	    print 'symbol to gafFile: %s' % m['symbol']
+	    #print 'symbol to gafFile: %s' % m['symbol']
             gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
 	        dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
 
@@ -628,7 +689,7 @@ def readGAF(inFile):
 
 	    gpadQualifier = dagQualifier[dag]
             if len(qualifierValue) > 0:
-                gpadQualifier = gpadQualifier + '|' + qualifierValue.strip()
+                gpadQualifier = qualifierValue.strip() + '|' + gpadQualifier
 
 	    if evidence in ecoLookupByEvidence:
 	        gpadEvidence = ecoLookupByEvidence[evidence]
@@ -643,9 +704,15 @@ def readGAF(inFile):
 
         #
         # collect all annotations, collapsing the same annotation of different inferredFrom into one record
+	#
+
+	#
+	# if isoformValue == UniProtKB in gpiLookup, then set isoformValue = PR
         #
 
         if len(isoformValue) > 0:
+	    if isoformValue in gpiLookup:
+	        isoformValue = gpiLookup[isoformValue][0]
 	    mgiproperties = 'gene product&=&' + isoformValue
         else:
 	    mgiproperties = ''
@@ -677,6 +744,32 @@ def readGAF(inFile):
 	    mgiproperties = mgiproperties + '&==&' + properties
         else:
     	    mgiproperties = properties
+
+	#
+	# if mgiassignedBy does not exist in MGI_User, then add it
+	# add GOA_ and NOCTUA_ at the same time
+	#
+	if mgiassignedBy not in userLookup:
+	    addSQL = '''
+	    	insert into MGI_User values (
+		(select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+		)''' % (mgiassignedBy, mgiassignedBy)
+	    print 'adding new MGI_User...'
+	    print addSQL
+	    db.sql(addSQL, 'auto')
+	    db.commit()
+	    userLookup.append(mgiassignedBy)
+	    addNoctua = mgiassignedBy
+	    addNoctua = addNoctua.replace('GOA', 'NOCTUA')
+	    addSQL = '''
+	    	insert into MGI_User values (
+		(select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+		)''' % (addNoctua, addNoctua)
+	    print 'adding new MGI_User...'
+	    print addSQL
+	    db.sql(addSQL, 'auto')
+	    db.commit()
+	    userLookup.append(addNoctua)
 
         n = (goID, mgiID, jnumID, evidence, qualifierValue, mgiassignedBy, modDate, mgiproperties)
 
@@ -713,6 +806,7 @@ def closeFiles():
     reportlib.finish_nonps(mgiErrorFile)
     reportlib.finish_nonps(multiGeneErrorFile)
     reportlib.finish_nonps(nopubmedFile)
+    reportlib.finish_nonps(paintFile)
     reportlib.finish_nonps(pubmedAnnotFile)
     reportlib.finish_nonps(pubmedErrorFile)
     reportlib.finish_nonps(pubmedeviErrorFile)

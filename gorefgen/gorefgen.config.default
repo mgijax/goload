@@ -42,8 +42,8 @@ LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
-INFILE_NAME_GZ=${DATADOWNLOADS}/go_gene_assoc/submission/paint/pre-submission/gene_association.paint_mgi.gz
-INFILE_NAME_GAF=${INPUTDIR}/gene_association.paint_mgi
+INFILE_NAME_GZ=${DATADOWNLOADS}/snapshot.geneontology.org/annotations/mgi.gaf.gz
+INFILE_NAME_GAF=${INPUTDIR}/mgi.gaf
 INFILE_NAME=${INPUTDIR}/gorefgen.annot
 INFILE_NAME_ERROR=${INPUTDIR}/gorefgen.annot.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR 
@@ -61,7 +61,7 @@ export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
 
 # The name of the job stream for the load
 JOBSTREAM=gorefgenload
-JNUMBER="J:161428"
+JNUMBER="J:265628"
 export JOBSTREAM JNUMBER
 
 ###########################################################################
