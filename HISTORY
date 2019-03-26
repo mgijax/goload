@@ -6,6 +6,11 @@ ${MIRROR_WGET}/download_package build.berkeleybop.org.gpad.goload
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 
+TAG: goload-6-0-13-1
+DATE: 03/26/2018
+STAFF: sc
+CHANGES:TR13059 - new url/filename for go rat load
+
 TAG: goload-6-0-11-?
 DATE: 11/02/2017
 STAFF: lec
