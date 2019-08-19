@@ -1,9 +1,14 @@
 dependencies:
-${MIRROR_WGET}/download_package pir.georgetown.edu.proisoform 
+${MIRROR_WGET}/download_package purl.obolibrary.org.pr.obo
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
+
+TAG: goload-6-0-13-13
+DATE: 08/19/2019
+STAFF: lec
+CHANGES:TR13152/gomousenoctua/update qualifier
 
 TAG: goload-6-0-13-12
 TAG: goload-6-0-13-11
