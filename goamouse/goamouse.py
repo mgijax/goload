@@ -575,7 +575,16 @@ def readGAF(inFile):
         # skip it if there is not PubMed ID
 
         if refID[0:5] != 'PMID:':
-	    nopubmedFile.write(line)
+	    if line.find('Reactome') >= 0:
+		if goaID not in assoc:
+	    		unresolvedBErrorFile.write(line)
+		else:
+        		m = assoc[goaID]
+			line = line.replace('UniProtKB', 'MGI');
+			line = line.replace(goaID, m[0])
+	    		gafFile.write(line)
+	    else:
+	    	nopubmedFile.write(line)
 	    continue
 
         #

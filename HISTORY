@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-15-1
+DATE: 02/11/2020
+STAFF: lec
+CHANGES: TR13231/Supply Reactone annotations in gaf (and gpad)
+
 TAG: goload-6-0-13-13
 DATE: 08/19/2019
 STAFF: lec
