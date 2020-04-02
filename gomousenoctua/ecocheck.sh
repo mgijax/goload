@@ -15,7 +15,7 @@ touch $ECOLOG
 date | tee -a $ECOLOG
  
 echo 'Eco Id -> Evidence Code associations' | tee -a ${ECOLOG}
-${GOLOAD}/lib/ecolib.py | sort | tee -a ${ECOLOG}
+${PYTHON} ${GOLOAD}/lib/ecolib.py | sort | tee -a ${ECOLOG}
 
 echo '' | tee -a ${ECOLOG}
 

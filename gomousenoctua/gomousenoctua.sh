@@ -125,7 +125,7 @@ cd ${OUTPUTDIR}
 # create input file
 #
 echo 'Running gomousenoctua.py' >> ${LOG}
-${GOLOAD}/gomousenoctua/gomousenoctua.py >> ${LOG}
+${PYTHON} ${GOLOAD}/gomousenoctua/gomousenoctua.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/gomousenoctua/gomousenoctua.py"
 

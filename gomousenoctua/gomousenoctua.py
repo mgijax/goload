@@ -1,5 +1,3 @@
-#!/usr/local/bin/python
-
 '''
 #
 # gomousenoctua.py
@@ -160,27 +158,27 @@ def initialize():
     # pubmed id:jnum id
     #
 
-    print 'reading mgi id/pubmed id -> J: translation...'
+    print('reading mgi id/pubmed id -> J: translation...')
 
     results = db.sql('select mgiID, pubmedID, jnumID from BIB_Citation_Cache', 'auto')
     for r in results:
-	mgiRefLookup[r['mgiID']] = r['jnumID']
-	if r['pubmedID'] != '':
-	    mgiRefLookup[r['pubmedID']] = r['jnumID']
+        mgiRefLookup[r['mgiID']] = r['jnumID']
+        if r['pubmedID'] != '':
+            mgiRefLookup[r['pubmedID']] = r['jnumID']
 
     #
     # read/store object-to-Marker info
     #
 
-    print 'reading object -> marker translation using gpi file...'
+    print('reading object -> marker translation using gpi file...')
 
     for line in gpiFile.readlines():
         if line[:1] == '!':
-	    continue
+            continue
         tokens = line[:-1].split('\t')
-	if tokens[0] in gpiSet:
-	    key = tokens[0] + ':' + tokens[1]
-	    value = tokens[7].replace('MGI:MGI:', 'MGI:')
+        if tokens[0] in gpiSet:
+            key = tokens[0] + ':' + tokens[1]
+            value = tokens[7].replace('MGI:MGI:', 'MGI:')
             if key not in gpiLookup:
                 gpiLookup[key] = []
             gpiLookup[key].append(value)
@@ -188,33 +186,33 @@ def initialize():
     #
     # lookup file of Evidence Code Ontology using ecolib.py library
     #
-    print 'reading eco -> go evidence translation...'
+    print('reading eco -> go evidence translation...')
     ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
     #
     # read/store UBERON-to-EMAPA info
     #
-    print 'reading uberon -> emapa translation file...'
+    print('reading uberon -> emapa translation file...')
     uberonLookup = uberonlib.processUberon() 
 
     #
     # lookup file of GO_REF->J:
     #
     results = db.sql('''select a1.accID as goref, a2.accID as jnum
-    	from ACC_Accession a1, ACC_Accession a2
-    	where a1._MGIType_key = 1
-    	and a1._LogicalDB_key = 185
-    	and a1._Object_key = a2._Object_key
-    	and a2._MGIType_key = 1
-    	and a2._LogicalDB_key = 1
-    	and a2.prefixPart = 'J:'
-	''', 'auto')
+        from ACC_Accession a1, ACC_Accession a2
+        where a1._MGIType_key = 1
+        and a1._LogicalDB_key = 185
+        and a1._Object_key = a2._Object_key
+        and a2._MGIType_key = 1
+        and a2._LogicalDB_key = 1
+        and a2.prefixPart = 'J:'
+        ''', 'auto')
 
     for r in results:
         key = r['goref']
         value = r['jnum']
         goRefLookup[key] = value
-    print goRefLookup
+    print(goRefLookup)
 
     return 0
 
@@ -252,18 +250,18 @@ def readGPAD(gpadInFile):
     # field 10: logicalDB : MGI
     annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\tMGI\t%s\n' 
 
-    print 'reading MGI GPAD...'
+    print('reading MGI GPAD...')
 
     for line in gpadInFile.readlines():
 
-	if line[0] == '!':
-	    continue
+        if line[0] == '!':
+            continue
 
-	line = line[:-1]
-	tokens = line.split('\t')
+        line = line[:-1]
+        tokens = line.split('\t')
 
         databaseID = tokens[0]		# should always be 'MGI'
-	dbobjectID = tokens[1]
+        dbobjectID = tokens[1]
         qualifier = tokens[2]
         goID = tokens[3]
         references = tokens[4]
@@ -287,125 +285,125 @@ def readGPAD(gpadInFile):
         # skip if the databaseID is not MGI or PR
         #
 
-	if databaseID != 'MGI' and databaseID not in gpiSet:
+        if databaseID != 'MGI' and databaseID not in gpiSet:
             errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
             continue
 
-	#
-	# if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
-	#
+        #
+        # if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
+        #
 
-	if databaseID in gpiSet:
-	    #print tokens
-	    dbobjectID = databaseID + ':' + dbobjectID
-	    properties = 'gene product=' + dbobjectID + '|' + properties
+        if databaseID in gpiSet:
+            #print tokens
+            dbobjectID = databaseID + ':' + dbobjectID
+            properties = 'gene product=' + dbobjectID + '|' + properties
 
-	    if dbobjectID in gpiLookup:
-	        dbobjectID = gpiLookup[dbobjectID][0]
+            if dbobjectID in gpiLookup:
+                dbobjectID = gpiLookup[dbobjectID][0]
             else:
-	        errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (dbobjectID, line))
-	        continue
+                errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (dbobjectID, line))
+                continue
 
-	# translate references (MGI/PMID) to J numbers (J:)
-	# use the first J: match that we find
+        # translate references (MGI/PMID) to J numbers (J:)
+        # use the first J: match that we find
 
-	jnumIDFound = 0
-	referencesTokens = references.split('|')
-	for r in referencesTokens:
+        jnumIDFound = 0
+        referencesTokens = references.split('|')
+        for r in referencesTokens:
 
-	    refID = r.replace('MGI:MGI:', 'MGI:')
-	    refID = refID.replace('PMID:', '')
+            refID = r.replace('MGI:MGI:', 'MGI:')
+            refID = refID.replace('PMID:', '')
 
-	    if refID in mgiRefLookup:
-		jnumID = mgiRefLookup[refID]
-		jnumIDFound = 1
-		 
+            if refID in mgiRefLookup:
+                jnumID = mgiRefLookup[refID]
+                jnumIDFound = 1
+                 
             if refID in goRefLookup:
-		jnumID = goRefLookup[refID]
-		jnumIDFound = 1
+                jnumID = goRefLookup[refID]
+                jnumIDFound = 1
 
-	# if reference does not exist...skip it
+        # if reference does not exist...skip it
 
-	if not jnumIDFound:
-	    errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
-	    continue
+        if not jnumIDFound:
+            errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
+            continue
 
-	if evidenceCode in ecoLookupByEco:
-	    #goEvidenceCode = ecoLookupByEco[evidenceCode][0]
-	    goEvidenceCode = ecoLookupByEco[evidenceCode]
-	else:
-	    errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
-	    continue
+        if evidenceCode in ecoLookupByEco:
+            #goEvidenceCode = ecoLookupByEco[evidenceCode][0]
+            goEvidenceCode = ecoLookupByEco[evidenceCode]
+        else:
+            errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
+            continue
 
-	#
-	# "extensions" contain things like "occurs_in", "part_of", etc.
-	# and are added to "properties" for forwarding to the annotation loader
-	#
-	if len(extensions) > 0:
+        #
+        # "extensions" contain things like "occurs_in", "part_of", etc.
+        # and are added to "properties" for forwarding to the annotation loader
+        #
+        if len(extensions) > 0:
 
-	    # to translate uberon ids to emapa
-	    extensions, errors = uberonlib.convertExtensions(extensions, uberonLookup)
-	    if errors:
-	        for error in errors:
-	            errorFile.write('%s\n%s\n****\n' % (error, line))
+            # to translate uberon ids to emapa
+            extensions, errors = uberonlib.convertExtensions(extensions, uberonLookup)
+            if errors:
+                for error in errors:
+                    errorFile.write('%s\n%s\n****\n' % (error, line))
 
-	    # re-format to use 'properties' format
-	    # (which will then be re-formated to mgi-property format)
-	    extensions = extensions.replace('(', '=')
-	    extensions = extensions.replace(')', '')
-	    extensions = extensions.replace(',', '|')
-	    if len(properties) > 0:
-	        properties = extensions + '|' + properties
-	    else:
-	        properties = extensions
+            # re-format to use 'properties' format
+            # (which will then be re-formated to mgi-property format)
+            extensions = extensions.replace('(', '=')
+            extensions = extensions.replace(')', '')
+            extensions = extensions.replace(',', '|')
+            if len(properties) > 0:
+                properties = extensions + '|' + properties
+            else:
+                properties = extensions
 
-	#
-	# for qualifier:
-	#
-	# if qualifier in goqualifiersLookup:
-	#
-	#	a) store as annotload/column 11/Property
-	#
-	#	b) append to 'properties'
-	#
-	#	for example:
-	#		go_qualifier=part_of
-	#		go_qualifier=enables
-	#		go_qualifier=involved_in
-	#
-	# else:
-	#	a) store as annotload/column 6/Qualifier
-	#
-	goqualifiers = []
-	for g in qualifier.split('|'):
-	    if g in goqualifiersLookup:
-	        if len(properties) > 0:
-	            properties = properties + '|'
-	    	properties = properties + 'go_qualifier=' + g
-	    else:
-	        goqualifiers.append(g)
+        #
+        # for qualifier:
+        #
+        # if qualifier in goqualifiersLookup:
+        #
+        #	a) store as annotload/column 11/Property
+        #
+        #	b) append to 'properties'
+        #
+        #	for example:
+        #		go_qualifier=part_of
+        #		go_qualifier=enables
+        #		go_qualifier=involved_in
+        #
+        # else:
+        #	a) store as annotload/column 6/Qualifier
+        #
+        goqualifiers = []
+        for g in qualifier.split('|'):
+            if g in goqualifiersLookup:
+                if len(properties) > 0:
+                    properties = properties + '|'
+                properties = properties + 'go_qualifier=' + g
+            else:
+                goqualifiers.append(g)
 
         # for evidence:
-	#	a) store as translated ECO->MGI->Evidence Code field
-	#	b) append to 'properties' as:
-	#		evidence=ECO:xxxx
+        #	a) store as translated ECO->MGI->Evidence Code field
+        #	b) append to 'properties' as:
+        #		evidence=ECO:xxxx
         #
-	properties = properties + '|evidence=' + evidenceCode
+        properties = properties + '|evidence=' + evidenceCode
 
         # re-format to mgi-property format
         #
         properties = properties.replace('=', '&=&')
         properties = properties.replace('|', '&==&')
 
-	# write data to the annotation file
-	# note that the annotation load will qc duplicate annotations itself
-	# (dbobjectID, goID, goEvidenceCode, jnumID)
+        # write data to the annotation file
+        # note that the annotation load will qc duplicate annotations itself
+        # (dbobjectID, goID, goEvidenceCode, jnumID)
 
-	# attached prefix
-	createdBy = 'NOCTUA_' + createdBy
+        # attached prefix
+        createdBy = 'NOCTUA_' + createdBy
 
-	annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
-		'|'.join(goqualifiers), createdBy, modDate, properties))
+        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
+                '|'.join(goqualifiers), createdBy, modDate, properties))
 
     return 0
 

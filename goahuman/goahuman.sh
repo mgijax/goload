@@ -113,7 +113,7 @@ cd ${OUTPUTDIR}
 # create input file
 #
 echo 'Running goahuman.py' >> ${LOG}
-${GOLOAD}/goahuman/goahuman.py >> ${LOG}
+${PYTHON} ${GOLOAD}/goahuman/goahuman.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goahuman/goahuman.py"
 

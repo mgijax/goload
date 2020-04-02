@@ -1,5 +1,3 @@
-#!/usr/local/bin/python
-
 '''
 #
 # gocfp.py
@@ -70,7 +68,6 @@
 
 import sys 
 import os
-import string
 import db
 
 # GOC GAF file from the dataloads directory
@@ -128,10 +125,10 @@ def initialize():
 
     results = db.sql('''select mgiID, pubmedID, jnumID from BIB_Citation_Cache ''', 'auto')
     for r in results:
-	mgiRefLookup[r['mgiID']] = r['jnumID']
+        mgiRefLookup[r['mgiID']] = r['jnumID']
 
-	if r['pubmedID'] != '':
-	    mgiRefLookup[r['pubmedID']] = r['jnumID']
+        if r['pubmedID'] != '':
+            mgiRefLookup[r['pubmedID']] = r['jnumID']
 
     return 0
 
@@ -155,58 +152,58 @@ def readGAF():
 
     for line in inFile.readlines():
 
-	if line[0] == '!':
-	    continue
+        if line[0] == '!':
+            continue
 
-	tokens = string.split(line[:-1], '\t')
+        tokens = str.split(line[:-1], '\t')
 
-	#
-	# field 1: Database ID (MGI)
-	# field 2: MGI ID (MGI:###)
-	# field 4: Qualifier
-	# field 5: GO ID
-	# field 6: MGI:MGI:#### (reference)
-	# field 7: Evidence code
-	# field 8: With (inferred from)
-	# field 14: Modification Date
-	#
+        #
+        # field 1: Database ID (MGI)
+        # field 2: MGI ID (MGI:###)
+        # field 4: Qualifier
+        # field 5: GO ID
+        # field 6: MGI:MGI:#### (reference)
+        # field 7: Evidence code
+        # field 8: With (inferred from)
+        # field 14: Modification Date
+        #
 
-	databaseID = tokens[0]
-	mgiID = tokens[1]
-	qualifier = tokens[3]
-	goID = tokens[4]
-	references = string.split(tokens[5], '|')
-	evidenceCode = tokens[6]
-	inferredFrom = string.replace(tokens[7], 'MGI:MGI:', 'MGI:')
-	modDate = tokens[13]
+        databaseID = tokens[0]
+        mgiID = tokens[1]
+        qualifier = tokens[3]
+        goID = tokens[4]
+        references = str.split(tokens[5], '|')
+        evidenceCode = tokens[6]
+        inferredFrom = str.replace(tokens[7], 'MGI:MGI:', 'MGI:')
+        modDate = tokens[13]
 
-	# don't use this field
-	#createdBy = tokens[14]
+        # don't use this field
+        #createdBy = tokens[14]
 
-	jnumIDFound = 0
+        jnumIDFound = 0
 
-	# translate references (MGI/PMID) to J numbers (J:)
-	# use the first J: match that we find
-	for r in references:
+        # translate references (MGI/PMID) to J numbers (J:)
+        # use the first J: match that we find
+        for r in references:
 
-	    refID = string.replace(r, 'MGI:MGI:', 'MGI:')
-	    refID = string.replace(refID, 'PMID:', '')
+            refID = str.replace(r, 'MGI:MGI:', 'MGI:')
+            refID = str.replace(refID, 'PMID:', '')
 
-	    if refID in mgiRefLookup:
-		jnumID = mgiRefLookup[refID]
-		jnumIDFound = 1
-		 
-	# if reference does not exist...skip it
+            if refID in mgiRefLookup:
+                jnumID = mgiRefLookup[refID]
+                jnumIDFound = 1
+                 
+        # if reference does not exist...skip it
 
-	if not jnumIDFound:
-	    errorFile.write('Invalid Refeference:  %s, %s\n' % (mgiID, references))
-	    continue
+        if not jnumIDFound:
+            errorFile.write('Invalid Refeference:  %s, %s\n' % (mgiID, references))
+            continue
 
-	# write data to the annotation file
-	# note that the annotation load will qc duplicate annotations itself
-	# (mgiID, goID, evidenceCode, jnumID)
+        # write data to the annotation file
+        # note that the annotation load will qc duplicate annotations itself
+        # (mgiID, goID, evidenceCode, jnumID)
 
-	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, inferredFrom, createdBy, modDate))
+        annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, inferredFrom, createdBy, modDate))
 
     return 0
 
@@ -232,4 +229,3 @@ if readGAF() != 0:
 
 closeFiles()
 sys.exit(0)
-

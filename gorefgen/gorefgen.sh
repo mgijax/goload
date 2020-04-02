@@ -127,7 +127,7 @@ cd ${OUTPUTDIR}
 # create input file
 #
 echo 'Running gorefgen.py' >> ${LOG}
-${GOLOAD}/gorefgen/gorefgen.py >> ${LOG}
+${PYTHON} ${GOLOAD}/gorefgen/gorefgen.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/gorefgen/gorefgen.py"
 

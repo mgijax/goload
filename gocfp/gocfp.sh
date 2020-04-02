@@ -109,7 +109,7 @@ cd ${OUTPUTDIR}
 # create input file
 #
 echo 'Running gocfp.py' >> ${LOG}
-${GOLOAD}/gocfp/gocfp.py >> ${LOG}
+${PYTHON} ${GOLOAD}/gocfp/gocfp.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/gocfp/gocfp.py"
 

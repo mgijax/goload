@@ -1,5 +1,3 @@
-#!/usr/local/bin/python
-
 '''
 #
 # gorefgen.py
@@ -94,7 +92,6 @@
 
 import sys 
 import os
-import string
 import db
 
 # GAF file input file
@@ -147,20 +144,20 @@ def initialize():
     try:
         inFile = open(inFileName, 'r')
     except:
-	print 'Cannot open input file: ' + inFileName
-	return 1
+        print('Cannot open input file: ' + inFileName)
+        return 1
 
     try:
         annotFile = open(annotFileName, 'w')
     except:
-	print 'Cannot open annotation file for writing: ' + annotFileName
-	return 1
+        print('Cannot open annotation file for writing: ' + annotFileName)
+        return 1
 
     try:
         errorFile = open(errorFileName, 'w')
     except:
-	print 'Cannot open error file for writing: ' + errorFileName
-	return 1
+        print('Cannot open error file for writing: ' + errorFileName)
+        return 1
 
     #
     # list of markers type 'gene'
@@ -168,11 +165,11 @@ def initialize():
     results = db.sql('''select a.accID
               from MRK_Marker m, ACC_Accession a
               where m._Marker_Type_key = 1
-	      and m._Marker_key = a._Object_key
-	      and a._MGIType_key = 2
-	      and a._LogicalDB_key = 1
-	      and a.preferred = 1
-	  ''', 'auto')
+              and m._Marker_key = a._Object_key
+              and a._MGIType_key = 2
+              and a._LogicalDB_key = 1
+              and a.preferred = 1
+          ''', 'auto')
 
     for r in results:
         value = r['accID']
@@ -206,58 +203,58 @@ def readGAF():
         if line[0] == '!':
             continue
 
-        tokens = string.split(line[:-1],'\t')
+        tokens = str.split(line[:-1],'\t')
 
-	#       1.  DB                       MGI
-	#       2.  DB Object ID             MGI:xxxx
-	#       4.  Qualifier
-	#       5.  GO ID                    GO:xxxx
-	#       6.  DB:Reference(s)          MGI:MGI:xxxx|PMID:xxxx : PMID:21873635
-	#       7.  Evidence Code            3-digit (not ECO:xxxx)
-	#       8.  With (or)From            optional
-	#       14. Date                     YYYYMMDD
-	#       15. Assigned By
-	#
+        #       1.  DB                       MGI
+        #       2.  DB Object ID             MGI:xxxx
+        #       4.  Qualifier
+        #       5.  GO ID                    GO:xxxx
+        #       6.  DB:Reference(s)          MGI:MGI:xxxx|PMID:xxxx : PMID:21873635
+        #       7.  Evidence Code            3-digit (not ECO:xxxx)
+        #       8.  With (or)From            optional
+        #       14. Date                     YYYYMMDD
+        #       15. Assigned By
+        #
 
-	databaseID = tokens[0]
-	mgiID = tokens[1]
-	qualifier = tokens[3].lower()
-	goID = tokens[4]
-	dbRef = tokens[5]
-	evidenceCode = tokens[6]
-	modDate = tokens[13]
-	createdBy = tokens[14]
+        databaseID = tokens[0]
+        mgiID = tokens[1]
+        qualifier = tokens[3].lower()
+        goID = tokens[4]
+        dbRef = tokens[5]
+        evidenceCode = tokens[6]
+        modDate = tokens[13]
+        createdBy = tokens[14]
 
         if dbRef not in ['PMID:21873635']:
-	    continue
-	
+            continue
+        
         if mgiID.find('MGI:') < 0:
-	    continue
+            continue
 
-	if mgiID not in markerList:
-	    continue
+        if mgiID not in markerList:
+            continue
 
-	if evidenceCode not in evidenceCodeList:
-	    print 'Invalid Evidence Code:  ', evidenceCode
-	    continue
+        if evidenceCode not in evidenceCodeList:
+            print('Invalid Evidence Code:  ', evidenceCode)
+            continue
 
         if qualifier in ['not']:
-	    qualifier = 'NOT'
+            qualifier = 'NOT'
 
-	#
-	# only interested in: PANTHER:
-	#
-	allInferredFrom = tokens[7].split('|')
-	inferredFrom = []
-	for i in allInferredFrom:
+        #
+        # only interested in: PANTHER:
+        #
+        allInferredFrom = tokens[7].split('|')
+        inferredFrom = []
+        for i in allInferredFrom:
             if i.find('PANTHER:') >= 0:
                 inferredFrom.append(i)
 
-	# write data to the annotation file
-	# note that the annotation load will qc duplicate annotations itself
-	# (mgiID, goID, evidenceCode, jnumID)
+        # write data to the annotation file
+        # note that the annotation load will qc duplicate annotations itself
+        # (mgiID, goID, evidenceCode, jnumID)
 
-	annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(inferredFrom), qualifier, createdBy, modDate))
+        annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(inferredFrom), qualifier, createdBy, modDate))
 
     return 0
 
@@ -284,4 +281,3 @@ if readGAF() != 0:
 
 closeFiles()
 sys.exit(0)
-

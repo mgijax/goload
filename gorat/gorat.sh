@@ -126,7 +126,7 @@ cd ${OUTPUTDIR}
 # create input file
 #
 echo 'Running gorat.py' >> ${LOG}
-${GOLOAD}/gorat/gorat.py >> ${LOG}
+${PYTHON} ${GOLOAD}/gorat/gorat.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/gorat/gorat.py"
 

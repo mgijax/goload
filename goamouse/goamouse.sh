@@ -134,7 +134,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse"
 # create input file
 #
 echo 'Running goamouse.py' >> ${LOG}
-${GOLOAD}/goamouse/goamouse.py >> ${LOG}
+${PYTHON} ${GOLOAD}/goamouse/goamouse.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/goamouse/goamouse.py"
 
