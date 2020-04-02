@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 '''
 #
@@ -49,7 +48,7 @@ def processUberon():
     # read/store UBERON-to-EMAPA info
     #
 
-    print 'reading uberon -> emapa translation file...'
+    print('reading uberon -> emapa translation file...')
 
     #
     # read/store list of primary EMAPA ids
@@ -76,17 +75,17 @@ def processUberon():
         # find xref: EMAPA:
 
         if line == '[Term]':
-	    foundUberon = 0
+            foundUberon = 0
 
         elif line[:11] == uberonIdValue:
             uberonId = line[4:-1]
-	    foundUberon = 1
+            foundUberon = 1
 
         elif foundUberon and line[:12] == emapaXrefValue:
 
             emapaId = line[6:-1]
 
-	    # only convert to primary EMAPA
+            # only convert to primary EMAPA
             if emapaId not in primaryEmapa:
                 continue
 
@@ -125,25 +124,25 @@ def convertExtensions(extensions, uberonLookup={}):
     pStart = extensions.split('(')
     for p in pStart:
 
-	pEnd = p.split(')')
+        pEnd = p.split(')')
 
-	for e in pEnd:
+        for e in pEnd:
 
-	    # found uberon id
-	    if e.find(uberonPrefix) >= 0:
-		if e in uberonLookup:
-		    u = uberonLookup[e]
-		    # found > 1 emapa
-		    if len(u) > 1:
-			errors.append(UBERON_MAPPING_MULTIPLES_ERROR % (e, str(u)))
-		    # replace UBERON id with EMAPA id
-		    else:
-			extensions = extensions.replace(e, u[0])
-		# did not find uberon id
-		else:
-		    errors.append(UBERON_MAPPING_MISSING_ERROR % (e))
+            # found uberon id
+            if e.find(uberonPrefix) >= 0:
+                if e in uberonLookup:
+                    u = uberonLookup[e]
+                    # found > 1 emapa
+                    if len(u) > 1:
+                        errors.append(UBERON_MAPPING_MULTIPLES_ERROR % (e, str(u)))
+                    # replace UBERON id with EMAPA id
+                    else:
+                        extensions = extensions.replace(e, u[0])
+                # did not find uberon id
+                else:
+                    errors.append(UBERON_MAPPING_MISSING_ERROR % (e))
 
-	    # else, do nothing
+            # else, do nothing
 
     return extensions, errors
 
@@ -151,8 +150,7 @@ if __name__ == '__main__':
 
     uberonLookup = processUberon()
 
-    print 'rows:', len(uberonLookup)
+    print('rows:', len(uberonLookup))
 
     for u in uberonLookup:
-        print u, uberonLookup[u]
-
+        print(u, uberonLookup[u])

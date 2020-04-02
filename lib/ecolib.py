@@ -1,4 +1,3 @@
-#!/usr/local/bin/python
 
 '''
 #
@@ -43,25 +42,25 @@ def processECO():
     global ecoLookupByEco
 
     oboFileName = os.environ['DATADOWNLOADS'] + \
-    	'/raw.githubusercontent.com/evidenceontology/evidenceontology/master/gaf-eco-mapping-derived.txt'
+        '/raw.githubusercontent.com/evidenceontology/evidenceontology/master/gaf-eco-mapping-derived.txt'
 
     oboFile = open(oboFileName, 'r')
 
     for line in oboFile.readlines():
 
-	line = line.strip()
-	tokens = line.split('\t')
-	ecoId = tokens[0]
-	evidence = tokens[1]
-	try:
-		isDefault = tokens[2]
-	except:
-		isDefault = ''
-	
-	if isDefault == 'Default':
-	    ecoLookupByEvidence[evidence] = ecoId
+        line = line.strip()
+        tokens = line.split('\t')
+        ecoId = tokens[0]
+        evidence = tokens[1]
+        try:
+                isDefault = tokens[2]
+        except:
+                isDefault = ''
+        
+        if isDefault == 'Default':
+            ecoLookupByEvidence[evidence] = ecoId
 
-	ecoLookupByEco[ecoId] = evidence
+        ecoLookupByEco[ecoId] = evidence
 
     oboFile.close()
 
@@ -71,12 +70,11 @@ if __name__ == '__main__':
 
     ecoLookupByEco, ecoLookupByEvidence = processECO()
 
-    print 'rows:', len(ecoLookupByEco)
-    print 'rows:', len(ecoLookupByEvidence)
+    print('rows:', len(ecoLookupByEco))
+    print('rows:', len(ecoLookupByEvidence))
 
     for e in ecoLookupByEco:
-        print e, ecoLookupByEco[e]
+        print(e, ecoLookupByEco[e])
 
     for e in ecoLookupByEvidence:
-        print e, ecoLookupByEvidence[e]
-
+        print(e, ecoLookupByEvidence[e])
