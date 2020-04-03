@@ -28,7 +28,7 @@ ${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
 
 echo 'generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
+${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 
 echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
 ${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
