@@ -521,7 +521,7 @@ def readGAF():
     for line in list(annotToWriteDict.keys()):
         #get the list of properties
         pList = annotToWriteDict[line]
-        line = line  + str.join(pList, '&===&') + '\n'
+        line = line  + str.join('&===&', pList) + '\n'
         annotFile.write(line)
 
     return 0
