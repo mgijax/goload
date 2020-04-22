@@ -47,6 +47,9 @@ def processECO():
 
     for line in oboFile.readlines():
 
+        if line[0] == '#':
+            continue
+
         line = line.strip()
         tokens = line.split('\t')
         ecoId = tokens[0]
