@@ -49,6 +49,8 @@ def processECO():
 
         if line[0] == '#':
             continue
+        if line[0] == '$':
+            continue
 
         line = line.strip()
         tokens = line.split('\t')
