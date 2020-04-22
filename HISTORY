@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-15-2
+DATE: 04/22/2020
+STAFF: lec
+CHANGES: lib/ecolib.py/ignore comments
+
 TAG: goload-6-0-15-1
 DATE: 02/11/2020
 STAFF: lec
