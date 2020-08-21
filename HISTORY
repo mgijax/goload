@@ -6,6 +6,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-16-1
+DATE: 08/21/2020
+STAFF: sc
+CHANGES: TR13204/I20 project/python 3.7 upgrade
+
 TAG: goload-6-0-15-3
 TAG: goload-6-0-15-2
 DATE: 04/22/2020
