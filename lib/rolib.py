@@ -22,6 +22,7 @@
 
 import sys 
 import os
+import db
 
 roLookupByName = {}
 roLookupByRO = {}
@@ -40,6 +41,7 @@ def processRO():
     oboFile = open(oboFileName, 'r')
     idValue = 'id: '
     roIdValue = 'id: RO:'
+    bfoIdValue = 'id: BFO:'
     roNameValue = 'name:'
     foundRO = 0
 
@@ -53,6 +55,10 @@ def processRO():
             foundRO = 0
 
         elif line.find(roIdValue) >= 0:
+            roId = line[4:-1]
+            foundRO = 1
+
+        elif line.find(bfoIdValue) >= 0:
             roId = line[4:-1]
             foundRO = 1
 
@@ -79,11 +85,18 @@ if __name__ == '__main__':
 
     roLookupByRO, roLookupByName = processRO()
 
-    print('rows:', len(roLookupByRO))
+    #print('rows:', len(roLookupByRO))
     print('rows:', len(roLookupByName))
 
-    for e in roLookupByRO:
-        print(e, roLookupByRO[e])
+    #for e in roLookupByRO:
+    #    print(e, roLookupByRO[e])
 
     for e in roLookupByName:
         print(e, roLookupByName[e])
+
+    # those in mgi vocab but not in RO set
+    #results = db.sql('select term from voc_term where _vocab_key = 82 order by term', 'auto')
+    #for r in results:
+    #    term = r['term']
+    #    if term not in roLookupByName:
+    #        print(term)

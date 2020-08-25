@@ -6,6 +6,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-16-2
+DATE: 08/25/2020
+STAFF: sc
+CHANGES: TR13272/GPAD 2.0/added lib/rolib.py
+
 TAG: goload-6-0-16-1
 DATE: 08/21/2020
 STAFF: sc
