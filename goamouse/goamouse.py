@@ -134,6 +134,7 @@
 
 import sys
 import os
+import datetime
 import db
 import reportlib
 
@@ -151,6 +152,7 @@ PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse mark
 
 gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
+gpad2Line = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
 # list of evidence codes that are skipped; that is, not loaded into MGI
@@ -173,6 +175,7 @@ pubmedeviErrorFile = None
 dupErrorFile = None
 gafFile = None
 gpadFile = None
+gpad2File = None
 annotFile = None
 uberonTextFile = None
 propertiesErrorFile = None
@@ -194,6 +197,7 @@ uberonLookup = {}	# uberon -> emapa lookup
 # gpad file
 # translate dag to qualifier (col 3)
 dagQualifier = {'C':'part_of', 'P':'involved_in', 'F':'enables'}
+dagQualifier2 = {'C':'RO:0001025', 'P':'RO:0002264', 'F':'RO:0002327'}
 ecoLookupByEco = {} 
 ecoLookupByEvidence = {} 
 
@@ -225,7 +229,7 @@ def initialize():
     global pubmedeviErrorFile 
     global dupErrorFile 
     global gafFile 
-    global gpadFile 
+    global gpadFile, gpad2File
     global annotFile 
     global uberonTextFile
     global propertiesErrorFile 
@@ -294,6 +298,9 @@ def initialize():
 
     gpadFile = reportlib.init('goamouse', \
         outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
+
+    gpad2File = reportlib.init('goamouse', \
+        outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad2')
 
     annotFile = reportlib.init('goamouse', \
         outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
@@ -705,6 +712,20 @@ def readGAF(inFile):
 
             #print evidence, gpadEvidence
             gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
+                taxID, modDate, assignedBy))
+
+            # for gpad2File, translate 'qualiferValue' and 'evidence'
+
+            gpadQualifier = dagQualifier2[dag]
+
+            if evidence in ecoLookupByEvidence:
+                gpadEvidence = ecoLookupByEvidence[evidence]
+            else:
+                gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
+
+            taxID = taxID.replace('taxon', 'NCBITaxon')
+            modDate = datetime.datetime.strptime(modDate, '%Y%m%d').strftime('%Y-%m-%d')
+            gpad2File.write(gpad2Line % (databaseID + ':' + mgiID, qualifierValue, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
                 taxID, modDate, assignedBy))
 
             continue
