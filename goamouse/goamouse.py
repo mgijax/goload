@@ -89,6 +89,8 @@
 #
 # History:
 #
+# lec   09/11/2020
+#       - TR13272/GO CalTech meeting/add gpad2, gaf2 output; used by reports_db/daily/GO_gene_association_2.0.py
 #
 # lec   05/17/2018
 #       - TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
@@ -548,7 +550,7 @@ def readGAF(inFile):
         databaseID = 'MGI'
         goaID = tokens[1]		# translate to MGI value
         goaSymbol = tokens[2]		# translate to MGI value
-        qualifierValue = tokens[3]
+        qualifierValue = tokens[3].strip()
         goID = tokens[4]
         refID = tokens[5]		# translate to MGI value
         checkrefID = refID
@@ -695,7 +697,8 @@ def readGAF(inFile):
         if not loadMGI:
 
             # for gafFile
-            #print 'symbol to gafFile: %s' % m['symbol']
+            #print('symbol to gafFile: %s|%s|' % m['symbol'], str(qualifierValue))
+
             gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
                 dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
 
@@ -703,7 +706,7 @@ def readGAF(inFile):
 
             gpadQualifier = dagQualifier[dag]
             if len(qualifierValue) > 0:
-                gpadQualifier = qualifierValue.strip() + '|' + gpadQualifier
+                gpadQualifier = qualifierValue + '|' + gpadQualifier
 
             if evidence in ecoLookupByEvidence:
                 gpadEvidence = ecoLookupByEvidence[evidence]
