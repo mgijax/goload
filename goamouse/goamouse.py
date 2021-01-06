@@ -9,24 +9,22 @@
 #       ${PROTEIN_SORTED}      the sorted GAF file
 #       ${ISOFORM_SORTED}      the sorted GAF file
 #
-#       The GAF 2.2 file contains:
-#               1  DB             
-#               2  DB Object ID    
-#               3  DB Object Symbol
-#               4  Qualifier      
-#               5  GO ID             
-#               6  DB:Reference (|DB:Reference)
-#               7  Evidence Code              
-#               8  With (or) From            
-#               9  Aspect                   
-#               10 DB Object Name          
-#               11 DB Object Synonym (|Synonym) 
-#               12 DB Object Type              
-#               13 Taxon(|taxon)              
-#               14 Date                      
-#               15 Assigned By              
-#               16 Annotation Extension    
-#               17 Gene Product Form ID   
+#       The GAF file contains:
+#
+#               field 1:  Database ID ('MGI')
+#               field 2:  GOA ID
+#               field 3:  Symbol
+#               field 4:  Qualifier value
+#               field 5:  GO ID
+#               field 6:  References (PMIDs)
+#               field 7:  Evidence code
+#               field 8:  Inferred From 
+#		field 10: GOA Name
+#		field 11: Synonyms
+#		field 12: Marker Type
+#		field 13: Taxom ID
+#               field 14: Modification Date
+#               field 15: Assigned By
 #
 # Outputs/Report:
 #
@@ -154,7 +152,6 @@ UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
 UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
 PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse marker: %s"
 
-# gaf2.2
 gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 gpad2Line = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
@@ -233,7 +230,7 @@ def initialize():
     global pubmedErrorFile 
     global pubmedeviErrorFile 
     global dupErrorFile 
-    global gafFile
+    global gafFile 
     global gpadFile, gpad2File
     global annotFile 
     global uberonTextFile
@@ -700,26 +697,7 @@ def readGAF(inFile):
         if not loadMGI:
 
             # for gafFile
-            # print('symbol to gafFile: %s|%s|' % m['symbol'], str(qualifierValue))
-
-            #
-            # goamouse/GAF 2.1 -> GAF 2.2 and attach to gene_association.mgi2
-            #
-            # Any line that has a NOT by itself will follow these rules:
-            # If column 9 is 'P', then column 4 should be 'NOT|acts_upstream_of_or_within'
-            # If column 9 is 'F', then column 4 should be 'NOT|enables'
-            # If column 9 is 'C' 
-            #   and the value in column 5 (GO:#######) matches one of the values in the protein complex table,
-            #   then column 4 should be 'NOT|part_of' # Else column 4 should be 'NOT|located_in'.
-            #
-            # Any line that doesn't have anything will follow these rules:
-            # If column 9 is 'P', then column 4 should be 'acts_upstream_of_or_within'
-            # If column 9 is 'F', then column 4 should be 'enables'
-            # If column 9 is 'C' 
-            #   and the value in column 5 (GO:#######) matches one of the values in the protein complex table,
-            #   then column 4 should be 'part_of'
-            # Else column 4 should be 'located_in'.
-            #
+            #print('symbol to gafFile: %s|%s|' % m['symbol'], str(qualifierValue))
 
             gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
                 dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
@@ -866,7 +844,6 @@ def closeFiles():
     reportlib.finish_nonps(dupErrorFile)
     reportlib.finish_nonps(gafFile)
     reportlib.finish_nonps(gpadFile)
-    reportlib.finish_nonps(gpad2File)
     reportlib.finish_nonps(annotFile)
     reportlib.finish_nonps(uberonTextFile)
     reportlib.finish_nonps(propertiesErrorFile)
