@@ -9,24 +9,24 @@
 #	${INFILE_NAME_GAF}	the GAF file in the input directory
 #	${JNUMBER}		the J number to use for the annotation load
 #
-# 	The GAF file contains:
-#       1.  DB                       MGI
-#       2.  DB Object ID             MGI:xxxx
-#       3.  DB Object Symbol 
-#       4.  Qualifier
-#       5.  GO ID                    GO:xxxx
-#       6.  DB:Reference(s)          MGI:MGI:xxxx|PMID:xxxx : PMID:21873635
-#       7.  Evidence Code            3-digit (not ECO:xxxx)
-#       8.  With (or)From            optional
-#       9.  Aspect (GO DAG Abbreviation (F, P, C)) 
-#       10. DB Object Name           optional
-#       11. DB Object Synonym(s)     optional
-#       12. DB Object Type
-#       13. Taxon                    taxon:10090
-#       14. Date                     YYYYMMDD
-#       15. Assigned By
-#       16. Annotation Extension     same as GPAD/col 11
-#       17. Gene Product Form ID     Isorform
+#       The GAF 2.2 file contains:
+#               1  DB             
+#               2  DB Object ID    
+#               3  DB Object Symbol
+#               4  Qualifier      
+#               5  GO ID             
+#               6  DB:Reference (|DB:Reference)
+#               7  Evidence Code              
+#               8  With (or) From            
+#               9  Aspect                   
+#               10 DB Object Name          
+#               11 DB Object Synonym (|Synonym) 
+#               12 DB Object Type              
+#               13 Taxon(|taxon)              
+#               14 Date                      
+#               15 Assigned By              
+#               16 Annotation Extension    
+#               17 Gene Product Form ID   
 #
 # Outputs:
 #
@@ -35,15 +35,17 @@
 # 	The annotation loader format has the following columns:
 #
 #	A tab-delimited file in the format:
-#		field 1: GO ID 		GAF field 5
-#		field 2: MGI ID 	GAF field 2
-#		field 3: J:
-#		field 4: Evidence Code 	GAF field 7
-#		field 5: Inferred From	GAF field 8
-#		field 6: Qualifier 	GAF field 4
-#		field 7: Editor 	GAF field 15
-#		field 8: Date 		GAF field 14
-#		field 9: none
+#		1  Accession ID of Vocabulary Term being Annotated to
+#		2  ID of MGI Object being Annotated (ex. MGI ID)
+#		3  J: (J:#####)
+#		4  Evidence Code Abbreviation (max length 5)
+#		5  Inferred From 
+#		6  Qualifier 
+#		7  Editor (max length 30)
+#		8  Date (MM/DD/YYYY)
+#		9  Notes 
+#		10 Logical DB Name of Object (leave null)
+#		11 Properties
 #
 # Report:
 #	TR 9962
@@ -196,7 +198,7 @@ def readGAF():
     #
 
     # see annotload/annotload.py for format
-    annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\n' 
+    annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
     for line in inFile.readlines():
 
@@ -205,20 +207,9 @@ def readGAF():
 
         tokens = str.split(line[:-1],'\t')
 
-        #       1.  DB                       MGI
-        #       2.  DB Object ID             MGI:xxxx
-        #       4.  Qualifier
-        #       5.  GO ID                    GO:xxxx
-        #       6.  DB:Reference(s)          MGI:MGI:xxxx|PMID:xxxx : PMID:21873635
-        #       7.  Evidence Code            3-digit (not ECO:xxxx)
-        #       8.  With (or)From            optional
-        #       14. Date                     YYYYMMDD
-        #       15. Assigned By
-        #
-
         databaseID = tokens[0]
         mgiID = tokens[1]
-        qualifier = tokens[3].lower()
+        qualifier = tokens[3]
         goID = tokens[4]
         dbRef = tokens[5]
         evidenceCode = tokens[6]
@@ -238,9 +229,6 @@ def readGAF():
             print('Invalid Evidence Code:  ', evidenceCode)
             continue
 
-        if qualifier in ['not']:
-            qualifier = 'NOT'
-
         #
         # only interested in: PANTHER:
         #
@@ -250,11 +238,45 @@ def readGAF():
             if i.find('PANTHER:') >= 0:
                 inferredFrom.append(i)
 
+        #
+        # start : column 11 (properties)
+        #
+        
+        #
+        # if column 4 is not None and 
+        #       column 4 is not in('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to')
+        #       then
+        #
+        #       if column 4 = NOT|$ ($=string) 
+        #               then property = 'go_qualfier' value = 'not' + value
+        #       else 
+        #               then property = 'go_qualfier' value = + value
+        #
+
+        mgiproperties = ''
+
+        if qualifier != '' and qualifier != None and qualifier not in ('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to'):
+            if qualifier.startswith('NOT|'):
+                qtoken = qualifier.split('|')
+                qualifier = 'NOT'
+                if len(mgiproperties) > 0:
+                    mgiproperties = mgiproperties + '&==&'
+                mgiproperties += 'go_qualifier&=&' + qtoken[1]
+            else:
+                if len(mgiproperties) > 0:
+                    mgiproperties = mgiproperties + '&==&'
+                mgiproperties += 'go_qualifier&=&' + qualifier
+                qualifier = ''
+
+        #
+        # end : column 11
+        #
+
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
         # (mgiID, goID, evidenceCode, jnumID)
 
-        annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(inferredFrom), qualifier, createdBy, modDate))
+        annotFile.write(annotLine % (goID, mgiID, jnumID, evidenceCode, '|'.join(inferredFrom), qualifier, createdBy, modDate, mgiproperties))
 
     return 0
 

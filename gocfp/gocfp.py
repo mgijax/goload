@@ -9,15 +9,23 @@
 #       ${INFILE_NAME_GAF}	the GAF file
 #
 # 	The GAF file contains:
-#
-#		field 1: Database ID (MGI)
-#		field 2: MGI ID (MGI:###)
-#		field 4: Qualifier
-#		field 5: GO ID
-#		field 6: MGI:MGI:#### (reference)
-#	        field 7: Evidence code
-#	        field 8: With (inferred from)
-#		field 14: Modification Date
+#               1  DB             
+#               2  DB Object ID    
+#               3  DB Object Symbol
+#               4  Qualifier      
+#               5  GO ID             
+#               6  DB:Reference (|DB:Reference)
+#               7  Evidence Code              
+#               8  With (or) From            
+#               9  Aspect                   
+#               10 DB Object Name          
+#               11 DB Object Synonym (|Synonym) 
+#               12 DB Object Type              
+#               13 Taxon(|taxon)              
+#               14 Date                      
+#               15 Assigned By              
+#               16 Annotation Extension    
+#               17 Gene Product Form ID   
 #
 # Outputs:
 #
@@ -27,15 +35,17 @@
 # 	The annotation loader format has the following columns:
 #
 #	A tab-delimited file in the format:
-#		field 1: GO ID 		GAF field 5
-#		field 2: MGI ID 	GAF field 2
-#		field 3: J:157226
-#		field 4: Evidence Code 	GAF field 7 (IC)
-#		field 5: Inferred From	GAF field 8
-#		field 6: Qualifier 	GAF field 4
-#		field 7: Editor 	GAF field 15
-#		field 8: Date 		GAF field 14
-#		field 9: none
+#		1  Accession ID of Vocabulary Term being Annotated to
+#		2  ID of MGI Object being Annotated (ex. MGI ID)
+#		3  J: (J:#####)
+#		4  Evidence Code Abbreviation (max length 5)
+#		5  Inferred From 
+#		6  Qualifier 
+#		7  Editor (max length 30)
+#		8  Date (MM/DD/YYYY)
+#		9  Notes 
+#		10 Logical DB Name of Object (leave null)
+#		11 Properties
 #
 # Report:
 #	TR 10011
@@ -148,7 +158,7 @@ def readGAF():
     #
 
     # see annotload/annotload.py for format
-    annotLine = '%s\t%s\t%s\t%s\t%s\t\t%s\t%s\t\n' 
+    annotLine = '%s\t%s\t%s\t%s\t%s\t\t%s\t%s\t\t\t\n' 
 
     for line in inFile.readlines():
 
@@ -157,20 +167,8 @@ def readGAF():
 
         tokens = str.split(line[:-1], '\t')
 
-        #
-        # field 1: Database ID (MGI)
-        # field 2: MGI ID (MGI:###)
-        # field 4: Qualifier
-        # field 5: GO ID
-        # field 6: MGI:MGI:#### (reference)
-        # field 7: Evidence code
-        # field 8: With (inferred from)
-        # field 14: Modification Date
-        #
-
         databaseID = tokens[0]
         mgiID = tokens[1]
-        qualifier = tokens[3]
         goID = tokens[4]
         references = str.split(tokens[5], '|')
         evidenceCode = tokens[6]

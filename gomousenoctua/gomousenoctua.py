@@ -10,7 +10,6 @@
 #       ${PRINFILE_NAME_GPAD}      the PR GPAD file
 #
 #       The GPAD file contains:
-#
 #               field 1:  Database ID ('MGI')
 #		field 2:  DB Object ID
 #               field 3:  Qualifier
@@ -29,17 +28,17 @@
 # 	The annotation loader format has the following columns:
 #
 #	A tab-delimited file in the format:
-#		field 1: Accession ID of Vocabulary Term being Annotated to
-#		field 2: ID of MGI Object being Annotated (ex. MGI ID)
-#		field 3: J: (J:#####)
-#		field 4: Evidence Code Abbreviation (max length 5)
-#		field 5: Inferred From 
-#		field 6: Qualifier 
-#		field 7: Editor (max length 30)
-#		field 8: Date (MM/DD/YYYY)
-#		field 9: Notes 
-#		field 10: Logical DB Name of Object (leave null)
-#		field 11: Properties
+#		1  Accession ID of Vocabulary Term being Annotated to
+#		2  ID of MGI Object being Annotated (ex. MGI ID)
+#		3  J: (J:#####)
+#		4  Evidence Code Abbreviation (max length 5)
+#		5  Inferred From 
+#		6  Qualifier 
+#		7  Editor (max length 30)
+#		8  Date (MM/DD/YYYY)
+#		9  Notes 
+#		10 Logical DB Name of Object (leave null)
+#		11 Properties
 #
 # Usage:
 #       gomousenoctua.py

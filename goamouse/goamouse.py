@@ -9,22 +9,24 @@
 #       ${PROTEIN_SORTED}      the sorted GAF file
 #       ${ISOFORM_SORTED}      the sorted GAF file
 #
-#       The GAF file contains:
-#
-#               field 1:  Database ID ('MGI')
-#               field 2:  GOA ID
-#               field 3:  Symbol
-#               field 4:  Qualifier value
-#               field 5:  GO ID
-#               field 6:  References (PMIDs)
-#               field 7:  Evidence code
-#               field 8:  Inferred From 
-#		field 10: GOA Name
-#		field 11: Synonyms
-#		field 12: Marker Type
-#		field 13: Taxom ID
-#               field 14: Modification Date
-#               field 15: Assigned By
+#       The GAF 2.2 file contains:
+#               1  DB             
+#               2  DB Object ID    
+#               3  DB Object Symbol
+#               4  Qualifier      
+#               5  GO ID             
+#               6  DB:Reference (|DB:Reference)
+#               7  Evidence Code              
+#               8  With (or) From            
+#               9  Aspect                   
+#               10 DB Object Name          
+#               11 DB Object Synonym (|Synonym) 
+#               12 DB Object Type              
+#               13 Taxon(|taxon)              
+#               14 Date                      
+#               15 Assigned By              
+#               16 Annotation Extension    
+#               17 Gene Product Form ID   
 #
 # Outputs/Report:
 #
@@ -90,7 +92,7 @@
 # History:
 #
 # lec   09/11/2020
-#       - TR13272/GO CalTech meeting/add gpad2, gaf2 output; used by reports_db/daily/GO_gene_association_2.0.py
+#       - TR13272/GO CalTech meeting/add gpad2.0, gaf/2.2 output; used by reports_db/daily/GO_gene_association_2.0.py
 #
 # lec   05/17/2018
 #       - TR11975/add new GOA_, NOCTUA_ MGI_User, if needed
@@ -152,9 +154,9 @@ UBERON_MAPPING_MULTIPLES_ERROR = "uberon id has > 1 emapa : %s\t%s"
 UBERON_MAPPING_MISSING_ERROR = "uberon id not found or missing emapa id: %s" 
 PROPERTIES_ACCID_INVALID_ERROR = "accession id is not associated with mouse marker: %s"
 
+# gaf2.2
 gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
-gpad2Line = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
 # list of evidence codes that are skipped; that is, not loaded into MGI
@@ -177,7 +179,6 @@ pubmedeviErrorFile = None
 dupErrorFile = None
 gafFile = None
 gpadFile = None
-gpad2File = None
 annotFile = None
 uberonTextFile = None
 propertiesErrorFile = None
@@ -199,7 +200,7 @@ uberonLookup = {}	# uberon -> emapa lookup
 # gpad file
 # translate dag to qualifier (col 3)
 dagQualifier = {'C':'part_of', 'P':'involved_in', 'F':'enables'}
-dagQualifier2 = {'C':'RO:0001025', 'P':'RO:0002264', 'F':'RO:0002327'}
+#dagQualifier = {'C':'RO:0001025', 'P':'RO:0002264', 'F':'RO:0002327'}
 ecoLookupByEco = {} 
 ecoLookupByEvidence = {} 
 
@@ -230,8 +231,8 @@ def initialize():
     global pubmedErrorFile 
     global pubmedeviErrorFile 
     global dupErrorFile 
-    global gafFile 
-    global gpadFile, gpad2File
+    global gafFile
+    global gpadFile
     global annotFile 
     global uberonTextFile
     global propertiesErrorFile 
@@ -300,9 +301,6 @@ def initialize():
 
     gpadFile = reportlib.init('goamouse', \
         outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad')
-
-    gpad2File = reportlib.init('goamouse', \
-        outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.gpad2')
 
     annotFile = reportlib.init('goamouse', \
         outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.annot')
@@ -550,7 +548,7 @@ def readGAF(inFile):
         databaseID = 'MGI'
         goaID = tokens[1]		# translate to MGI value
         goaSymbol = tokens[2]		# translate to MGI value
-        qualifierValue = tokens[3].strip()
+        qualifier = tokens[3]
         goID = tokens[4]
         refID = tokens[5]		# translate to MGI value
         checkrefID = refID
@@ -579,7 +577,7 @@ def readGAF(inFile):
             mgiErrorFile.write(line)
             continue
 
-        # skip it if there is not PubMed ID
+        # skip it if there is no PubMed ID
 
         if refID[0:5] != 'PMID:':
             if line.find('Reactome') >= 0:
@@ -587,9 +585,8 @@ def readGAF(inFile):
                         unresolvedBErrorFile.write(line)
                 else:
                         m = assoc[goaID]
-                        line = line.replace('UniProtKB', 'MGI');
-                        line = line.replace(goaID, m[0])
-                        gafFile.write(line)
+                        gafWrite('MGI', m[0], goaSymbol, qualifier, goID, refID, evidence, inferredFrom,\
+                                dag, goaName, synonyms, markerType, taxID, modDate, assignedBy)
             else:
                 nopubmedFile.write(line)
             continue
@@ -696,39 +693,21 @@ def readGAF(inFile):
 
         if not loadMGI:
 
-            # for gafFile
-            #print('symbol to gafFile: %s|%s|' % m['symbol'], str(qualifierValue))
-
-            gafFile.write(gafLine % (databaseID, mgiID, m['symbol'], qualifierValue, goID, refID, evidence, inferredFrom,\
-                dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy))
+            gafWrite(databaseID, mgiID, m['symbol'], qualifier, goID, refID, evidence, inferredFrom,\
+                dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy)
 
             # for gpadFile, translate 'qualiferValue' and 'evidence'
 
             gpadQualifier = dagQualifier[dag]
-            if len(qualifierValue) > 0:
-                gpadQualifier = qualifierValue + '|' + gpadQualifier
+            if len(qualifier) > 0:
+                gpadQualifier = qualifier + '|' + gpadQualifier
 
             if evidence in ecoLookupByEvidence:
                 gpadEvidence = ecoLookupByEvidence[evidence]
             else:
                 gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
 
-            #print evidence, gpadEvidence
             gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
-                taxID, modDate, assignedBy))
-
-            # for gpad2File, translate 'qualiferValue' and 'evidence'
-
-            gpadQualifier = dagQualifier2[dag]
-
-            if evidence in ecoLookupByEvidence:
-                gpadEvidence = ecoLookupByEvidence[evidence]
-            else:
-                gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
-
-            taxID = taxID.replace('taxon', 'NCBITaxon')
-            modDate = datetime.datetime.strptime(modDate, '%Y%m%d').strftime('%Y-%m-%d')
-            gpad2File.write(gpad2Line % (databaseID + ':' + mgiID, qualifierValue, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
                 taxID, modDate, assignedBy))
 
             continue
@@ -767,14 +746,40 @@ def readGAF(inFile):
         properties = properties.replace(',', '&==&')
         properties = properties.replace('|', '&===&')
 
-        #
-        # end : column 16
-        #
-
         if len(mgiproperties) > 0 and len(properties) > 0:
             mgiproperties = mgiproperties + '&==&' + properties
         else:
             mgiproperties = properties
+
+
+        #
+        # if column 4 is not None and 
+        #       column 4 is not in('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to')
+        #       then
+        #
+        #       if column 4 = NOT|$ ($=string) 
+        #               then property = 'go_qualfier' value = 'NOT' + value
+        #       else 
+        #               then property = 'go_qualfier' value = + value
+        #
+
+        if qualifier != '' and qualifier != None and qualifier not in ('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to'):
+            print(qualifier)
+            if qualifier.startswith('NOT|'):
+                qtoken = qualifier.split('|')
+                qualifier = 'NOT'
+                if len(mgiproperties) > 0:
+                    mgiproperties = mgiproperties + '&==&'
+                mgiproperties += 'go_qualifier&=&' + qtoken[1]
+            else:
+                if len(mgiproperties) > 0:
+                    mgiproperties = mgiproperties + '&==&'
+                mgiproperties += 'go_qualifier&=&' + qualifier
+                qualifier = ''
+
+        #
+        # end : column 16
+        #
 
         #
         # if mgiassignedBy does not exist in MGI_User, then add it
@@ -802,7 +807,7 @@ def readGAF(inFile):
             db.commit()
             userLookup.append(addNoctua)
 
-        n = (goID, mgiID, jnumID, evidence, qualifierValue, mgiassignedBy, modDate, mgiproperties)
+        n = (goID, mgiID, jnumID, evidence, qualifier, mgiassignedBy, modDate, mgiproperties)
 
         if n not in newannot:
             newannot[n] = []
@@ -812,6 +817,54 @@ def readGAF(inFile):
     inFile.close()
 
     return 0
+
+#
+# write to gaf file
+#
+def gafWrite(databaseID, mgiID, symbol, qualifier, goID, refID, evidence, inferredFrom,\
+                dag, name, synonyms, markerType, taxID, modDate, assignedBy):
+
+        #
+        # goamouse/GAF 2.1 -> GAF 2.2 and attach to gene_association.mgi2
+        #
+        # If column 4 == 'NOT' (by itself)
+        #   If column 9 is 'P', then column 4 should be 'NOT|acts_upstream_of_or_within'
+        #   If column 9 is 'F', then column 4 should be 'NOT|enables'
+        #   If column 9 is 'C' 
+        #           and the value in column 5 (GO:#######) matches one of the values in the protein complex table,
+        #           then column 4 should be 'NOT|part_of' # Else column 4 should be 'NOT|located_in'.
+        #
+        # Else:
+        #   If column 9 is 'P', then column 4 should be 'acts_upstream_of_or_within'
+        #   If column 9 is 'F', then column 4 should be 'enables'
+        #   If column 9 is 'C' 
+        #           and the value in column 5 (GO:#######) matches one of the values in the protein complex table,
+        #           then column 4 should be 'part_of'
+        #
+        #   Else column 4 should be 'located_in'.
+        #
+
+        if qualifier == 'NOT':
+                if dag == 'P':
+                        qualifier = 'NOT|acts_upstream_of_or_within'
+                elif dag == 'F':
+                        qualifier = 'NOT|enables'
+                elif dag == 'C':
+                        qualifier = 'NOT|part_of'
+                else:
+                        qualifier = 'located_in'
+        else:
+                if dag == 'P':
+                        qualifier = 'acts_upstream_of_or_within'
+                elif dag == 'F':
+                        qualifier = 'enables'
+                elif dag == 'C':
+                        qualifier = 'part_of'
+                else:
+                        qualifier = 'located_in'
+
+        gafFile.write(gafLine % (databaseID, mgiID, symbol, qualifier, goID, refID, evidence, inferredFrom,\
+                dag, name, synonyms, markerType, taxID, modDate, assignedBy))
 
 #
 # write error files and close all files

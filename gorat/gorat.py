@@ -8,30 +8,39 @@
 #
 #       ${INFILE_NAME_GAF}      the GAF file
 #
-#       The GAF file contains:
-#
-#               field 1: Database ID (RGD or UniProtKB)
-#               field 2: RGD ID (12345)
-#               field 4: Qualifier value
-#               field 5: GO ID
-#               field 6: RGD|PMID
-#               field 7: Evidence code
-#               field 8: Inferred From
-#               field 14: Modification Date
-#               field 15: Assigned By
+#       The GAF 2.1 file contains:
+#               1  DB             
+#               2  DB Object ID    
+#               3  DB Object Symbol
+#               4  Qualifier      
+#               5  GO ID             
+#               6  DB:Reference (|DB:Reference)
+#               7  Evidence Code              
+#               8  With (or) From            
+#               9  Aspect                   
+#               10 DB Object Name          
+#               11 DB Object Synonym (|Synonym) 
+#               12 DB Object Type              
+#               13 Taxon(|taxon)              
+#               14 Date                      
+#               15 Assigned By              
+#               16 Annotation Extension    
+#               17 Gene Product Form ID   
 #
 #       The annotation loader format has the following columns:
 #
 #       A tab-delimited file in the format:
-#               field 1: Accession ID of Vocabulary Term being Annotated to
-#               field 2: ID of MGI Object being Annotated (ex. MGI ID)
-#               field 3: J::155856
-#               field 4: Evidence Code Abbreviation = ISO
-#               field 5: Inferred From = UniProt ID
-#               field 6: Qualifier = null
-#               field 7: Editor = RGD
-#               field 8: Date (MM/DD/YYYY)
-#               field 9: Notes 
+#		1  Accession ID of Vocabulary Term being Annotated to
+#		2  ID of MGI Object being Annotated (ex. MGI ID)
+#		3  J: (J:#####)
+#		4  Evidence Code Abbreviation (max length 5)
+#		5  Inferred From 
+#		6  Qualifier 
+#		7  Editor (max length 30)
+#		8  Date (MM/DD/YYYY)
+#		9  Notes 
+#		10 Logical DB Name of Object (leave null)
+#		11 Properties
 #
 # Usage:
 #       gorat.py
@@ -42,7 +51,7 @@
 # lec	01/13/2014
 #	- TR11570/11571/qualifier contains "_" in both input and MGI
 #	- use VOC_Term instead of MGI_Synonym
-#	- fix qualifierValue verification ('not') bug
+#	- fix qualifier verification ('NOT') bug
 #	- fix clusterID bug
 #
 # sc    02/2013 - N2MO/TR6519 - updated go use MRK_Cluster* tables with new rules
@@ -136,7 +145,7 @@ def preprocess():
         databaseID = tokens[0]
         ratID = tokens[1]
         symbol = tokens[2]
-        qualifierValue = tokens[3].lower()
+        qualifier = tokens[3]
         goID = tokens[4]
         references = tokens[5]
         evidenceCode = tokens[6]
@@ -155,8 +164,8 @@ def preprocess():
                 (mgiID, cID) = str.split(ids, '|')
                 clusterID = cID
 
-        if len(qualifierValue) > 0 and qualifierValue[:3] == 'not':
-            #print 'qualifierValue has NOT data: %s ' % line
+        if len(qualifier) > 0 and qualifier[:3] == 'NOT':
+            #print 'qualifier has NOT data: %s ' % line
             if clusterID not in clusterIDsWithNotDict:
                 clusterIDsWithNotDict[clusterID] = []
             clusterIDsWithNotDict[clusterID].append(goID)
@@ -359,22 +368,11 @@ def readGAF():
         if line[0] == '!':
             continue
 
-        # field 1: Database ID (RGD or UniProtKB)
-        # field 2: RGD ID or UniProtKB ID
-        # field 3: Symbol
-        # field 4: Qualifier value
-        # field 5: GO ID
-        # field 6: RGD|PMID
-        # field 7: Evidence code
-        # field 8: Inferred From
-        # field 14: Modification Date
-        # field 15: Assigned By
-
         tokens = str.split(line[:-1], '\t')
 
         databaseID = tokens[0]
         ratID = tokens[0] + ':' + tokens[1]
-        qualifierValue = tokens[3].lower()
+        qualifier = tokens[3]
         goID = tokens[4]
         references = tokens[5]
         evidenceCode = tokens[6]
@@ -431,7 +429,7 @@ def readGAF():
         # NOT|colocalizes_with
         # NOT|contributes_to
 
-        if len(qualifierValue) > 0 and qualifierValue[:3] == 'not':
+        if len(qualifier) > 0 and qualifier[:3] == 'NOT':
             errorFile.write(str(lineNum) + '\tIS_RAT_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
             continue
 
@@ -492,6 +490,32 @@ def readGAF():
             continue
 
         #
+        # if column 4 is not None and 
+        #       column 4 is not in('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to')
+        #       then
+        #
+        #       if column 4 = NOT|$ ($=string) 
+        #               then property = 'go_qualfier' value = 'NOT' + value
+        #       else 
+        #               then property = 'go_qualfier' value = + value
+        #
+
+        if qualifier != '' and qualifier != None \
+                and qualifier not in ('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to'):
+
+            if qualifier.startswith('NOT|'):
+                qtoken = qualifier.split('|')
+                qualifier = 'NOT'
+                if len(properties) > 0:
+                    properties = properties + '&==&'
+                properties += 'go_qualifier&=&' + qtoken[1]
+            else:
+                if len(properties) > 0:
+                    properties = properties + '&==&'
+                properties += 'go_qualifier&=&' + qualifier
+                qualifier = ''
+
+        #
         # For each mouse marker in the class, determine if new annotation
         # dup annotation, or already created annotation with additional properties
         #
@@ -499,7 +523,7 @@ def readGAF():
 
             # new annotloadLine sans modDate, note, properties
             annotloadLine = annotLine % \
-                (goID, mgiID, jnumID, new_evidenceCode, new_inferredFrom, qualifierValue, editor)
+                (goID, mgiID, jnumID, new_evidenceCode, new_inferredFrom, qualifier, editor)
             
             # this annotation not yet in the dictionary
             if annotloadLine not in annotToWriteDict:
