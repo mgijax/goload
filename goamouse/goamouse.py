@@ -199,8 +199,7 @@ uberonLookup = {}	# uberon -> emapa lookup
 
 # gpad file
 # translate dag to qualifier (col 3)
-dagQualifier = {'C':'part_of', 'P':'involved_in', 'F':'enables'}
-#dagQualifier = {'C':'RO:0001025', 'P':'RO:0002264', 'F':'RO:0002327'}
+dagQualifier = {'C':'RO:0001025', 'P':'RO:0002264', 'F':'RO:0002327'}
 ecoLookupByEco = {} 
 ecoLookupByEvidence = {} 
 
@@ -696,18 +695,19 @@ def readGAF(inFile):
             gafWrite(databaseID, mgiID, m['symbol'], qualifier, goID, refID, evidence, inferredFrom,\
                 dag, m['name'], synonyms, m['markerType'], taxID, modDate, assignedBy)
 
-            # for gpadFile, translate 'qualiferValue' and 'evidence'
+            # for gpadFile, translate 'qualifer' and 'evidence'
 
             gpadQualifier = dagQualifier[dag]
-            if len(qualifier) > 0:
-                gpadQualifier = qualifier + '|' + gpadQualifier
 
             if evidence in ecoLookupByEvidence:
                 gpadEvidence = ecoLookupByEvidence[evidence]
             else:
                 gpadEvidence = 'error:cannot find ECO equivalent:%' % (evidence)
 
-            gpadFile.write(gpadLine % (databaseID, mgiID, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
+            taxID = taxID.replace('taxon', 'NCBITaxon')
+            modDate = datetime.datetime.strptime(modDate, '%Y%m%d').strftime('%Y-%m-%d')
+
+            gpadFile.write(gpadLine % (databaseID + ':' + mgiID, qualifier, gpadQualifier, goID, refID, gpadEvidence, inferredFrom,\
                 taxID, modDate, assignedBy))
 
             continue
