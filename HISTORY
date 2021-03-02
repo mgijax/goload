@@ -4,6 +4,7 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
+${MIRROR_WGET}/download_package current.geneontology.org/annotations/rgd.gaf.gz
 
 TAG: goload-6-0-16-4
 DATE: 02/19/2021
