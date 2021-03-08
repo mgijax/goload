@@ -48,6 +48,9 @@ ${GOLOAD}/goahuman/goahuman.sh | tee -a ${GOLOG} || exit 1
 echo '6:running GO/CFP Load' | tee -a ${GOLOG}
 ${GOLOAD}/gocfp/gocfp.sh | tee -a ${GOLOG} || exit 1
 
+echo 'processing protein complex go_qualifier/part_of' | tee -a ${GOLOG}
+${GOLOAD}/proteincomplex.sh | tee -a ${GOLOG} || exit 1
+
 echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 

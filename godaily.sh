@@ -33,6 +33,9 @@ ${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
 ${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
 
+echo 'processing protein complex go_qualifier/part_of' | tee -a ${GOLOG}
+${GOLOAD}/proteincomplex.sh | tee -a ${GOLOG} || exit 1
+
 echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 
