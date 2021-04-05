@@ -5,6 +5,12 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-16-?
+DATE: 04/05/2021
+STAFF: lec
+TR13486/goload/GO_Central/skip withdrawn marker
+gorefgen
+
 TAG: goload-6-0-16-7
 TAG: goload-6-0-16-6
 DATE: 04/05/2021

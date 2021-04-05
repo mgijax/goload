@@ -102,6 +102,10 @@ inFileName = None
 # GAF file pointer
 inFile = None
 
+# LOG_CUR file
+logCurName = None
+logCur = None
+
 # annotation formatted file
 annotFileName = None
 # annotation file pointer
@@ -128,6 +132,7 @@ evidenceCodeList = {}
 def initialize():
 
     global inFileName, inFile
+    global logCurFileName, logCurFile
     global annotFileName, annotFile
     global errorFileName, errorFile
     global jnumID
@@ -141,12 +146,20 @@ def initialize():
     inFileName =  os.environ['INFILE_NAME_GAF']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
+    logCurFileName = os.environ['LOG_CUR']
     jnumID = os.environ['JNUMBER']
 
     try:
         inFile = open(inFileName, 'r')
     except:
         print('Cannot open input file: ' + inFileName)
+        return 1
+
+    # this file is created/opened by wrapper
+    try:
+        logCurFile = open(logCurFileName, 'a+')
+    except:
+        print('Cannot open log curator file for writing: ' + logCurFileName)
         return 1
 
     try:
@@ -162,15 +175,15 @@ def initialize():
         return 1
 
     #
-    # list of markers type 'gene'
+    # list of markers type 'gene', status in (1,3) (no withdrawns)
     #
     results = db.sql('''select a.accID
               from MRK_Marker m, ACC_Accession a
               where m._Marker_Type_key = 1
               and m._Marker_key = a._Object_key
+              and m._Marker_Status_key in (1,3)
               and a._MGIType_key = 2
               and a._LogicalDB_key = 1
-              and a.preferred = 1
           ''', 'auto')
 
     for r in results:
@@ -223,10 +236,11 @@ def readGAF():
             continue
 
         if mgiID not in markerList:
+            logCurFile.write('Withdrawn or Non-Gene Marker\n' + line + '\n')
             continue
 
         if evidenceCode not in evidenceCodeList:
-            print('Invalid Evidence Code:  ', evidenceCode)
+            logCurFile.write('Invalid Evidence\n' + line + '\n')
             continue
 
         #
@@ -288,6 +302,9 @@ def closeFiles():
     inFile.close()
     annotFile.close()
     errorFile.close()
+
+    # this file is opened/closed by wrapper
+    #logCur.close()
 
     return 0
 
