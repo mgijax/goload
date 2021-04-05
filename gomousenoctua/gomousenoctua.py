@@ -116,7 +116,8 @@ goqualifiersLookup = [
 'acts_upstream_of',
 'acts_upstream_of_positive_effect',
 'acts_upstream_of_negative_effect',
-'involved_in'
+'involved_in',
+'located_in'
 ]
 
 #
@@ -175,12 +176,14 @@ def initialize():
         if line[:1] == '!':
             continue
         tokens = line[:-1].split('\t')
-        if tokens[0] in gpiSet:
-            key = tokens[0] + ':' + tokens[1]
-            value = tokens[7].replace('MGI:MGI:', 'MGI:')
+        tokens2 = tokens[0].split(':')
+        if tokens2[0] in gpiSet:
+            key = tokens[0]
+            value = tokens[6].replace('MGI:MGI:', 'MGI:')
             if key not in gpiLookup:
                 gpiLookup[key] = []
             gpiLookup[key].append(value)
+    print(gpiLookup)
 
     #
     # lookup file of Evidence Code Ontology using ecolib.py library

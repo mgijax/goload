@@ -5,6 +5,14 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-16-6
+DATE: 04/05/2021
+STAFF: lec
+TR13490/Annotations are being incorrectly filtered from the Noctua load
+gomousenoctua
+1) add user 'NOCTUA_GO_Noctua' to MGI_User
+2) gpi changed from "PR  xxxx" to "PR:xxxx"
+
 TAG: goload-6-0-16-5
 DATE: 03/08/2021
 STAFF: lec
