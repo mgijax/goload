@@ -40,6 +40,9 @@
 #		10 Logical DB Name of Object (leave null)
 #		11 Properties
 #
+#       pubmed.error
+#               file of unique PubMed IDs that are not in MGI
+#
 # Usage:
 #       gomousenoctua.py
 #
@@ -56,6 +59,7 @@
 import sys 
 import os
 import db
+import reportlib
 
 goloadpath = os.environ['GOLOAD'] + '/lib'
 sys.path.insert(0, goloadpath)
@@ -78,6 +82,10 @@ annotFile = None
 errorFileName = None
 # error file pointer
 errorFile = None
+
+# pubmed ids
+pubmedErrorFile = None
+pubmedUnique = []
 
 # lookup file of mgi ids or pubmed ids -> J:
 # mgi id:jnum id
@@ -129,6 +137,7 @@ def initialize():
     global prInFileName, prInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
+    global pubmedErrorFile 
     global mgiRefLookup
     global gpiFileName, gpiFile, gpiLookup
     global ecoLookupByEco
@@ -151,6 +160,8 @@ def initialize():
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
+
+    pubmedErrorFile = reportlib.init('pubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     #
     # lookup file of mgi ids or pubmed ids -> J:
@@ -183,7 +194,7 @@ def initialize():
             if key not in gpiLookup:
                 gpiLookup[key] = []
             gpiLookup[key].append(value)
-    print(gpiLookup)
+    #print(gpiLookup)
 
     #
     # lookup file of Evidence Code Ontology using ecolib.py library
@@ -214,7 +225,7 @@ def initialize():
         key = r['goref']
         value = r['jnum']
         goRefLookup[key] = value
-    print(goRefLookup)
+    #print(goRefLookup)
 
     return 0
 
@@ -222,6 +233,7 @@ def initialize():
 # Purpose: Read MGI GPAD file and generate Annotation file
 #
 def readGPAD(gpadInFile):
+    global pubmedUnique
 
     #
     #	for each row in the GPAD file (MGIINFILE_NAME_GPAD, PRINFILE_NAME_GPAD):
@@ -324,8 +336,11 @@ def readGPAD(gpadInFile):
                 jnumID = goRefLookup[refID]
                 jnumIDFound = 1
 
-        # if reference does not exist...skip it
+            if not jnumIDFound:
+                if refID not in pubmedUnique:
+                    pubmedUnique.append(refID)
 
+        # if reference does not exist...skip it
         if not jnumIDFound:
             errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
             continue
@@ -414,10 +429,16 @@ def readGPAD(gpadInFile):
 #
 def closeFiles():
 
+    # write out unique pubmed ids that are not found in MGI
+    for p in pubmedUnique:
+        pubmedErrorFile.write('PMID:' + p + '\n')
+
     mgiInFile.close()
     prInFile.close()
     annotFile.close()
     errorFile.close()
+    reportlib.finish_nonps(pubmedErrorFile)
+
     return 0
 
 #

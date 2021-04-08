@@ -245,7 +245,6 @@ def initialize():
     global annotByGOID
     global annotByRef
     global pubmed
-    global pubmedUnique
     global pubmedEvidence
     global uberonLookup
     global ecoLookupByEco, ecoLookupByEvidence
@@ -533,6 +532,7 @@ def initialize():
 #
 def readGAF(inFile):
     global userLookup
+    global pubmedUnique
 
     for line in inFile.readlines():
 
