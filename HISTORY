@@ -5,8 +5,8 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
-TAG: goload-6-0-16-?
-DATE: 04/07/2021
+TAG: goload-6-0-16-9
+DATE: 04/08/2021
 STAFF: lec
 TR13307/Adding PMIDS from Noctua load into MGI
 gomousenoctua
