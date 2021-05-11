@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-17-1
+DATE: 05/11/2021
+STAFF: lec
+TR13349/Genome Build 39
+
 TAG: goload-6-0-16-9
 DATE: 04/08/2021
 STAFF: lec
