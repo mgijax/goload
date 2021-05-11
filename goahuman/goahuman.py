@@ -107,7 +107,7 @@ isNotDict = {}
 goaExistsDict = {}
 
 # Dict of number of members by class
-# {clusterID:numMembers, ...}
+# {clusterId:numMembers, ...}
 memberNumDict = {}
 
 # list of all Biological Process GO Ids
@@ -115,13 +115,13 @@ memberNumDict = {}
 bioProcessList = []
 
 # cluster IDs mapped to goa NOT GO IDs 
-clusterIDsWithNotDict = {}
+clusterIdsWithNotDict = {}
 
 #
 # Purpose: Create lookup of MGI clusters with human NOT annotations
 #
 def preprocess(inFile):
-    global clusterIDsWithNotDict
+    global clusterIdsWithNotDict
 
     for line in inFile.readlines():
         if line[0] == '!':
@@ -141,7 +141,7 @@ def preprocess(inFile):
         assignedBy = tokens[14]
         note = ''
         properties = ''
-        clusterID = ''
+        clusterId = 0
 
         # if goa/mouse orthology by UniProt ID get cluster ID
         if goaID in goaIdDict:
@@ -149,13 +149,12 @@ def preprocess(inFile):
             # cluster will be the same for all markers with this goaID
             for ids in mgiIDandClusterIDList:
                 (mgiID, cID) = str.split(ids, '|')
-                clusterID = cID
+                clusterId = int(cID)
 
         if len(qualifier) > 0 and qualifier[:3] == 'NOT':
-            #print 'qualifier has NOT data: %s ' % line
-            if clusterID not in clusterIDsWithNotDict:
-                clusterIDsWithNotDict[clusterID] = []
-            clusterIDsWithNotDict[clusterID].append(goID)
+            if clusterId not in clusterIdsWithNotDict:
+                clusterIdsWithNotDict[clusterId] = []
+            clusterIdsWithNotDict[clusterId].append(goID)
 
     inFile.close()
 
@@ -201,11 +200,11 @@ def initialize():
     # 4. MGI GO annotations to J:73065
     #
 
-    db.sql('''select c.clusterID, cm.*, m._Organism_key
+    db.sql('''select cm.*, m._Organism_key
         into temp mouse
         from MRK_Cluster c, MRK_ClusterMember cm, MRK_Marker m
         where c._ClusterType_key = 9272150
-        and c._ClusterSource_key = 9272151
+        and c._ClusterSource_key = 75885739
         and c._Cluster_key = cm._Cluster_key
         and cm._Marker_key = m._Marker_key
         and m._Organism_key = 1
@@ -213,35 +212,35 @@ def initialize():
         and lower(m.symbol) not  like 'gm%'
         and lower(m.name) not like '%predicted%' ''', None)
 
-    db.sql('create index m_idx1 on mouse(clusterID)', None)
+    db.sql('create index m_idx1 on mouse(_Cluster_key)', None)
 
-    db.sql('''select c.clusterID, cm.*, m._Organism_key
+    db.sql('''select cm.*, m._Organism_key
         into temp human
         from MRK_Cluster c, MRK_ClusterMember cm, MRK_Marker m
         where c._ClusterType_key = 9272150
-        and c._ClusterSource_key = 9272151
+        and c._ClusterSource_key = 75885739
         and c._Cluster_key = cm._Cluster_key
         and cm._Marker_key = m._Marker_key
         and m._Organism_key = 2
         and m._Marker_Type_key = 1''', None)
 
-    db.sql('create index h_idx1 on human(clusterID)', None)
+    db.sql('create index h_idx1 on human(_Cluster_key)', None)
 
     db.sql('''select m.*
         into temp mouseHuman
         from mouse m, human h
-        where m.clusterID = h.clusterID
+        where m._Cluster_key = h._Cluster_key
         UNION
         select h.*
         from mouse m,human h
-        where m.clusterID = h.clusterID''', None)
+        where m._Cluster_key = h._Cluster_key''', None)
 
     # get human uniprot ids and mouse marker MGI IDs
-    db.sql('''select distinct h2.clusterID, h2._Marker_key, a1.accID as goaID, a2.accID as mouseID
+    db.sql('''select distinct h2._Cluster_key, h2._Marker_key, a1.accID as goaID, a2.accID as mouseID
         into temp goa
         from mouseHuman h1, mouseHuman h2, ACC_Accession a1, ACC_Accession a2
         where h1._Organism_key = 2
-        and h1.clusterID = h2.clusterID
+        and h1._Cluster_key = h2._Cluster_key
         and h2._Organism_key = 1
         and h1._Marker_key = a1._Object_key
         and a1._MGIType_key = 2
@@ -255,19 +254,19 @@ def initialize():
     db.sql('create index goa_idx1 on goa(_Marker_key)', None)
 
     # Load the number of members by class lookup
-    results = db.sql('select * from mouseHuman order by clusterID' , 'auto')
+    results = db.sql('select * from mouseHuman order by _Cluster_key' , 'auto')
     for r in results:
-        clusterID = r['clusterID']
-        if clusterID not in memberNumDict:
-            memberNumDict[clusterID] = 0
-        memberNumDict[clusterID] += 1
+        clusterId = r['_Cluster_key']
+        if clusterId not in memberNumDict:
+            memberNumDict[clusterId] = 0
+        memberNumDict[clusterId] += 1
 
     results = db.sql('select * from goa', 'auto')
     for r in results:
         key = r['goaID']
         mouseID = r['mouseID']
-        clusterID = r['clusterID']
-        value = '%s|%s' % (mouseID, clusterID)
+        clusterId = r['_Cluster_key']
+        value = '%s|%s' % (mouseID, clusterId)
         if key not in goaIdDict:
             goaIdDict[key] = []
         goaIdDict[key].append(value)
@@ -393,7 +392,7 @@ def readGAF(inFile):
             continue
 
         # if no goa/mouse orthology by UniProt ID, then skip
-        clusterID = ''
+        clusterId = 0
         if goaID not in goaIdDict:
             errorFile.write(str(lineNum) + '\tNO_HOM\t\t' +line[:-1] + '\t\n')
             continue
@@ -407,11 +406,11 @@ def readGAF(inFile):
         for ids in mgiIDandClusterIDList:
             (mgiID, cID) = str.split(ids, '|')
             mgiIDList.append(mgiID)
-            clusterID = cID
+            clusterId = int(cID)
 
         # if qualifier has a "NOT" value, then skip
         if len(qualifier) > 0 and qualifier[:3] == 'NOT':
-            errorFile.write(str(lineNum) + '\tIS_GOA_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tIS_GOA_NOT\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         # if goaID/goID is in the "not" list, then skip
@@ -421,7 +420,7 @@ def readGAF(inFile):
                 if goID == n:
                     skip = 1
         if skip == 1:
-            errorFile.write(str(lineNum) + '\tIS_MGI_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tIS_MGI_NOT\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         # attach reference accession ids to properties
@@ -439,21 +438,21 @@ def readGAF(inFile):
 
         new_inferredFrom = databaseID + ':' + goaID
 
-        # If not 1:1 and GO ID is Bio Process - skip
-        if memberNumDict[clusterID] != 2 and goID in bioProcessList:
-            #print 'Not 1:1 and GO ID is Bio Process, skipping clusterID: %s %s' % (clusterID, line)
-            errorFile.write(str(lineNum) + '\tNON_1TO1_P\t' + clusterID + '\t' + line[:-1] + '\t\n')
+        if clusterId not in memberNumDict:
+            errorFile.write(str(lineNum) + '\tNO_MEMBER\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
-        # get the go IDs with NOT qualifiers in the input for this clusterID
+        # If not 1:1 and GO ID is Bio Process - skip
+        if memberNumDict[clusterId] != 2 and goID in bioProcessList:
+            errorFile.write(str(lineNum) + '\tNON_1TO1_P\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
+            continue
+
+        # get the go IDs with NOT qualifiers in the input for this clusterId
         notIdList = []
-        if clusterID in clusterIDsWithNotDict:
-            notIdList = clusterIDsWithNotDict[clusterID]
-            #print 'clusterIDsWithNotDict[%s]:  %s' % (clusterID, notIdList)
-            #print 'incoming goID: %s' % goID
+        if clusterId in clusterIdsWithNotDict:
+            notIdList = clusterIdsWithNotDict[clusterId]
         if goID in notIdList:
-            #print 'goID  has NOT qualifier in input, skipping clusterID: %s %s' % (clusterID, line)
-            errorFile.write(str(lineNum) + '\tNOT_NO_TRANSFER\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tNOT_NO_TRANSFER\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         # skip if an MGI annotation for
@@ -464,10 +463,9 @@ def readGAF(inFile):
             if mgiID in goaExistsDict:
                 for e in goaExistsDict[mgiID]:
                     if goID == e['goID'] and new_inferredFrom == e['inferredFrom']:
-                        #print mgiID, goID, new_inferredFrom
                         skip = 1
         if skip == 1:
-            errorFile.write(str(lineNum) + '\tANNOT_IN_MGI_TO ' + mgiID + '\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tANNOT_IN_MGI_TO ' + mgiID + '\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         #
@@ -509,16 +507,16 @@ def readGAF(inFile):
             # this annotation not yet in the dictionary
             if annotloadLine not in annotToWriteDict:
                 annotToWriteDict[annotloadLine] = [modDate + '\t\t\t' + propertyPrefix + properties]
-                errorFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + clusterID + '\t' + line) 
+                errorFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + str(clusterId) + '\t' + line) 
 
             # this annotation and properties in the dictionary and so exact dup
             elif annotloadLine in annotToWriteDict:
-                errorFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + clusterID + '\t' + line)
+                errorFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + str(clusterId) + '\t' + line)
 
             # this annotation in dictionary, add additional properties 
             else:
                 annotToWriteDict[annotloadLine].append(propertyPrefix + properties)
-                errorFile.write(str(lineNum) + '\tCREATE_ANNOT_COL\t' + clusterID + '\t' + line) 
+                errorFile.write(str(lineNum) + '\tCREATE_ANNOT_COL\t' + str(clusterId) + '\t' + line) 
 
     #
     # now write to annotload file

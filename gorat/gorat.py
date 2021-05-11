@@ -52,7 +52,7 @@
 #	- TR11570/11571/qualifier contains "_" in both input and MGI
 #	- use VOC_Term instead of MGI_Synonym
 #	- fix qualifier verification ('NOT') bug
-#	- fix clusterID bug
+#	- fix clusterId bug
 #
 # sc    02/2013 - N2MO/TR6519 - updated go use MRK_Cluster* tables with new rules
 #
@@ -96,7 +96,7 @@ evidenceCodeList = ['IDA', 'IPI', 'IGI', 'IMP', 'EXP']
 excludedList = ['GO:0005515', 'GO:0005488']
 
 # RGD rat IDs that contain mouse orthologs 
-# {ratID:[mouse MGI ID|clusterID, ...], ...}
+# {ratID:[mouse MGI ID|clusterId, ...], ...}
 ratIdDict = {}
 
 #  mouse annotations that contain a "NOT" qualifier
@@ -109,7 +109,7 @@ isNotDict = {}
 infFromExistsDict = {}
 
 # Dict of number of members by class
-# {clusterID:numMembers, ...}
+# {clusterId:numMembers, ...}
 memberNumDict = {}
 
 # list of all Biological Process GO Ids
@@ -117,7 +117,7 @@ memberNumDict = {}
 bioProcessList = []
 
 # cluster IDs mapped to rat NOT GO IDs 
-clusterIDsWithNotDict = {}
+clusterIdsWithNotDict = {}
 
 #
 # Purpose: reinitialize input file descriptor`
@@ -134,7 +134,7 @@ def reinitialize():
 # Purpose:  Create lookup of MGI clusters with rat NOT annotations
 #
 def preprocess():
-    global clusterIDsWithNotDict
+    global clusterIdsWithNotDict
 
     for line in inFile.readlines():
         if line[0] == '!':
@@ -154,7 +154,7 @@ def preprocess():
         assignedBy = tokens[14]
         note = ''
         properties = ''
-        clusterID = ''
+        clusterId = 0
 
         # if go/mouse orthology by RGD or UniProt ID get cluster ID
         if ratID in ratIdDict:
@@ -162,13 +162,13 @@ def preprocess():
             # cluster will be the same for all markers with this ratID
             for ids in mgiIDandClusterIDList:
                 (mgiID, cID) = str.split(ids, '|')
-                clusterID = cID
+                clusterId = int(cID)
 
         if len(qualifier) > 0 and qualifier[:3] == 'NOT':
             #print 'qualifier has NOT data: %s ' % line
-            if clusterID not in clusterIDsWithNotDict:
-                clusterIDsWithNotDict[clusterID] = []
-            clusterIDsWithNotDict[clusterID].append(goID)
+            if clusterId not in clusterIdsWithNotDict:
+                clusterIdsWithNotDict[clusterId] = []
+            clusterIdsWithNotDict[clusterId].append(goID)
 
     return 0
 
@@ -213,11 +213,11 @@ def initialize():
     # 4. MGI GO annotations to J:73065
     #
 
-    db.sql('''select c.clusterID, cm.*, m._Organism_key
+    db.sql('''select cm.*, m._Organism_key
         into temp mouse
         from MRK_Cluster c, MRK_ClusterMember cm, MRK_Marker m
         where c._ClusterType_key = 9272150
-        and c._ClusterSource_key = 9272151
+        and c._ClusterSource_key = 75885739
         and c._Cluster_key = cm._Cluster_key
         and cm._Marker_key = m._Marker_key
         and m._Organism_key = 1
@@ -225,35 +225,35 @@ def initialize():
         and lower(m.symbol) not  like 'gm%'
         and lower(m.name) not like '%predicted%' ''', None)
 
-    db.sql('create index m_idx1 on mouse(clusterID)', None)
+    db.sql('create index m_idx1 on mouse(_Cluster_key)', None)
 
-    db.sql('''select c.clusterID, cm.*, m._Organism_key
+    db.sql('''select cm.*, m._Organism_key
         into temp rat
         from MRK_Cluster c, MRK_ClusterMember cm, MRK_Marker m
         where c._ClusterType_key = 9272150
-        and c._ClusterSource_key = 9272151
+        and c._ClusterSource_key = 75885739
         and c._Cluster_key = cm._Cluster_key
         and cm._Marker_key = m._Marker_key
         and m._Organism_key = 40
         and m._Marker_Type_key = 1''', None)
 
-    db.sql('create index r_idx1 on rat(clusterID)', None)
+    db.sql('create index r_idx1 on rat(_Cluster_key)', None)
 
     db.sql('''select m.*
         into temp mouseRat
         from mouse m, rat h
-        where m.clusterID = h.clusterID
+        where m._Cluster_key = h._Cluster_key
         UNION
         select h.*
         from mouse m, rat h
-        where m.clusterID = h.clusterID''', None)
+        where m._Cluster_key = h._Cluster_key''', None)
 
     # get rat RGD ids/uniprot IDs and mouse marker MGI IDs
-    db.sql('''select distinct h2.clusterID, h2._Marker_key, a1.accID as ratID, a2.accID as mouseID
+    db.sql('''select distinct h2._Cluster_key, h2._Marker_key, a1.accID as ratID, a2.accID as mouseID
         into temp gorat
         from mouseRat h1, mouseRat h2, ACC_Accession a1, ACC_Accession a2
         where h1._Organism_key = 40
-        and h1.clusterID = h2.clusterID
+        and h1._Cluster_key = h2._Cluster_key
         and h2._Organism_key = 1
         and h1._Marker_key = a1._Object_key
         and a1._MGIType_key = 2
@@ -267,22 +267,24 @@ def initialize():
     db.sql('create index gr_idx1 on gorat(_Marker_key)', None)
 
     # Load the number of members by class lookup
-    results = db.sql('select * from mouseRat order by clusterID' , 'auto')
+    results = db.sql('select * from mouseRat order by _Cluster_key' , 'auto')
     for r in results:
-        clusterID = r['clusterID']
-        if clusterID not in memberNumDict:
-            memberNumDict[clusterID] = 0
-        memberNumDict[clusterID] += 1
+        clusterId = r['_Cluster_key']
+        if clusterId not in memberNumDict:
+            memberNumDict[clusterId] = 0
+        memberNumDict[clusterId] += 1
+    #print(memberNumDict[36570801])
 
     results = db.sql('select * from gorat', 'auto')
     for r in results:
         key = r['ratID']
         mouseID = r['mouseID']
-        clusterID = r['clusterID']
-        value = '%s|%s' % (mouseID, clusterID)
+        clusterId = r['_Cluster_key']
+        value = '%s|%s' % (mouseID, clusterId)
         if key not in ratIdDict:
             ratIdDict[key] = []
         ratIdDict[key].append(value)
+    #print(ratIdDict)
 
     # create MGI mouse NOT lookup
     results = db.sql('''select distinct g.ratID, acc.accID as goID
@@ -403,7 +405,7 @@ def readGAF():
             continue
 
         # if no rat/mouse orthology by RGD ID or UniProtKB, then skip
-        clusterID = ''
+        clusterId = 0
         if ratID not in ratIdDict:
             errorFile.write(str(lineNum) + '\tNO_HOM\t\t' +line[:-1] + '\t\n')
             continue
@@ -416,7 +418,9 @@ def readGAF():
             for ids in mgiIDandClusterIDList:
                 (mgiID, cID) = str.split(ids, '|')
                 mgiIDList.append(mgiID)
-                clusterID = cID
+                clusterId = int(cID)
+            #print(mgiIDList)
+            #print(clusterId)
 
         # if qualifier has a value, then skip sc - incorrect, need to filter for 'NOT'
         # sc - current values:
@@ -430,7 +434,7 @@ def readGAF():
         # NOT|contributes_to
 
         if len(qualifier) > 0 and qualifier[:3] == 'NOT':
-            errorFile.write(str(lineNum) + '\tIS_RAT_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tIS_RAT_NOT\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         # if ratID/goID is in the "not" list, then skip
@@ -440,7 +444,7 @@ def readGAF():
                 if goID == n:
                     skip = 1
         if skip == 1:
-            errorFile.write(str(lineNum) + '\tIS_MGI_NOT\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tIS_MGI_NOT\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         # attach reference accession id(s) to properties
@@ -458,21 +462,21 @@ def readGAF():
 
         new_inferredFrom = ratID
 
-        # If not 1:1 and GO ID is Bio Process - skip
-        if memberNumDict[clusterID] != 2 and goID in bioProcessList:
-            #print 'Not 1:1 and GO ID is Bio Process, skipping clusterID: %s %s' % (clusterID, line)
-            errorFile.write(str(lineNum) + '\tNON_1TO1_P\t' + clusterID + '\t' + line[:-1] + '\t\n')
+        if clusterId not in memberNumDict:
+            errorFile.write(str(lineNum) + '\tNOT_IN_MEMBER\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
-        # get the go IDs with NOT qualifiers in the input for this clusterID
+        # If not 1:1 and GO ID is Bio Process - skip
+        if memberNumDict[clusterId] != 2 and goID in bioProcessList:
+            errorFile.write(str(lineNum) + '\tNON_1TO1_P\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
+            continue
+
+        # get the go IDs with NOT qualifiers in the input for this clusterId
         notIdList = []
-        if clusterID in clusterIDsWithNotDict:
-            notIdList = clusterIDsWithNotDict[clusterID]
-            #print 'clusterIDsWithNotDict[%s]:  %s' % (clusterID, notIdList)
-            #print 'incoming goID: %s' % goID
+        if clusterId in clusterIdsWithNotDict:
+            notIdList = clusterIdsWithNotDict[clusterId]
         if goID in notIdList:
-            #print 'goID  has NOT qualifier in input, skipping clusterID: %s %s' % (clusterID, line)
-            errorFile.write(str(lineNum) + '\tNOT_NO_TRANSFER\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tNOT_NO_TRANSFER\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         # skip if an MGI annotation already exists 
@@ -486,7 +490,7 @@ def readGAF():
                         #print mgiID, goID, new_inferredFrom
                         skip = 1
         if skip == 1:
-            errorFile.write(str(lineNum) + '\tANNOT_IN_MGI_TO ' + mgiID + '\t' + clusterID + '\t' + line[:-1] + '\t\n')
+            errorFile.write(str(lineNum) + '\tANNOT_IN_MGI_TO ' + mgiID + '\t' + str(clusterId) + '\t' + line[:-1] + '\t\n')
             continue
 
         #
@@ -528,16 +532,16 @@ def readGAF():
             # this annotation not yet in the dictionary
             if annotloadLine not in annotToWriteDict:
                 annotToWriteDict[annotloadLine] = [modDate + '\t\t\t' + propertyPrefix + properties]
-                errorFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + clusterID + '\t' + line) 
+                errorFile.write(str(lineNum) + '\tCREATE_ANNOT\t' + str(clusterId) + '\t' + line) 
 
             # this annotation and properties in the dictionary and so exact dup
             elif annotloadLine in annotToWriteDict and propertyPrefix + properties in annotToWriteDict[annotloadLine]:
-                errorFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + clusterID + '\t' + line) 
+                errorFile.write(str(lineNum) + '\tDUP_IN_INPUT\t' + str(clusterId) + '\t' + line) 
         
             # this annotation in dictionary, add additional properties
             else:
                 annotToWriteDict[annotloadLine].append(propertyPrefix + properties)
-                errorFile.write(str(lineNum) + '\tCREATE_ANNOT_COL\t' + clusterID + '\t' + line) 
+                errorFile.write(str(lineNum) + '\tCREATE_ANNOT_COL\t' + str(clusterId) + '\t' + line) 
 
     #
     # now write to annotload file
