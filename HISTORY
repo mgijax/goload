@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-17-2
+DATE: 06/11/2021
+STAFF: lec
+wts2-641/Allow additional go_property (is_active_in) to be valid in Noctua load and reexamine how we define duplicate annotations
+
 TAG: goload-6-0-17-1
 DATE: 05/11/2021
 STAFF: lec

@@ -125,7 +125,8 @@ goqualifiersLookup = [
 'acts_upstream_of_positive_effect',
 'acts_upstream_of_negative_effect',
 'involved_in',
-'located_in'
+'located_in',
+'is_active_in'
 ]
 
 #
