@@ -292,9 +292,9 @@ def readGPAD(gpadInFile):
         # skip if the GO id is a root term:  GO:0003674, GO:0008150, GO:0005575
         #
 
-        if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
-            errorFile.write('Root Id is used : %s\n%s\n****\n' % (goID, line))
-            continue
+        #if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
+        #    errorFile.write('Root Id is used : %s\n%s\n****\n' % (goID, line))
+        #    continue
 
         #
         # skip if the databaseID is not MGI or PR
@@ -324,10 +324,13 @@ def readGPAD(gpadInFile):
 
         jnumIDFound = 0
         referencesTokens = references.split('|')
+        #print(referencesTokens)
         for r in referencesTokens:
 
             refID = r.replace('MGI:MGI:', 'MGI:')
             refID = refID.replace('PMID:', '')
+
+            # TBD:  use GO_REF to get the J:
 
             if refID in mgiRefLookup:
                 jnumID = mgiRefLookup[refID]
