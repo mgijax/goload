@@ -85,7 +85,6 @@ errorFile = None
 
 # pubmed ids
 pubmedErrorFile = None
-pubmedUnique = []
 
 # lookup file of mgi ids or pubmed ids -> J:
 # mgi id:jnum id
@@ -111,6 +110,9 @@ uberonLookup = {}
 # mapping of load reference J: to GO_REF IDs
 # see _LogicalDB_key = 185 (GO_REF)
 goRefLookup = {}
+
+# mapping of load reference J: to PubMed IDs
+pubmedLookup = {}
 
 #
 # mgi.gpad/col 3
@@ -145,6 +147,7 @@ def initialize():
     global ecoLookupByEvidence
     global uberonLookup
     global goRefLookup
+    global pubmedLookup
 
     #
     # open files
@@ -228,13 +231,28 @@ def initialize():
         goRefLookup[key] = value
     #print(goRefLookup)
 
+    #
+    # lookup file of Pubmed->J:
+    #
+    results = db.sql('''select pubmedid, jnumid
+        from BIB_Citation_Cache
+        where pubmedid is not null
+        and jnumid is not null
+        ''', 'auto')
+
+    for r in results:
+        key = r['pubmedid']
+        value = r['jnumid']
+        pubmedLookup[key] = value
+    #print(pubmedLookup)
+
     return 0
 
 #
 # Purpose: Read MGI GPAD file and generate Annotation file
 #
 def readGPAD(gpadInFile):
-    global pubmedUnique
+    global pubmedErrorFile
 
     #
     #	for each row in the GPAD file (MGIINFILE_NAME_GPAD, PRINFILE_NAME_GPAD):
@@ -326,26 +344,30 @@ def readGPAD(gpadInFile):
         referencesTokens = references.split('|')
         #print(referencesTokens)
         for r in referencesTokens:
-
             refID = r.replace('MGI:MGI:', 'MGI:')
-            refID = refID.replace('PMID:', '')
 
-            # TBD:  use GO_REF to get the J:
+            if jnumIDFound == 1:
+                break
 
             if refID in mgiRefLookup:
                 jnumID = mgiRefLookup[refID]
                 jnumIDFound = 1
                  
-            if refID in goRefLookup:
+            elif refID in goRefLookup:
                 jnumID = goRefLookup[refID]
                 jnumIDFound = 1
 
-            if not jnumIDFound:
-                if refID not in pubmedUnique:
-                    pubmedUnique.append(refID)
+            # if pubmedid, but not in pubmedLookup...
+            elif 'PMID:' in refID:
+                refID = refID.replace('PMID:', '')
+                if refID in pubmedLookup:
+                    jnumID = pubmedLookup[refID]
+                    jnumIDFound = 1
+                else: 
+                    pubmedErrorFile.write('PMID:' + refID + '\n')
 
         # if reference does not exist...skip it
-        if not jnumIDFound:
+        if jnumIDFound == 0:
             errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
             continue
 
@@ -432,10 +454,6 @@ def readGPAD(gpadInFile):
 # Purpose: Close files
 #
 def closeFiles():
-
-    # write out unique pubmed ids that are not found in MGI
-    for p in pubmedUnique:
-        pubmedErrorFile.write('PMID:' + p + '\n')
 
     mgiInFile.close()
     prInFile.close()
