@@ -57,11 +57,11 @@ def processECO():
         ecoId = tokens[0]
         evidence = tokens[1]
         try:
-                isDefault = tokens[2]
+                isDefault = tokens[2].lower()
         except:
                 isDefault = ''
         
-        if isDefault == 'Default':
+        if isDefault == 'default':
             ecoLookupByEvidence[evidence] = ecoId
 
         ecoLookupByEco[ecoId] = evidence
