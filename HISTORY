@@ -5,6 +5,12 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-18-?
+DATE: 01/25/2022
+STAFF: lec
+wts2-767/mgi_notechunk/mgi_note merge
+only change is to the index file
+
 TAG: goload-6-0-17-3
 DATE: 10/01/2021
 STAFF: lec
