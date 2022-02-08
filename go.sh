@@ -18,8 +18,8 @@ fi
 . ${MGICONFIG}/master.config.sh
 
 GOLOG=${DATALOADSOUTPUT}/go/go.log
-rm -rf $GOLOG
-touch $GOLOG
+rm -rf ${GOLOG}
+touch ${GOLOG}
  
 date | tee -a $GOLOG
 
@@ -29,6 +29,9 @@ ${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
 echo 'generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 ${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
+
+echo 'delete all existing GO Annotations' | tee -a ${GOLOG}
+${GOLOAD}/gopreprocess.sh | tee -a ${GOLOAD}
 
 echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
 ${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
