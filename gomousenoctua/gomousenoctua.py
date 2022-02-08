@@ -368,7 +368,7 @@ def readGPAD(gpadInFile):
 
         # if reference does not exist...skip it
         if jnumIDFound == 0:
-            errorFile.write('Invalid Refeference: %s\n%s\n****\n' % (references, line))
+            errorFile.write('Invalid Reference: %s\n%s\n****\n' % (references, line))
             continue
 
         if evidenceCode in ecoLookupByEco:
