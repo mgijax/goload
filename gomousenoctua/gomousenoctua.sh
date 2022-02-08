@@ -99,13 +99,13 @@ fi
 preload ${OUTPUTDIR}
 
 # copy new file from ${DATADOWNLOADS} and unzip
-#cd ${INPUTDIR}
-#cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
-#rm -rf ${MGIINFILE_NAME_GPAD}
-#gunzip ${MGIINFILE_NAME_GZ}
-#cp ${FROM_PRINFILE_NAME_GZ} ${INPUTDIR}
-#rm -rf ${PRINFILE_NAME_GPAD}
-#gunzip ${PRINFILE_NAME_GZ}
+cd ${INPUTDIR}
+cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${MGIINFILE_NAME_GPAD}
+gunzip ${MGIINFILE_NAME_GZ}
+cp ${FROM_PRINFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${PRINFILE_NAME_GPAD}
+gunzip ${PRINFILE_NAME_GZ}
 
 cd ${OUTPUTDIR}
 
@@ -113,13 +113,13 @@ cd ${OUTPUTDIR}
 # run annotation load with an empty file to remove previous data
 # not needed right now
 #
-#echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
-#rm -rf ${ANNOTINPUTFILE}
-#touch ${ANNOTINPUTFILE}
-#COMMON_CONFIG_CSH=${GOLOAD}/gomousenoctua/godelete.csh.config
-#${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
-#STAT=$?
-#checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua"
+echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
+rm -rf ${ANNOTINPUTFILE}
+touch ${ANNOTINPUTFILE}
+COMMON_CONFIG_CSH=${GOLOAD}/gomousenoctua/godelete.csh.config
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua >> ${LOG} 
+STAT=$?
+checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} gomousenoctua"
 
 #
 # create input file
