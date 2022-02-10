@@ -360,28 +360,9 @@ def readGPAD(gpadInFile):
                 jnumID = goRefLookup[refID]
                 jnumIDFound = 1
 
-<<<<<<< HEAD
-            # if pubmedid, but not in pubmedLookup...
-            elif 'PMID:' in refID:
-                refID = refID.replace('PMID:', '')
-                if refID in pubmedLookup:
-                    jnumID = pubmedLookup[refID]
-                    jnumIDFound = 1
-                else: 
-                    pubmedErrorFile.write('PMID:' + refID + '\n')
-
-        # if reference does not exist...skip it
-        if jnumIDFound == 0:
-            errorFile.write('Invalid Reference: %s\n%s\n****\n' % (references, line))
-=======
-            if jnumIDFound == 0:
-                if refID not in pubmedUnique:
-                    pubmedUnique.append(refID)
-
         # if reference does not exist...skip it
         if jnumIDFound == 0:
             errorFile.write('Invalid Reference/either no pubmed id or no jnum: %s\n%s\n****\n' % (references, line))
->>>>>>> master
             continue
 
         if evidenceCode in ecoLookupByEco:
