@@ -346,19 +346,23 @@ def readGPAD(gpadInFile):
         jnumIDFound = 0
         referencesTokens = references.split('|')
         #print(referencesTokens)
-        for r in referencesTokens:
-            refID = r.replace('MGI:MGI:', 'MGI:')
 
-            if jnumIDFound == 1:
-                break
+        for r in referencesTokens:
+
+            refID = r.replace('MGI:MGI:', 'MGI:')
+            refID = refID.replace('PMID:', '')
 
             if refID in mgiRefLookup:
                 jnumID = mgiRefLookup[refID]
                 jnumIDFound = 1
                  
-            elif refID in goRefLookup:
+            if refID in goRefLookup:
                 jnumID = goRefLookup[refID]
                 jnumIDFound = 1
+
+            if jnumIDFound == 0:
+                if refID not in pubmedUnique:
+                    pubmedUnique.append(refID)
 
         # if reference does not exist...skip it
         if jnumIDFound == 0:
