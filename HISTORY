@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-18-1
+DATE: 0210/2022
+STAFF: lec
+wts2-788/Noctua Annotations not being loaded
+
 TAG: goload-6-0-17-3
 DATE: 10/01/2021
 STAFF: lec
