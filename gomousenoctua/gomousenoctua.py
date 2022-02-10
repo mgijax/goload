@@ -175,11 +175,12 @@ def initialize():
 
     print('reading mgi id/pubmed id -> J: translation...')
 
-    results = db.sql('select mgiID, pubmedID, jnumID from BIB_Citation_Cache', 'auto')
+    results = db.sql('select mgiID, pubmedID, jnumID from BIB_Citation_Cache where jnumID is not null', 'auto')
     for r in results:
         mgiRefLookup[r['mgiID']] = r['jnumID']
         if r['pubmedID'] != '':
             mgiRefLookup[r['pubmedID']] = r['jnumID']
+    #print(mgiRefLookup['14321840'])
 
     #
     # read/store object-to-Marker info
@@ -340,6 +341,8 @@ def readGPAD(gpadInFile):
         # translate references (MGI/PMID) to J numbers (J:)
         # use the first J: match that we find
 
+        print(references)
+        jnumID = ""
         jnumIDFound = 0
         referencesTokens = references.split('|')
         #print(referencesTokens)
@@ -357,6 +360,7 @@ def readGPAD(gpadInFile):
                 jnumID = goRefLookup[refID]
                 jnumIDFound = 1
 
+<<<<<<< HEAD
             # if pubmedid, but not in pubmedLookup...
             elif 'PMID:' in refID:
                 refID = refID.replace('PMID:', '')
@@ -369,6 +373,15 @@ def readGPAD(gpadInFile):
         # if reference does not exist...skip it
         if jnumIDFound == 0:
             errorFile.write('Invalid Reference: %s\n%s\n****\n' % (references, line))
+=======
+            if jnumIDFound == 0:
+                if refID not in pubmedUnique:
+                    pubmedUnique.append(refID)
+
+        # if reference does not exist...skip it
+        if jnumIDFound == 0:
+            errorFile.write('Invalid Reference/either no pubmed id or no jnum: %s\n%s\n****\n' % (references, line))
+>>>>>>> master
             continue
 
         if evidenceCode in ecoLookupByEco:
