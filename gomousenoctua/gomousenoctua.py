@@ -360,10 +360,6 @@ def readGPAD(gpadInFile):
                 jnumID = goRefLookup[refID]
                 jnumIDFound = 1
 
-            if jnumIDFound == 0:
-                if refID not in pubmedUnique:
-                    pubmedUnique.append(refID)
-
         # if reference does not exist...skip it
         if jnumIDFound == 0:
             errorFile.write('Invalid Reference/either no pubmed id or no jnum: %s\n%s\n****\n' % (references, line))
