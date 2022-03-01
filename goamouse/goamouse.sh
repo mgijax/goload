@@ -120,17 +120,6 @@ sort -k2,7 ${ISOFORM_GAF} > ${ISOFORM_SORTED}
 cd ${OUTPUTDIR}
 
 #
-# run annotation load with an empty file to remove previous data
-#
-echo "Running GOA/Mouse annotation load (previous data)" >> ${LOG}
-rm -rf ${ANNOTINPUTFILE}
-touch ${ANNOTINPUTFILE}
-COMMON_CONFIG_CSH=${GOLOAD}/goamouse/goadelete.csh.config
-${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse >> ${LOG} 
-STAT=$?
-checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} goamouse"
-
-#
 # create input file
 #
 echo 'Running goamouse.py' >> ${LOG}
