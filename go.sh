@@ -31,9 +31,10 @@ echo 'generate GPI file (gomousenoctua depends on it)...'
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 ${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 
-date | tee -a $GOLOG
-echo 'delete all existing GO Annotations' | tee -a ${GOLOG}
-${GOLOAD}/gopreprocess.sh | tee -a ${GOLOAD}
+#commented out on purpose; turn on only if uniprotload is also turned on
+#date | tee -a $GOLOG
+#echo 'delete all existing GO Annotations' | tee -a ${GOLOG}
+#${GOLOAD}/gopreprocess.sh | tee -a ${GOLOAD}
 
 date | tee -a $GOLOG
 echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
@@ -59,17 +60,16 @@ date | tee -a $GOLOG
 echo '6:running GO/CFP Load' | tee -a ${GOLOG}
 ${GOLOAD}/gocfp/gocfp.sh | tee -a ${GOLOG} || exit 1
 
-date | tee -a $GOLOG
-echo 'uniprotload/makeGOAnnot.sh' | tee -a ${GOLOG}
-${UNIPROTLOAD}/bin/makeGOAnnot.sh | tee -a ${GOLOG}
-
-date | tee -a $GOLOG
-echo 'uniprotload/makeInterProAnnot.sh' | tee -a ${GOLOG}
-${UNIPROTLOAD}/bin/makeInterProAnnot.sh | tee -a ${GOLOG}
-
-date | tee -a $GOLOG
-echo 'uniprotload/inferred from/accession cache load' | tee -a ${GOLOG}
-${MGICACHELOAD}/bin/inferredfrom.csh | tee -a ${GOLOG}
+#commented out on purpose; only turn on if goprsprocess.sh is turned on
+#date | tee -a $GOLOG
+#echo 'uniprotload/makeGOAnnot.sh' | tee -a ${GOLOG}
+#${UNIPROTLOAD}/bin/makeGOAnnot.sh | tee -a ${GOLOG}
+#date | tee -a $GOLOG
+#echo 'uniprotload/makeInterProAnnot.sh' | tee -a ${GOLOG}
+#${UNIPROTLOAD}/bin/makeInterProAnnot.sh | tee -a ${GOLOG}
+#date | tee -a $GOLOG
+#echo 'uniprotload/inferred from/accession cache load' | tee -a ${GOLOG}
+#${MGICACHELOAD}/bin/inferredfrom.csh | tee -a ${GOLOG}
 
 date | tee -a $GOLOG
 echo 'processing protein complex go_qualifier/part_of' | tee -a ${GOLOG}

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 #
+# ONLY USE THIS WHEN YOU WANT TO DELETE/RELOAD ALL OF THE GO ANNOTATIONS!
+#
 # gopreprocess.sh
 #
 # truncate all GO Annotations (_annottype_key = 1000)
-#
-# called from go.sh; logs are in GOLOG
 #
 
 cd `dirname $0`
