@@ -330,7 +330,7 @@ def readGPAD(gpadInFile):
         # translate references (MGI/PMID) to J numbers (J:)
         # use the first J: match that we find
 
-        print(references)
+        #print(references)
         jnumID = ""
         jnumIDFound = 0
         referencesTokens = references.split('|')
