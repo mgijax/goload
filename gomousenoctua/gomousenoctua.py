@@ -40,9 +40,6 @@
 #		10 Logical DB Name of Object (leave null)
 #		11 Properties
 #
-#       pubmed.error
-#               file of unique PubMed IDs that are not in MGI
-#
 # Usage:
 #       gomousenoctua.py
 #
@@ -82,9 +79,6 @@ annotFile = None
 errorFileName = None
 # error file pointer
 errorFile = None
-
-# pubmed ids
-pubmedErrorFile = None
 
 # lookup file of mgi ids or pubmed ids -> J:
 # mgi id:jnum id
@@ -140,7 +134,6 @@ def initialize():
     global prInFileName, prInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
-    global pubmedErrorFile 
     global mgiRefLookup
     global gpiFileName, gpiFile, gpiLookup
     global ecoLookupByEco
@@ -164,8 +157,6 @@ def initialize():
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
-
-    pubmedErrorFile = reportlib.init('pubmed', outputdir = os.environ['OUTPUTDIR'], printHeading = None, fileExt = '.error')
 
     #
     # lookup file of mgi ids or pubmed ids -> J:
@@ -253,8 +244,6 @@ def initialize():
 # Purpose: Read MGI GPAD file and generate Annotation file
 #
 def readGPAD(gpadInFile):
-    global pubmedErrorFile
-
     #
     #	for each row in the GPAD file (MGIINFILE_NAME_GPAD, PRINFILE_NAME_GPAD):
     #
@@ -453,7 +442,6 @@ def closeFiles():
     prInFile.close()
     annotFile.close()
     errorFile.close()
-    reportlib.finish_nonps(pubmedErrorFile)
 
     return 0
 
