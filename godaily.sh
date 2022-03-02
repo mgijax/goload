@@ -31,7 +31,7 @@ date | tee -a $GOLOG
 LASTRUN_FILE=${DATALOADSOUTPUT}/go/lastrun
 if [ -f ${LASTRUN_FILE} ]
 then
-    if test ${LASTRUN_FILE} -nt ${FROM_MGIINFILE_NAME_GZ}
+    if test ${LASTRUN_FILE} -nt ${DATADOWNLOADS}/go_noctua/noctua_mgi.gpad.gz
     then
         echo "Input file has not been updated - skipping load" | tee -a ${GOLOG}
         echo 'shutting down'
@@ -39,24 +39,24 @@ then
     fi
 fi
 
-#echo 'runnning proisoformload...'
-#${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
+echo 'runnning proisoformload...'
+${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
 
-#echo 'generate GPI file (gomousenoctua depends on it)...'
-#REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
+echo 'generate GPI file (gomousenoctua depends on it)...'
+REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 
-#echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
-#${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
+echo '1:running GO/Mouse/Noctua Load' | tee -a ${GOLOG}
+${GOLOAD}/gomousenoctua/gomousenoctua.sh | tee -a ${GOLOG} || exit 1
 
-#echo 'processing protein complex go_qualifier/part_of' | tee -a ${GOLOG}
-#${GOLOAD}/proteincomplex.sh | tee -a ${GOLOG} || exit 1
+echo 'processing protein complex go_qualifier/part_of' | tee -a ${GOLOG}
+${GOLOAD}/proteincomplex.sh | tee -a ${GOLOG} || exit 1
 
-#echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
-#${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
+echo 'running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
+${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 
-#echo 'running go_isoforms_display_load.csh' | tee -a ${GOLOG}
-#${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG} || exit 1
+echo 'running go_isoforms_display_load.csh' | tee -a ${GOLOG}
+${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG} || exit 1
 
 touch ${LASTRUN_FILE}
 
