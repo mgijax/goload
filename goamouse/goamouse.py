@@ -764,7 +764,7 @@ def readGAF(inFile):
         #
 
         if qualifier != '' and qualifier != None and qualifier not in ('NOT', 'colocalizes_with', 'NOT|colocalizes_with', 'contributes_to', 'NOT|contributes_to'):
-            print(qualifier)
+            #print(qualifier)
             if qualifier.startswith('NOT|'):
                 qtoken = qualifier.split('|')
                 qualifier = 'NOT'
