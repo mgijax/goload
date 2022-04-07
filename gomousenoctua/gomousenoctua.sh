@@ -163,4 +163,4 @@ shutDown
 #
 cd ${OUTPUTDIR}
 rm -rf pubmed.error
-grep "Invalid Reference" ${INFILE_NAME_ERROR} >  pubmed.error
+grep "Invalid Reference" gomousenoctua.error | cut -f2,3 -d":" | sort | uniq
