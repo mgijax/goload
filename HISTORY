@@ -5,9 +5,10 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-18-5
 TAG: goload-6-0-18-4
 TAG: goload-6-0-18-3
-DATE: 03/23/2022, 04/07/2022
+DATE: 03/23/2022, 04/07/2022, 04/12/2022
 STAFF: lec
 wts2-703/new Noctua -> GO Annotation pipeline
 add generation of pubmed.error to end of gomousenoctua/gomousenoctua.sh
