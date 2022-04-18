@@ -5,6 +5,7 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-18-6
 TAG: goload-6-0-18-5
 TAG: goload-6-0-18-4
 TAG: goload-6-0-18-3
