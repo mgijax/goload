@@ -5,6 +5,13 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-20-1
+DATE: 06/30/2022
+STAFF: lec
+wts2-730/Need to be sure refs that are used in annotations (i.e. in GOA folder processing) are not marked 'discard'
+added:  preprocessrefs.py
+which is called from goamouse/goamouse.sh and gomousenoctua/gomousenoctua.sh
+
 TAG: goload-6-0-18-6
 TAG: goload-6-0-18-5
 TAG: goload-6-0-18-4
