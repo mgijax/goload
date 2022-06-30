@@ -117,6 +117,22 @@ gunzip ${ISOFORM_GAF} >> ${LOG}
 rm -rf ${ISOFORM_SORTED} >> ${LOG}
 sort -k2,7 ${ISOFORM_GAF} > ${ISOFORM_SORTED}
 
+#
+# pre-process
+#
+cd ${INPUTDIR}
+rm -rf ${PROTEIN_PMID} ${ISOFORM_PMID}
+cut -f6 ${PROTEIN_SORTED} | sort | uniq | grep 'PMID' | cut -f2 -d":" > ${PROTEIN_PMID}
+cut -f6 ${ISOFORM_SORTED} | sort | uniq | grep 'PMID' | cut -f2 -d":" > ${ISOFORM_PMID}
+echo "Running pre-processing pmid" >> ${LOG}
+$PYTHON ${GOLOAD}/preprocessrefs.py ${PROTEIN_PMID} >> ${LOG} 
+STAT=$?
+checkStatus ${STAT} "preprocessrefs.py ${PROTEIN_PMID}"
+echo "Running pre-processing pmid" >> ${LOG}
+$PYTHON ${GOLOAD}/preprocessrefs.py ${ISOFORM_PMID} >> ${LOG} 
+STAT=$?
+checkStatus ${STAT} "preprocessrefs.py ${ISOFORM_PMID}"
+
 cd ${OUTPUTDIR}
 
 #

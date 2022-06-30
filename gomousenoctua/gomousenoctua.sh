@@ -107,6 +107,17 @@ cp ${FROM_PRINFILE_NAME_GZ} ${INPUTDIR}
 rm -rf ${PRINFILE_NAME_GPAD}
 gunzip ${PRINFILE_NAME_GZ}
 
+#
+# pre-process
+#
+cd ${INPUTDIR}
+rm -rf ${INFILE_NAME_PMID}
+cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
+echo "Running pre-processing pmid" >> ${LOG}
+$PYTHON ${GOLOAD}/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
+
 cd ${OUTPUTDIR}
 
 #
