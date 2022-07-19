@@ -5,6 +5,12 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-21-1
+DATE: 07/19/2022
+STAFF: lec
+wts2-920/Changes to MGI GAF (GO annotations) for consistency of types with those reported in mgi.gpi file
+replace marker type with so term
+
 TAG: goload-6-0-20-1
 DATE: 06/30/2022
 STAFF: lec

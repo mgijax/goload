@@ -863,6 +863,8 @@ def gafWrite(databaseID, mgiID, symbol, qualifier, goID, refID, evidence, inferr
                 else:
                         qualifier = 'located_in'
 
+        # wts2-920/set all marker types as follows...
+        markerType = 'protein_coding_gene'
         gafFile.write(gafLine % (databaseID, mgiID, symbol, qualifier, goID, refID, evidence, inferredFrom,\
                 dag, name, synonyms, markerType, taxID, modDate, assignedBy))
 
