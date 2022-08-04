@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-21-2
+DATE: 08/04/2022
+STAFF: lec
+wts2-947/Allow use of IEP as evidence code for GO annotations in all annotation loads
+
 TAG: goload-6-0-21-1
 DATE: 07/19/2022
 STAFF: lec

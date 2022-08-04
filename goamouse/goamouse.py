@@ -159,8 +159,9 @@ gafLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 gpadLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\n'
 annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\t\t%s\n' 
 
+# wts2-947/Allow use of IEP as evidence code for GO annotations in all annotation loads
 # list of evidence codes that are skipped; that is, not loaded into MGI
-skipEvidenceCodes = ['IEP']
+#skipEvidenceCodes = ['IEP']
 
 ### Globals ###
 
@@ -684,9 +685,10 @@ def readGAF(inFile):
         else:
             jnumID = pubmed[refID]
 
+        # wts2-947/Allow use of IEP as evidence code for GO annotations in all annotation loads
         # if evidence code is in "skipped" list, don't load this annotation into MGI
-        if evidence in skipEvidenceCodes:
-            loadMGI = 0
+        #if evidence in skipEvidenceCodes:
+            #loadMGI = 0
 
         # if this annotation is not loaded into MGI, then write it to the "to-append" file and continue
 
