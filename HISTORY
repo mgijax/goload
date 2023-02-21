@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-22-2
+DATE: 02/21/2023
+STAFF: lec
+wts2-1125/fl2-220/Modify the Noctua load to only include the noctua_mgi file. 
+
 TAG: goload-6-0-22-1
 DATE: 11/25/2022
 STAFF: lec

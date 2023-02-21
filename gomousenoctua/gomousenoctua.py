@@ -7,7 +7,6 @@
 # Inputs:
 #
 #       ${MGIINFILE_NAME_GPAD}     the MGI GPAD file
-#       ${PRINFILE_NAME_GPAD}      the PR GPAD file
 #
 #       The GPAD file contains:
 #               field 1:  Database ID ('MGI')
@@ -65,10 +64,8 @@ import uberonlib
 
 # GPAD files from the dataloads directory
 mgiInFileName = None
-prInFileName = None
 # GPAD file pointer
 mgiInFile = None
-prInFile = None
 
 # annotation formatted file
 annotFileName = None
@@ -131,7 +128,6 @@ goqualifiersLookup = [
 def initialize():
 
     global mgiInFileName, mgiInFile
-    global prInFileName, prInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
     global mgiRefLookup
@@ -147,13 +143,11 @@ def initialize():
     #
 
     mgiInFileName = os.environ['MGIINFILE_NAME_GPAD']
-    prInFileName = os.environ['PRINFILE_NAME_GPAD']
     gpiFileName = os.environ['GPIFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
 
     mgiInFile = open(mgiInFileName, 'r')
-    prInFile = open(prInFileName, 'r')
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
@@ -439,7 +433,6 @@ def readGPAD(gpadInFile):
 def closeFiles():
 
     mgiInFile.close()
-    prInFile.close()
     annotFile.close()
     errorFile.close()
 
@@ -453,9 +446,6 @@ if initialize() != 0:
     sys.exit(1)
 
 if readGPAD(mgiInFile) != 0:
-    sys.exit(1)
-
-if readGPAD(prInFile) != 0:
     sys.exit(1)
 
 closeFiles()

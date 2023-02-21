@@ -45,15 +45,11 @@ INPUTDIR=${FILEDIR}/input
 FROM_MGIINFILE_NAME_GZ=${DATADOWNLOADS}/go_noctua/noctua_mgi.gpad.gz
 MGIINFILE_NAME_GZ=${INPUTDIR}/noctua_mgi.gpad.gz
 MGIINFILE_NAME_GPAD=${INPUTDIR}/noctua_mgi.gpad
-FROM_PRINFILE_NAME_GZ=${DATADOWNLOADS}/go_noctua/noctua_pr.gpad.gz
-PRINFILE_NAME_GZ=${INPUTDIR}/noctua_pr.gpad.gz
-PRINFILE_NAME_GPAD=${INPUTDIR}/noctua_pr.gpad
 INFILE_NAME=${INPUTDIR}/gomousenoctua.annot
 INFILE_NAME_PMID=${INPUTDIR}/gomousenoctua.pmid
 INFILE_NAME_ERROR=${INPUTDIR}/gomousenoctua.error
 export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
 export MGIINFILE_NAME_GZ MGIINFILE_NAME_GPAD 
-export PRINFILE_NAME_GZ PRINFILE_NAME_GPAD
 export INFILE_NAME INFILE_NAME_PMID INFILE_NAME_ERROR
 
 ECOFILE=${DATADOWNLOADS}/raw.githubusercontent.com/evidenceontology/evidenceontology/master/gaf-eco-mapping-derived.txt
