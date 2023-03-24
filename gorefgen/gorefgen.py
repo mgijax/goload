@@ -179,7 +179,7 @@ def initialize():
     #
     results = db.sql('''select a.accID
               from MRK_Marker m, ACC_Accession a
-              where m._Marker_Type_key = 1
+              where m._Marker_Type_key in (1,7,10)
               and m._Marker_key = a._Object_key
               and m._Marker_Status_key in (1,3)
               and a._MGIType_key = 2

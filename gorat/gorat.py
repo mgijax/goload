@@ -221,7 +221,7 @@ def initialize():
         and c._Cluster_key = cm._Cluster_key
         and cm._Marker_key = m._Marker_key
         and m._Organism_key = 1
-        and m._Marker_Type_key = 1 
+        and m._Marker_Type_key in (1,7,10)
         and lower(m.symbol) not  like 'gm%'
         and lower(m.name) not like '%predicted%' ''', None)
 
@@ -235,7 +235,8 @@ def initialize():
         and c._Cluster_key = cm._Cluster_key
         and cm._Marker_key = m._Marker_key
         and m._Organism_key = 40
-        and m._Marker_Type_key = 1''', None)
+        and m._Marker_Type_key in (1,7,10)
+        ''', None)
 
     db.sql('create index r_idx1 on rat(_Cluster_key)', None)
 

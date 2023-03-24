@@ -312,7 +312,7 @@ def initialize():
 
     #
     # Mouse Markers
-    # only include markers of type 'gene' (1)
+    # only include markers of type 'Gene' (1) and 'Pseudogene' (7) and 'Complex' (10)
     #
 
     print('reading marker data...')
@@ -321,7 +321,7 @@ def initialize():
         into temporary table markers 
         from ACC_Accession a, MRK_Marker m, MRK_Types t 
         where m._Organism_key = 1 
-        and m._Marker_Type_key = 1 
+        and m._Marker_Type_key in (1,7,10)
         and m._Marker_key = a._Object_key 
         and a._MGIType_key = 2 
         and a._LogicalDB_key = 1 

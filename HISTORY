@@ -5,6 +5,11 @@ ${MIRROR_WGET}/download_package ftp.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
 
+TAG: goload-6-0-22-3
+DATE: 03/24/2023
+STAFF: lec
+wts2-1137/fl2-247/GOA load scripts update to include GO annotations to 'polymorphic pseudogene'
+
 TAG: goload-6-0-22-2
 DATE: 02/21/2023
 STAFF: lec
