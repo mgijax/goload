@@ -1,4 +1,4 @@
-'''
+-'''
 #
 # gomousenoctua.py
 #
@@ -8,41 +8,44 @@
 #
 #       ${MGIINFILE_NAME_GPAD}     the MGI GPAD file
 #
-#       The GPAD file contains:
-#               field 1:  Database ID ('MGI')
-#		field 2:  DB Object ID
-#               field 3:  Qualifier
-#               field 4:  GO ID
-#               field 5:  References (PMIDs)
-#               field 6:  Evidence code
-#               field 7:  Inferred From  (With)
-#		field 8 : Interacting taxon ID
-#		field 9 : Date (yyymmdd)
-#		field 10: Assigned By (NOCTUA_, MGI, other)
-#		field 11: Annotation Extension
-#		field 12: Annotation Properties
+#       The GPAD 2.0 file contains:
+#		1:  DB_Object_ID
+#               2:  Negation
+#               3:  Relation Ontology (RO)
+#               4:  Ontology_Class_ID
+#               5:  References (PMIDs)
+#               6:  Evidence_Type
+#               7:  With_Or_From
+#		8:  Interacting_Taxon_ID
+#		9:  Annotation_Date (yyymmdd)
+#		10: Assigned_By (NOCTUA_, MGI, other)
+#		11: Annotation_Extensions
+#		12: Annotation_Properties
 #
 # Outputs/Report:
 #
 # 	The annotation loader format has the following columns:
 #
 #	A tab-delimited file in the format:
-#		1  Accession ID of Vocabulary Term being Annotated to
-#		2  ID of MGI Object being Annotated (ex. MGI ID)
-#		3  J: (J:#####)
-#		4  Evidence Code Abbreviation (max length 5)
-#		5  Inferred From 
-#		6  Qualifier 
-#		7  Editor (max length 30)
-#		8  Date (MM/DD/YYYY)
-#		9  Notes 
-#		10 Logical DB Name of Object (leave null)
-#		11 Properties
+#		1:  Accession ID of Vocabulary Term being Annotated to
+#		2:  ID of MGI Object being Annotated (ex. MGI ID)
+#		3:  J: (J:#####)
+#		4:  Evidence Code Abbreviation (max length 5)
+#		5:  Inferred From 
+#    		6:  Qualifier  (from Negation)
+#		7:  Editor (max length 30)
+#		8:  Date (MM/DD/YYYY)
+#		9:  Notes 
+#		10: Logical DB Name of Object (leave null)
+#		11: Properties (from Relation/Qualifier)
 #
 # Usage:
 #       gomousenoctua.py
 #
 # History:
+#
+# lec	08/2023
+#       wts2-1155/fl2-394/Test Rat/Human (gorat, goahuman)
 #
 # lec	03/28/2018
 #	TR12834/Noctua changes
@@ -55,7 +58,6 @@
 import sys 
 import os
 import db
-import reportlib
 
 goloadpath = os.environ['GOLOAD'] + '/lib'
 sys.path.insert(0, goloadpath)
@@ -76,11 +78,15 @@ annotFile = None
 errorFileName = None
 # error file pointer
 errorFile = None
+hasError = 0
 
 # lookup file of mgi ids or pubmed ids -> J:
 # mgi id:jnum id
 # pubmed id:jnum id
 mgiRefLookup = {}
+
+# user lookup
+userLookup = []
 
 #
 # use gpi file to build gpiLookup of object:MGI:xxxx relationship
@@ -105,22 +111,8 @@ goRefLookup = {}
 # mapping of load reference J: to PubMed IDs
 pubmedLookup = {}
 
-#
-# mgi.gpad/col 3
-#
-goqualifiersLookup = [
-'enables', 
-'part_of', 
-'acts_upstream_of_or_within',
-'acts_upstream_of_or_within_positive_effect',
-'acts_upstream_of_or_within_negative_effect',
-'acts_upstream_of',
-'acts_upstream_of_positive_effect',
-'acts_upstream_of_negative_effect',
-'involved_in',
-'located_in',
-'is_active_in'
-]
+# go-relation ontology lookup (RO/etc. id, term)
+goROLookup = {}
 
 #
 # Purpose: Initialization
@@ -137,6 +129,8 @@ def initialize():
     global uberonLookup
     global goRefLookup
     global pubmedLookup
+    global goROLookup
+    global userLookup
 
     #
     # open files
@@ -220,7 +214,8 @@ def initialize():
     #
     # lookup file of Pubmed->J:
     #
-    results = db.sql('''select pubmedid, jnumid
+    results = db.sql('''
+        select pubmedid, jnumid
         from BIB_Citation_Cache
         where pubmedid is not null
         and jnumid is not null
@@ -231,6 +226,32 @@ def initialize():
         value = r['jnumid']
         pubmedLookup[key] = value
     #print(pubmedLookup)
+
+    #
+    # note contains the go-property id RO:, etc.
+    # will need to note (id) and the term itself
+    #
+    results = db.sql('''
+        select t.term, t.note
+        from VOC_Term t
+        where t._vocab_key = 82
+        and (t.note like 'RO:%' or t.note like 'BFO%')
+        ''', 'auto')
+    for r in results:
+        key = r['note']
+        value = r['term']
+        if key not in goROLookup:
+            goROLookup[key] = []
+        goROLookup[key].append(value)
+    #print(goROLookup)
+
+    #
+    # read/store GOA_, NOCTUA_ MGI_User
+    #
+    print('reading MGI_User...')
+    results = db.sql('''select login from MGI_User where login like 'GOA_%' or login like 'NOCTUA_%' ''', 'auto')
+    for r in results:
+        userLookup.append(r['login'])
 
     return 0
 
@@ -247,24 +268,27 @@ def readGPAD(gpadInFile):
     #
     #           write the record to the annotation file (INFILE_NAME)
     #
+    #   1:  DB_Object_ID
+    #   2:  Negation
+    #   3:  Relation Ontology (RO)
+    #   4:  Ontology_Class_ID
+    #   5:  References (PMIDs)
+    #   6:  Evidence_Type
+    #   7:  With_Or_From
+    #   8:  Interacting_Taxon_ID
+    #   9:  Annotation_Date (yyymmdd)
+    #   10: Assigned_By (NOCTUA_, MGI, other)
+    #   11: Annotation_Extensions
+    #   12: Annotation_Properties
+    #
 
-    # field 1:  Database ID ('MGI')
-    # field 2:  DB Object ID
-    # field 3:  Qualifier
-    # field 4:  GO ID
-    # field 5:  References (PMIDs)
-    # field 6:  Evidence code
-    # field 7:  Inferred From  (With)
-    # field 8 : Interacting taxon ID
-    # field 9 : Date (yyymmdd)
-    # field 10: Assigned By (NOCTUA_)
-    # field 11: Annotation Extension
-    # field 12: Annotation Properties
+    glocal userLookup
+    global hasError
 
     # see annotload/annotload.py for format
-    # field 6:  Qualifier : null
-    # field 9 : Notes : none
-    # field 10: logicalDB : MGI
+    # 6:  Qualifier : null
+    # 9:  Notes : none
+    # 10: logicalDB : MGI
     annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\tMGI\t%s\n' 
 
     print('reading MGI GPAD...')
@@ -274,11 +298,13 @@ def readGPAD(gpadInFile):
         if line[0] == '!':
             continue
 
+        hasError = 0
         line = line[:-1]
         tokens = line.split('\t')
 
-        databaseID = tokens[0]		# should always be 'MGI'
-        dbobjectID = tokens[1]
+        dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
+        gpiobjectID = tokens[0]
+        negation = tokens[1]
         qualifier = tokens[2]
         goID = tokens[3]
         references = tokens[4]
@@ -291,34 +317,28 @@ def readGPAD(gpadInFile):
         properties = tokens[11]
 
         #
-        # skip if the GO id is a root term:  GO:0003674, GO:0008150, GO:0005575
+        # skip if the dbobjectID is not MGI or PR
         #
-
-        #if goID in ('GO:0003674','GO:0008150', 'GO:0005575'):
-        #    errorFile.write('Root Id is used : %s\n%s\n****\n' % (goID, line))
-        #    continue
-
-        #
-        # skip if the databaseID is not MGI or PR
-        #
-
-        if databaseID != 'MGI' and databaseID not in gpiSet:
+        if dbobjectID.startswith('MGI:') == False and dbobjectID.startswith('PR:') == False:
             errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
+            hasError += 1
             continue
 
         #
         # if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
+        # grab marker from gpiLookup
+        # example: PR:Q9QWY8-2 -> MGI:1342335
+        #       properties = 'gene product=PR:Q9QWY8-2'
+        #       dbobjectID = 'MGI:1342335'
         #
-
+        databaseID, databaseTerm = dbobjectID.split(':')
         if databaseID in gpiSet:
-            #print tokens
-            dbobjectID = databaseID + ':' + dbobjectID
-            properties = 'gene product=' + dbobjectID + '|' + properties
-
-            if dbobjectID in gpiLookup:
-                dbobjectID = gpiLookup[dbobjectID][0]
+            if gpiobjectID in gpiLookup:
+                properties = 'gene product=' + dbobjectID + '|' + properties
+                dbobjectID = gpiLookup[gpiobjectID][0]
             else:
-                errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (dbobjectID, line))
+                errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (gpiobjectID, line))
+                hasError += 1
                 continue
 
         # translate references (MGI/PMID) to J numbers (J:)
@@ -345,14 +365,16 @@ def readGPAD(gpadInFile):
 
         # if reference does not exist...skip it
         if jnumIDFound == 0:
-            errorFile.write('Invalid Reference/either no pubmed id or no jnum: %s\n%s\n****\n' % (references, line))
+            errorFile.write('Invalid Reference/either no pubmed id or no jnum (5): %s\n%s\n****\n' % (references, line))
+            hasError += 1
             continue
 
         if evidenceCode in ecoLookupByEco:
             #goEvidenceCode = ecoLookupByEco[evidenceCode][0]
             goEvidenceCode = ecoLookupByEco[evidenceCode]
         else:
-            errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code : %s\n%s\n****\n' % (evidenceCode, line))
+            errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code (6): %s\n%s\n****\n' % (evidenceCode, line))
+            hasError += 1
             continue
 
         #
@@ -366,6 +388,7 @@ def readGPAD(gpadInFile):
             if errors:
                 for error in errors:
                     errorFile.write('%s\n%s\n****\n' % (error, line))
+                    hasError += 1
 
             # re-format to use 'properties' format
             # (which will then be re-formated to mgi-property format)
@@ -378,52 +401,81 @@ def readGPAD(gpadInFile):
                 properties = extensions
 
         #
-        # for qualifier:
-        #
-        # if qualifier in goqualifiersLookup:
+        # if qualifier in goproperytLookup:
         #
         #	a) store as annotload/column 11/Property
         #
         #	b) append to 'properties'
         #
         #	for example:
-        #		go_qualifier=part_of
-        #		go_qualifier=enables
-        #		go_qualifier=involved_in
+        #		go_qualifier_id=BFO:0000050
+        #		go_qualifier_term=part_of
+        #		go_qualifier_id=RO:0002327
+        #		go_qualifier_term=enables
+        #		go_qualifier_id=RO:0002331
+        #		go_qualifier_term=involved_in
         #
-        # else:
-        #	a) store as annotload/column 6/Qualifier
-        #
-        goqualifiers = []
         for g in qualifier.split('|'):
-            if g in goqualifiersLookup:
+            if g in goROLookup:
                 if len(properties) > 0:
                     properties = properties + '|'
-                properties = properties + 'go_qualifier=' + g
+                properties = properties + 'go_qualifier_id=' + g
+                properties = properties + '|go_qualifier_term=' + goROLookup[g][0]
             else:
-                goqualifiers.append(g)
+                errorFile.write('Invalid Relation in GOProperty (3): cannot find RO:,etc id: %s\n%s\n****\n' % (g, line))
+                hasError += 1
+
+        if hasError > 0:
+                continue
 
         # for evidence:
         #	a) store as translated ECO->MGI->Evidence Code field
         #	b) append to 'properties' as:
         #		evidence=ECO:xxxx
         #
-        properties = properties + '|evidence=' + evidenceCode
+        if len(properties) > 0:
+             properties = properties + '|'
+        properties = properties + 'evidence=' + evidenceCode
 
         # re-format to mgi-property format
         #
         properties = properties.replace('=', '&=&')
         properties = properties.replace('|', '&==&')
+        properties = properties.replace('&==&&==&', '&==&')
+
+        #
+        # if createdBy does not exist in MGI_User, then add it
+        # add GOA_ and NOCTUA_ at the same time
+        #
+        # attached prefix
+        createdBy = 'NOCTUA_' + createdBy
+        if createdBy not in userLookup:
+            addSQL = '''
+                insert into MGI_User values (
+                (select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+                )''' % (createdBy, createdBy)
+            print('adding new MGI_User...')
+            print(addSQL)
+            db.sql(addSQL, 'auto')
+            db.commit()
+            userLookup.append(createdBy)
+            addNoctua = createdBy
+            addNoctua = addNoctua.replace('GOA', 'NOCTUA')
+            addSQL = '''
+                insert into MGI_User values (
+                (select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+                )''' % (addNoctua, addNoctua)
+            print('adding new MGI_User...')
+            print(addSQL)
+            db.sql(addSQL, 'auto')
+            db.commit()
+            userLookup.append(addNoctua)
 
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
         # (dbobjectID, goID, goEvidenceCode, jnumID)
 
-        # attached prefix
-        createdBy = 'NOCTUA_' + createdBy
-
-        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, \
-                '|'.join(goqualifiers), createdBy, modDate, properties))
+        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, createdBy, modDate, properties))
 
     return 0
 
@@ -450,3 +502,4 @@ if readGPAD(mgiInFile) != 0:
 
 closeFiles()
 sys.exit(0)
+

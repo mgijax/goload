@@ -167,7 +167,7 @@ checkStatus ${STAT} "${GOLOAD}/gomousenoctua/echocheck.sh"
 shutDown
 
 #
-# invalid reference format for harold/nancy
+# invalid reference format
 #
 cd ${OUTPUTDIR}
 rm -rf pubmed.error

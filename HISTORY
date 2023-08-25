@@ -2,8 +2,14 @@ ${MIRROR_WGET}/download_package purl.obolibrary.org.pr
 ${MIRROR_WGET}/download_package purl.obolibrary.org.uberon.obo
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
-${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
-${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.noctua
+${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.annotations
+
+TAG: goload-6-0-22-?
+DATE: 
+STAFF: lec
+wts2-1155/GOC taking over GOA mouse, GOA human, etc.
+remove gorat folder
+from noctua_mgi.gpad to mgi.gpad
 
 TAG: goload-6-0-22-4
 TAG: goload-6-0-22-3

@@ -34,7 +34,8 @@ import sys
 import os
 import db
 
-db.setTrace()
+# only turn on when debugging
+#db.setTrace()
 
 #
 # Main

@@ -8,10 +8,8 @@
 
 setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/go/gocfp/input
 setenv ANNOTMODE                new
-#setenv ANNOTMODE                preview
 setenv ANNOTTYPENAME            "GO/Marker"
 setenv ANNOTPROPERTY            82
-#want to delete by user, not reference
 setenv DELETEREFERENCE          "J:0"
 setenv DELETEUSER               GOC
 setenv ANNOTOBSOLETE            0
