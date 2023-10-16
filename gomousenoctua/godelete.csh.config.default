@@ -11,7 +11,7 @@ setenv ANNOTMODE                delete
 setenv ANNOTTYPENAME            "GO/Marker"
 setenv ANNOTPROPERTY            82
 setenv DELETEREFERENCE          "J:0"
-setenv DELETEUSER               GO_Central
+setenv DELETEUSER               NOCTUA_
 setenv ANNOTOBSOLETE            0
 setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/gomousenoctua.annot
 setenv ANNOTLOG                 ${ANNOTINPUTFILE}.log
