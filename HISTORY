@@ -4,12 +4,10 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.annotations
 
-TAG: goload-6-0-22-?
-DATE: 
+TAG: goload-6-0-22-5
+DATE: 10/16/2023
 STAFF: lec
-wts2-1155/GOC taking over GOA mouse, GOA human, etc.
-remove gorat folder
-from noctua_mgi.gpad to mgi.gpad
+wts2-1155/fl2-581/turn goload/preprocessrefs.py db.setTrace() off
 
 TAG: goload-6-0-22-4
 TAG: goload-6-0-22-3
