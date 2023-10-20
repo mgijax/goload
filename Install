@@ -29,7 +29,7 @@ fi
 #
 cd `dirname $0`
 
-for i in gomousenoctua
+for i in gomousenoctua goamouse gorat gorefgen goahuman gocfp
 do
 
 cp -r $i/$i.config.default $i/$i.config
@@ -82,6 +82,7 @@ ${DLAINSTALL} ${DEV}
 done
 
 # for goamouse only
+cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
 cp -r gomousenoctua/godelete.csh.config.default gomousenoctua/godelete.csh.config
 
 # remove old *pyc

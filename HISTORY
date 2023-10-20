@@ -4,6 +4,7 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.annotations
 
+TAG: goload-6-0-22-9
 TAG: goload-6-0-22-8
 TAG: goload-6-0-22-7
 TAG: goload-6-0-22-6

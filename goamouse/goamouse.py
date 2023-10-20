@@ -1020,7 +1020,8 @@ def convertPropertiesIds(properties, uberonLookup={}):
 if initialize() != 0:
     sys.exit(1)
 
-for inFileName in (os.environ['PROTEIN_SORTED'], os.environ['ISOFORM_SORTED']):
+#for inFileName in (os.environ['PROTEIN_SORTED'], os.environ['ISOFORM_SORTED']):
+for inFileName in (os.environ['PROTEIN_SORTED']):
     inFile = open(inFileName, 'r')
     if readGAF(inFile) != 0:
         sys.exit(1)
