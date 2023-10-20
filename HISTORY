@@ -4,10 +4,11 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.annotations
 
+TAG: goload-6-0-22-8
 TAG: goload-6-0-22-7
 TAG: goload-6-0-22-6
 TAG: goload-6-0-22-5
-DATE: 10/16/2023
+DATE: 10/16/2023, 10/20/2023
 STAFF: lec
 wts2-1155/fl2-581/turn goload/preprocessrefs.py db.setTrace() off
 
