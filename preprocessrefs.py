@@ -53,6 +53,9 @@ for line in inFile.readlines():
         pubmedids.append(p)
 inFile.close()
 
+relevanceSQL = ""
+jnumSQL = ""
+
 for i in pubmedids:
     # select where jnumid is null ; includes relevance = keep and discard
     cmd = '''
@@ -62,9 +65,6 @@ for i in pubmedids:
     and jnumid is null
     ''' % i
     #''' % ','.join(pubmedids)
-
-    relevanceSQL = ""
-    jnumSQL = ""
 
     results = db.sql(cmd, 'auto')
     for r in results:
