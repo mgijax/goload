@@ -151,7 +151,18 @@ def preprocess(inFile):
                 (mgiID, cID) = str.split(ids, '|')
                 clusterId = int(cID)
 
+        #
+        # if at least one cluster member has a NOT, 
+        # then *all* of the cluster members will be added to the clusterIdsWithNotDict
+        # and will be reported as in the NOT_NO_TRANSFER
+        # example:  cluster Q14186/TFDP1/does not have NOT, TFDP3/has a NOT
+        #
         if len(qualifier) > 0 and qualifier[:3] == 'NOT':
+            #if clusterId == 45295081:
+            #    print('found qualifier NOT')
+            #    print('cluster: ' + str(clusterId))
+            #    print('qualifier: ' + str(qualifier))
+            #    print(tokens)
             if clusterId not in clusterIdsWithNotDict:
                 clusterIdsWithNotDict[clusterId] = []
             clusterIdsWithNotDict[clusterId].append(goID)
