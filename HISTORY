@@ -4,6 +4,13 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.annotations
 
+TAG: goload-6-0-22-??
+DATE: 10/25/2023
+STAFF: lec
+wts2-1311/improve lib_py_postgres/product changes
+preprocessrefs.py: relevanceSQL, jnumSQL must be created before "for" loop
+
+TAG: goload-6-0-22-11
 TAG: goload-6-0-22-10
 TAG: goload-6-0-22-9
 TAG: goload-6-0-22-8
