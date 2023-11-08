@@ -98,7 +98,10 @@ fi
 #
 preload ${OUTPUTDIR}
 
+#
 # copy new file from ${DATADOWNLOADS} and unzip
+#
+echo "copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
 cd ${INPUTDIR}
 cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
 rm -rf ${MGIINFILE_NAME_GPAD}
@@ -107,10 +110,10 @@ gunzip ${MGIINFILE_NAME_GZ}
 #
 # pre-process
 #
+echo "Running pre-processing pmid" >> ${LOG}
 cd ${INPUTDIR}
 rm -rf ${INFILE_NAME_PMID}
 cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
-echo "Running pre-processing pmid" >> ${LOG}
 ${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
