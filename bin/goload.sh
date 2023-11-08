@@ -4,8 +4,8 @@
 ###########################################################################
 #
 #  Purpose:
-# 	This script creates a GO annotation load
-#       input file and invokes the annotload using that input file.
+# 	This script creates a GO annotation load input file 
+#       and invokes the annotload using that input file.
 #
 #  Usage=goload.sh
 #
