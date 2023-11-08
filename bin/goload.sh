@@ -118,6 +118,7 @@ ${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
 
+# now move to the ${OUTPUTDIR}
 cd ${OUTPUTDIR}
 
 #
