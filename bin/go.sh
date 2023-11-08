@@ -54,20 +54,32 @@ if ( $weekday == 7 ) then
         ${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
 endif
 
+#
+# pre-process
+#
 date | tee -a $GOLOG
-echo '1:running GO load' | tee -a ${GOLOG}
+echo "1:running pre-processing pmid" | tee -a ${GOLOG}
+cd ${INPUTDIR}
+rm -rf ${INFILE_NAME_PMID}
+cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
+$PYTHON ${GOLOAD}/preprocessrefs.py ${INFILE_NAME_PMID} | tee -a ${GOLOG} || exit 1
+
+cd ${OUTPUTDIR}
+
+date | tee -a $GOLOG
+echo '2:running GO load' | tee -a ${GOLOG}
 ${GOLOAD}/bin/goload.sh | tee -a ${GOLOG} || exit 1
 
 date | tee -a $GOLOG
-echo '2:running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
+echo '3:running go_annot_extensions_display_load.csh' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_annot_extensions_display_load.csh | tee -a ${GOLOG} || exit 1
 
 date | tee -a $GOLOG
-echo '3:running go_isoforms_display_load.csh' | tee -a ${GOLOG}
+echo '4:running go_isoforms_display_load.csh' | tee -a ${GOLOG}
 ${MGICACHELOAD}/go_isoforms_display_load.csh | tee -a ${GOLOG} || exit 1
 
 date | tee -a $GOLOG
-echo '4:running BIB_updateWFStatusGO' | tee -a ${GOLOG}
+echo '5:running BIB_updateWFStatusGO' | tee -a ${GOLOG}
 cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a ${GOLOG}
 select BIB_updateWFStatusGO();
 EOSQL
