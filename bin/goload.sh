@@ -122,8 +122,8 @@ cd ${OUTPUTDIR}
 # not needed right now
 #
 echo "Running annotation load to delete existing data (GO_Central)" >> ${LOG}
-rm -rf ${DATALOADSOUTPUT}/go/input/goload.annot
-touch ${DATALOADSOUTPUT}/go/input/goload.annot
+rm -rf ${INPUTDIR}/goload.annot
+touch ${INPUTDIR}/goload.annot
 COMMON_CONFIG_CSH=${GOLOAD}/goannotdelete.config
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG}
 STAT=$?
