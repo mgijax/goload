@@ -29,23 +29,12 @@ fi
 #
 cd `dirname $0`
 
-for i in gomousenoctua goamouse gorat gorefgen goahuman gocfp
-do
-
-cp -r $i/$i.config.default $i/$i.config
-
-if [ -r $i/goa.csh.config.default ]
-then
-cp -r $i/goa.csh.config.default $i/goa.csh.config
-fi
-
-if [ -r $i/go.csh.config.default ]
-then
-cp -r $i/go.csh.config.default $i/go.csh.config
-fi
+cp -r goload.config.default goload.config
+cp -r goannot.config.default goannot.config
+cp -r goannotdelete.config.default goannotdelete.config
 
 # establish the config files
-MAIN_CONFIG=$i/$i.config
+MAIN_CONFIG=goload.config
 
 # Make sure config file exists and source it
 if [ -r ${MAIN_CONFIG} ]
@@ -57,7 +46,6 @@ else
     installFailed
 fi
 
-#
 # Create the input directory if it doesn't exist.
 #
 if [ ! -d ${INPUTDIR} ]
@@ -78,12 +66,6 @@ fi
 #
 echo 'running DLAINSTALL'
 ${DLAINSTALL} ${DEV}
-
-done
-
-# for goamouse only
-cp -r goamouse/goadelete.csh.config.default goamouse/goadelete.csh.config
-cp -r gomousenoctua/godelete.csh.config.default gomousenoctua/godelete.csh.config
 
 # remove old *pyc
 rm -rf lib/*pyc
