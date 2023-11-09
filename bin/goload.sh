@@ -101,22 +101,22 @@ preload ${OUTPUTDIR}
 #
 # copy new file from ${DATADOWNLOADS} and unzip
 #
-echo "copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
-cd ${INPUTDIR}
-cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${MGIINFILE_NAME_GPAD}
-gunzip ${MGIINFILE_NAME_GZ}
+#echo "copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
+#cd ${INPUTDIR}
+#cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
+#rm -rf ${MGIINFILE_NAME_GPAD}
+#gunzip ${MGIINFILE_NAME_GZ}
 
 #
 # pre-process
 #
-echo "Running pre-processing pmid" >> ${LOG}
-cd ${INPUTDIR}
-rm -rf ${INFILE_NAME_PMID}
-cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
-${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
-STAT=$?
-checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
+#echo "Running pre-processing pmid" >> ${LOG}
+#cd ${INPUTDIR}
+#rm -rf ${INFILE_NAME_PMID}
+#cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
+#${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
+#STAT=$?
+#checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
 
 # now move to the ${OUTPUTDIR}
 cd ${OUTPUTDIR}
@@ -144,28 +144,28 @@ checkStatus ${STAT} "${GOLOAD}/bin/goload.py"
 #
 # run annotation load with new annotations
 #
-#COMMON_CONFIG_CSH=${GOLOAD}/goannot.config
-#echo "Running GO annotation load" >> ${LOG}
-#echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG} 
-#${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG} 
-#STAT=$?
-#checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
+COMMON_CONFIG_CSH=${GOLOAD}/goannot.config
+echo "Running GO annotation load" >> ${LOG}
+echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG} 
+${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG} 
+STAT=$?
+checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 
 #
 # run inferred-from cache
 #
-#echo "Running GO inferred-from cache load" >> ${LOG}
-#${MGICACHELOAD}/inferredfrom.go >> ${LOG} 
-#STAT=$?
-#checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
+echo "Running GO inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.go >> ${LOG} 
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
 
 #
 # run eco check
 #
-#echo "Running GO ecocheck.sh" >> ${LOG}
-#${GOLOAD}/bin/ecocheck.sh >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
+echo "Running GO ecocheck.sh" >> ${LOG}
+${GOLOAD}/bin/ecocheck.sh >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
 
 #
 # run postload cleanup and email logs
