@@ -98,6 +98,20 @@ fi
 #
 preload ${OUTPUTDIR}
 
+# 
+# this proisoform/marker annotations are used by the reports_db/daily/GO_gpi.py
+#
+echo 'runnning proisoformload'
+${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
+STAT=$?
+checkStatus ${STAT} "proisoformload process"
+
+echo 'generate ${PUBREPORTDIR}/output/mgi.gpi'
+REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
+STAT=$?
+checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
+
 #
 # copy new file from ${DATADOWNLOADS} and unzip
 #
