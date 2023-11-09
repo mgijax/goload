@@ -13,6 +13,6 @@ setenv ANNOTPROPERTY            82
 setenv DELETEREFERENCE          "J:0"
 setenv DELETEUSER               GO_Central
 setenv ANNOTOBSOLETE            0
-setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/mgi/goload.annot
+setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/goload.annot
 setenv ANNOTLOG                 ${ANNOTINPUTFILE}.log
 
