@@ -105,6 +105,9 @@ pubmedLookup = {}
 # go-relation ontology lookup (RO/etc. id, term)
 goROLookup = {}
 
+# user lookup
+userLookup = []
+
 #
 # Purpose: Initialization
 #
@@ -121,6 +124,7 @@ def initialize():
     global goRefLookup
     global pubmedLookup
     global goROLookup
+    global userLookup
 
     #
     # open files
@@ -235,6 +239,14 @@ def initialize():
         goROLookup[key].append(value)
     #print(goROLookup)
 
+    #
+    # read/store GOA_, NOCTUA_ MGI_User
+    #
+    results = db.sql('''select login from MGI_User where login like 'GO_%') ''', 'auto')
+    for r in results:
+        userLookup.append(r['login'])
+    #print(userLookup)
+
     return 0
 
 #
@@ -252,6 +264,7 @@ def readGPAD(gpadInFile):
     #
 
     global hasError
+    global userLookup
 
     # see annotload/annotload.py for format
     # 6:  Qualifier : null
@@ -276,10 +289,10 @@ def readGPAD(gpadInFile):
         goID = tokens[3]
         references = tokens[4]
         evidenceCode = tokens[5]
-        inferredFrom = tokens[6].replace('MGI:MGI:', 'MGI:')
+        inferredFrom = tokens[6]
         taxID = tokens[7]
         modDate = tokens[8]
-        createdBy = tokens[9]
+        assignedBy = tokens[9]
         extensions = tokens[10].replace('MGI:MGI:', 'MGI:')
         properties = tokens[11]
 
@@ -307,6 +320,10 @@ def readGPAD(gpadInFile):
                 errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (gpiobjectID, line))
                 hasError += 1
                 continue
+
+        # inferredFrom
+        inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
+        inferredFrom = inferredFrom.replace('"', '')
 
         # translate references (MGI/PMID) to J numbers (J:)
         # use the first J: match that we find
@@ -410,10 +427,25 @@ def readGPAD(gpadInFile):
         properties = properties.replace('|', '&==&')
         properties = properties.replace('&==&&==&', '&==&')
 
+        #
+        # if assignedBy does not exist in MGI_User, then add it
+        #
+        assignedBy = assignedBy.replace('MGI', 'GO_MGI')
+        if assignedBy not in userLookup:
+            addSQL = '''
+                insert into MGI_User values (
+                (select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
+                )''' % (assignedBy, assignedBy)
+            print('adding new MGI_User...')
+            print(addSQL)
+            db.sql(addSQL, 'auto')
+            db.commit()
+            userLookup.append(assignedBy)
+
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
         # (dbobjectID, goID, goEvidenceCode, jnumID)
-        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, createdBy, modDate, properties))
+        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, assignedBy, modDate, properties))
 
     return 0
 
