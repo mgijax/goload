@@ -242,7 +242,7 @@ def initialize():
     #
     # read/store GOA_, NOCTUA_ MGI_User
     #
-    results = db.sql('''select login from MGI_User where login like 'GO_%') ''', 'auto')
+    results = db.sql('''select login from MGI_User where login like 'GO_%' ''', 'auto')
     for r in results:
         userLookup.append(r['login'])
     #print(userLookup)

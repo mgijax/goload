@@ -101,16 +101,16 @@ preload ${OUTPUTDIR}
 # 
 # this proisoform/marker annotations are used by the reports_db/daily/GO_gpi.py
 #
-echo 'runnning proisoformload'
-${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
-STAT=$?
-checkStatus ${STAT} "proisoformload process"
+#echo 'runnning proisoformload'
+#${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
+#STAT=$?
+#checkStatus ${STAT} "proisoformload process"
 
-echo 'generate ${PUBREPORTDIR}/output/mgi.gpi'
-REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
-STAT=$?
-checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
+#echo 'generate ${PUBREPORTDIR}/output/mgi.gpi'
+#REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
+#STAT=$?
+#checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 
 #
 # copy new file from ${DATADOWNLOADS} and unzip
@@ -132,7 +132,7 @@ checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 #STAT=$?
 #checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
 
-# now move to the ${OUTPUTDIR}
+# move to the ${OUTPUTDIR}
 cd ${OUTPUTDIR}
 
 #
