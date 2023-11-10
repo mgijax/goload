@@ -146,8 +146,7 @@ def initialize():
     # pubmed id:jnum id
     #
 
-    print('reading mgi id/pubmed id -> J: translation...')
-
+    print('reading mgi id/pubmed id -> J: translation')
     results = db.sql('select mgiID, pubmedID, jnumID from BIB_Citation_Cache where jnumID is not null', 'auto')
     for r in results:
         mgiRefLookup[r['mgiID']] = r['jnumID']
@@ -158,9 +157,7 @@ def initialize():
     #
     # read/store object-to-Marker info
     #
-
-    print('reading object -> marker translation using gpi file...')
-
+    print('reading object -> marker translation using gpi file')
     for line in gpiFile.readlines():
         if line[:1] == '!':
             continue
@@ -177,13 +174,13 @@ def initialize():
     #
     # lookup file of Evidence Code Ontology using ecolib.py library
     #
-    print('reading eco -> go evidence translation...')
+    print('reading eco -> go evidence translation')
     ecoLookupByEco, ecoLookupByEvidence = ecolib.processECO()
 
     #
     # read/store UBERON-to-EMAPA info
     #
-    print('reading uberon -> emapa translation file...')
+    print('reading uberon -> emapa translation file')
     uberonLookup = uberonlib.processUberon() 
 
     #
@@ -240,8 +237,9 @@ def initialize():
     #print(goROLookup)
 
     #
-    # read/store GOA_, NOCTUA_ MGI_User
+    # read/store MGI_User used for GO (GO_)
     #
+    print('reading mgi_user GO_')
     results = db.sql('''select login from MGI_User where login like 'GO_%' ''', 'auto')
     for r in results:
         userLookup.append(r['login'])
