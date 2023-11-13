@@ -352,7 +352,7 @@ def readGPAD(gpadInFile):
 
         # inferredFrom
         inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
-        # unexpected quote
+        # unexpected quote; remove it
         inferredFrom = inferredFrom.replace('"', '')
 
         #
@@ -364,9 +364,9 @@ def readGPAD(gpadInFile):
             # to translate uberon ids to emapa
             extensions, errors = uberonlib.convertExtensions(extensions, uberonLookup)
 
-            # unexpected quote
+            # unexpected quote; remove it
             extensions = extensions.replace('"','')
-            # different delimiters
+            # different delimiters; make them all the same ","
             extensions = extensions.replace('|',',')
 
             if errors:
