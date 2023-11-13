@@ -347,6 +347,8 @@ def readGPAD(gpadInFile):
             hasError += 1
             continue
 
+        # end: translate references (MGI/PMID) to J numbers (J:)
+
         # inferredFrom
         inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
         # unexpected quote
