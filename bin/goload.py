@@ -284,26 +284,38 @@ def readGPAD(gpadInFile):
         dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
         # 1:  DB_Object_ID with fill MGI:MGI:
         gpiobjectID = tokens[0]
+
         # 2:  Negation
         negation = tokens[1]
+
         # 3:  Relation Ontology (RO)
         qualifier = tokens[2]
+
         # 4:  Ontology_Class_ID
         goID = tokens[3]
+
         # 5:  References (PMIDs)
         references = tokens[4]
+
         # 6:  Evidence_Type
         evidenceCode = tokens[5]
+
         # 7:  With_Or_From
         inferredFrom = tokens[6]
+
         # 8:  Interacting_Taxon_ID
+        # MGI does nothing with this field
         taxID = tokens[7]
+
         # 9:  Annotation_Date (yyymmdd)
-        modDate = tokens[8]
+        annotDate = tokens[8]
+
         # 10: Assigned_By (GO_Central)
         assignedBy = tokens[9]
+
         # 11: Annotation_Extensions
         extensions = tokens[10].replace('MGI:MGI:', 'MGI:')
+
         # 12: Annotation_Properties
         properties = tokens[11].replace('"','')
 
@@ -325,6 +337,7 @@ def readGPAD(gpadInFile):
                 hasError += 1
                 continue
 
+        # start: references
         # translate references (MGI/PMID) to J numbers (J:)
         # use the first J: match that we find
 
@@ -354,14 +367,13 @@ def readGPAD(gpadInFile):
             continue
 
         if evidenceCode in ecoLookupByEco:
-            #goEvidenceCode = ecoLookupByEco[evidenceCode][0]
             goEvidenceCode = ecoLookupByEco[evidenceCode]
         else:
             errorFile.write('Invalid ECO id : cannot find valid GO Evidence Code (6): %s\n%s\n****\n' % (evidenceCode, line))
             hasError += 1
             continue
 
-        # end: translate references (MGI/PMID) to J numbers (J:)
+        # end: references
 
         # inferredFrom
         inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
@@ -484,7 +496,7 @@ def readGPAD(gpadInFile):
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
         # (dbobjectID, goID, goEvidenceCode, jnumID)
-        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, assignedBy, modDate, properties))
+        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, assignedBy, annotDate, properties))
 
     return 0
 
