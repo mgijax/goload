@@ -270,7 +270,7 @@ def readGPAD(gpadInFile):
     # 10: logicalDB : MGI
     annotLine = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t\tMGI\t%s\n' 
 
-    print('reading MGI GPAD...')
+    print('reading MGI GPAD')
 
     for line in gpadInFile.readlines():
 
@@ -292,15 +292,7 @@ def readGPAD(gpadInFile):
         modDate = tokens[8]
         assignedBy = tokens[9]
         extensions = tokens[10].replace('MGI:MGI:', 'MGI:')
-        properties = tokens[11]
-
-        #
-        # skip if the dbobjectID is not MGI or PR
-        #
-        if dbobjectID.startswith('MGI:') == False and dbobjectID.startswith('PR:') == False:
-            errorFile.write('column 1 is not valid: %s\n%s\n****\n' % (databaseID, line))
-            hasError += 1
-            continue
+        properties = tokens[11].replace('"','')
 
         #
         # if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
@@ -318,10 +310,6 @@ def readGPAD(gpadInFile):
                 errorFile.write('object is not in GPI file: %s\n%s\n****\n' % (gpiobjectID, line))
                 hasError += 1
                 continue
-
-        # inferredFrom
-        inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
-        inferredFrom = inferredFrom.replace('"', '')
 
         # translate references (MGI/PMID) to J numbers (J:)
         # use the first J: match that we find
@@ -359,17 +347,40 @@ def readGPAD(gpadInFile):
             hasError += 1
             continue
 
+        # inferredFrom
+        inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
+        # unexpected quote
+        inferredFrom = inferredFrom.replace('"', '')
+
         #
-        # "extensions" contain things like "occurs_in", "part_of", etc.
+        # "extensions" contain things like RO/BFO which need to be translated to "occurs_in", "part_of", etc.
         # and are added to "properties" for forwarding to the annotation loader
         #
         if len(extensions) > 0:
 
             # to translate uberon ids to emapa
             extensions, errors = uberonlib.convertExtensions(extensions, uberonLookup)
+
+            # unexpected quote
+            extensions = extensions.replace('"','')
+            # different delimiters
+            extensions = extensions.replace('|',',')
+
             if errors:
                 for error in errors:
                     errorFile.write('%s\n%s\n****\n' % (error, line))
+                    hasError += 1
+
+            # translate extensions to goROLookup terms
+            s1 = extensions.split(",")
+            for s in s1:
+                s2 = s.split("(")
+                roTerm = s2[0]
+                #print('roTerm: ' + roTerm)
+                if roTerm in goROLookup:
+                    extensions = extensions.replace(roTerm, goROLookup[g][0])
+                else:
+                    errorFile.write('Invalid Relation in GOProperty (3): cannot find RO:,etc id: %s\n%s\n****\n' % (roTerm, line))
                     hasError += 1
 
             # re-format to use 'properties' format
@@ -377,6 +388,7 @@ def readGPAD(gpadInFile):
             extensions = extensions.replace('(', '=')
             extensions = extensions.replace(')', '')
             extensions = extensions.replace(',', '|')
+
             if len(properties) > 0:
                 properties = extensions + '|' + properties
             else:
@@ -419,17 +431,21 @@ def readGPAD(gpadInFile):
              properties = properties + '|'
         properties = properties + 'evidence=' + evidenceCode
 
+        #
         # re-format to mgi-property format
         #
+        properties = properties.replace('"', '')
         properties = properties.replace('=', '&=&')
         properties = properties.replace('|', '&==&')
         properties = properties.replace('&==&&==&', '&==&')
 
         #
         # if assignedBy does not exist in MGI_User, then add it
+        # use the prefix "GO_" to the MGI_User.login/name, so that we can find the GO annotations more easily
         #
         assignedBy = assignedBy.replace('MGI', 'GO_MGI')
         if assignedBy not in userLookup:
+            assignedBy = 'GO_' + assignedBy
             addSQL = '''
                 insert into MGI_User values (
                 (select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
