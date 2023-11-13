@@ -355,8 +355,12 @@ def readGPAD(gpadInFile):
         # unexpected quote; remove it
         inferredFrom = inferredFrom.replace('"', '')
 
+        # start: extensions/properties
+        # for MGI, we merge the extensions & properties into MGI-properties
         #
-        # "extensions" contain things like RO/BFO which need to be translated to "occurs_in", "part_of", etc.
+
+        #
+        # extensions contain things like RO/BFO which need to be translated to "occurs_in", "part_of", etc.
         # and are added to "properties" for forwarding to the annotation loader
         #
         if len(extensions) > 0:
@@ -427,8 +431,7 @@ def readGPAD(gpadInFile):
 
         # for evidence:
         #	a) store as translated ECO->MGI->Evidence Code field
-        #	b) append to 'properties' as:
-        #		evidence=ECO:xxxx
+        #	b) append to 'properties' as: evidence=ECO:xxxx
         #
         if len(properties) > 0:
              properties = properties + '|'
@@ -442,6 +445,10 @@ def readGPAD(gpadInFile):
         properties = properties.replace('|', '&==&')
         properties = properties.replace('&==&&==&', '&==&')
 
+        # end: extensions/properties
+
+        #
+        # start:  assigned by
         #
         # if assignedBy does not exist in MGI_User, then add it
         # use the prefix "GO_" to the MGI_User.login/name, so that we can find the GO annotations more easily
@@ -458,6 +465,8 @@ def readGPAD(gpadInFile):
             db.sql(addSQL, 'auto')
             db.commit()
             userLookup.append(assignedBy)
+
+        # end:  assigned by
 
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
