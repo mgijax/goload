@@ -296,6 +296,7 @@ def readGPAD(gpadInFile):
 
         #
         # if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
+        # these are considered "isoforms" of the mouse gene
         # grab marker from gpiLookup
         # example: PR:Q9QWY8-2 -> MGI:1342335
         #       properties = 'gene product=PR:Q9QWY8-2'
