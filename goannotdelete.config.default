@@ -11,7 +11,6 @@ setenv ANNOTMODE                delete
 setenv ANNOTTYPENAME            "GO/Marker"
 setenv ANNOTPROPERTY            82
 setenv DELETEREFERENCE          "J:0"
-#setenv DELETEUSER               GO_Central
 setenv DELETEUSER               none
 setenv ANNOTOBSOLETE            0
 setenv ANNOTINPUTFILE           ${ANNOTDATADIR}/goload.annot
