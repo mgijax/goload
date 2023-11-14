@@ -101,21 +101,21 @@ preload ${OUTPUTDIR}
 # 
 # this proisoform/marker annotations are used by the reports_db/daily/GO_gpi.py
 #
-#echo 'runnning proisoformload'
-#${PROISOFORMLOAD}/bin/proisoform.sh | tee -a ${GOLOG} || exit 1
+#echo 'Runnning proisoformload'
+#${PROISOFORMLOAD}/bin/proisoform.sh
 #STAT=$?
 #checkStatus ${STAT} "proisoformload process"
 
-#echo 'generate ${PUBREPORTDIR}/output/mgi.gpi'
+#echo 'Generate ${PUBREPORTDIR}/output/mgi.gpi'
 #REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py | tee -a ${GOLOG} || exit 1
+#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
 #STAT=$?
 #checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 
 #
 # copy new file from ${DATADOWNLOADS} and unzip
 #
-#echo "copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
+#echo "Copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
 #cd ${INPUTDIR}
 #cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
 #rm -rf ${MGIINFILE_NAME_GPAD}
@@ -139,7 +139,7 @@ cd ${OUTPUTDIR}
 # run annotation load with an empty file to remove previous data
 # not needed right now
 #
-echo "Running annotation load to delete existing data (GO_Central)" >> ${LOG}
+echo "Running annotation load to delete existing data (_annottype_key = 1000)" >> ${LOG}
 rm -rf ${INPUTDIR}/goload.annot
 touch ${INPUTDIR}/goload.annot
 COMMON_CONFIG_CSH=${GOLOAD}/goannotdelete.config
@@ -180,6 +180,30 @@ echo "Running GO ecocheck.sh" >> ${LOG}
 ${GOLOAD}/bin/ecocheck.sh >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
+
+#
+# run go_annot_extensions_display_load.csh
+#
+echo 'Running go_annot_extensions_display_load.csh' >> ${LOG}
+${MGICACHELOAD}/go_annot_extensions_display_load.csh
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
+
+#
+# run go_isoforms_display_load.csh
+#
+echo 'Running go_isoforms_display_load.csh' >> ${LOG}
+${MGICACHELOAD}/go_isoforms_display_load.csh 
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
+
+#
+# run BIB_updateWFStatusGO()
+#
+echo 'Running BIB_updateWFStatusGO' >> ${LOG}
+cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
+select BIB_updateWFStatusGO();
+EOSQL
 
 #
 # run postload cleanup and email logs
