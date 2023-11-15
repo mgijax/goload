@@ -101,12 +101,12 @@ preload ${OUTPUTDIR}
 # 
 # this proisoform/marker annotations are used by the reports_db/daily/GO_gpi.py
 #
-#echo 'Runnning proisoformload'
+#echo "Runnning proisoformload"
 #${PROISOFORMLOAD}/bin/proisoform.sh
 #STAT=$?
 #checkStatus ${STAT} "proisoformload process"
 
-#echo 'Generate ${PUBREPORTDIR}/output/mgi.gpi'
+#echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
 #REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 #${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
 #STAT=$?
@@ -150,7 +150,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # create input file
 #
-echo 'Running goload.py' >> ${LOG}
+echo "Running goload.py" >> ${LOG}
 ${PYTHON} ${GOLOAD}/bin/goload.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/bin/goload.py"
@@ -160,7 +160,6 @@ checkStatus ${STAT} "${GOLOAD}/bin/goload.py"
 #
 COMMON_CONFIG_CSH=${GOLOAD}/goannot.config
 echo "Running GO annotation load" >> ${LOG}
-echo ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG} 
 ${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go >> ${LOG} 
 STAT=$?
 checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
@@ -184,7 +183,7 @@ checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
 #
 # run go_annot_extensions_display_load.csh
 #
-echo 'Running go_annot_extensions_display_load.csh' >> ${LOG}
+echo "Running go_annot_extensions_display_load.csh" >> ${LOG}
 ${MGICACHELOAD}/go_annot_extensions_display_load.csh
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
@@ -192,7 +191,7 @@ checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
 #
 # run go_isoforms_display_load.csh
 #
-echo 'Running go_isoforms_display_load.csh' >> ${LOG}
+echo "Running go_isoforms_display_load.csh" >> ${LOG}
 ${MGICACHELOAD}/go_isoforms_display_load.csh 
 STAT=$?
 checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
@@ -200,7 +199,7 @@ checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
 #
 # run BIB_updateWFStatusGO()
 #
-echo 'Running BIB_updateWFStatusGO' >> ${LOG}
+echo "Running BIB_updateWFStatusGO" >> ${LOG}
 cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
 select BIB_updateWFStatusGO();
 EOSQL
