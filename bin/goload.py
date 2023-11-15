@@ -392,25 +392,23 @@ def readGPAD(gpadInFile):
 
             # to translate uberon ids to emapa
             extensions, errors = uberonlib.convertExtensions(extensions, uberonLookup)
+            if errors:
+                for error in errors:
+                    errorFile.write('%s\n%s\n****\n' % (error, line))
+                    hasError += 1
 
             # unexpected quote; remove it
             extensions = extensions.replace('"','')
             # different delimiters; make them all the same ","
             extensions = extensions.replace('|',',')
 
-            if errors:
-                for error in errors:
-                    errorFile.write('%s\n%s\n****\n' % (error, line))
-                    hasError += 1
-
             # translate extensions to goROLookup terms
             s1 = extensions.split(",")
             for s in s1:
                 s2 = s.split("(")
                 roTerm = s2[0]
-                #print('roTerm: ' + roTerm)
                 if roTerm in goROLookup:
-                    extensions = extensions.replace(roTerm, goROLookup[g][0])
+                    extensions = extensions.replace(roTerm, goROLookup[roTerm][0])
                 else:
                     errorFile.write('Invalid Relation in GOProperty (3): cannot find RO:,etc id: %s\n%s\n****\n' % (roTerm, line))
                     hasError += 1
