@@ -107,10 +107,10 @@ preload ${OUTPUTDIR}
 #checkStatus ${STAT} "proisoformload process"
 
 #echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
-#REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
-#STAT=$?
-#checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
+REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
+STAT=$?
+checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 
 #
 # copy new file from ${DATADOWNLOADS} and unzip
@@ -124,13 +124,13 @@ preload ${OUTPUTDIR}
 #
 # pre-process
 #
-#echo "Running pre-processing pmid" >> ${LOG}
-#cd ${INPUTDIR}
-#rm -rf ${INFILE_NAME_PMID}
-#cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
-#${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
+echo "Running pre-processing pmid" >> ${LOG}
+cd ${INPUTDIR}
+rm -rf ${INFILE_NAME_PMID}
+cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
+${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
 
 # move to the ${OUTPUTDIR}
 cd ${OUTPUTDIR}
@@ -167,10 +167,10 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-echo "Running GO inferred-from cache load" >> ${LOG}
-${MGICACHELOAD}/inferredfrom.go >> ${LOG} 
-STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
+#echo "Running GO inferred-from cache load" >> ${LOG}
+#${MGICACHELOAD}/inferredfrom.go >> ${LOG} 
+#STAT=$?
+#checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
 
 #
 # run eco check
@@ -184,26 +184,26 @@ checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
 #
 # run go_annot_extensions_display_load.csh
 #
-echo "Running go_annot_extensions_display_load.csh" >> ${LOG}
-${MGICACHELOAD}/go_annot_extensions_display_load.csh
-STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
+#echo "Running go_annot_extensions_display_load.csh" >> ${LOG}
+#${MGICACHELOAD}/go_annot_extensions_display_load.csh
+#STAT=$?
+#checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
 
 #
 # run go_isoforms_display_load.csh
 #
-echo "Running go_isoforms_display_load.csh" >> ${LOG}
-${MGICACHELOAD}/go_isoforms_display_load.csh 
-STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
+#echo "Running go_isoforms_display_load.csh" >> ${LOG}
+#${MGICACHELOAD}/go_isoforms_display_load.csh 
+#STAT=$?
+#checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
 
 #
 # run BIB_updateWFStatusGO()
 #
-echo "Running BIB_updateWFStatusGO" >> ${LOG}
-cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
-select BIB_updateWFStatusGO();
-EOSQL
+#echo "Running BIB_updateWFStatusGO" >> ${LOG}
+#cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
+#select BIB_updateWFStatusGO();
+#EOSQL
 
 #
 # run postload cleanup and email logs
