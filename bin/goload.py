@@ -410,7 +410,7 @@ def readGPAD(gpadInFile):
                 if roTerm in goROLookup:
                     extensions = extensions.replace(roTerm, goROLookup[roTerm][0])
                 else:
-                    errorFile.write('Invalid Relation in GO-Property (11,12): cannot find RO:,etc id: %s\n%s\n****\n' % (roTerm, line))
+                    errorFile.write('Invalid Relation in GO-Property (11,12): cannot find RO:,BFO: id: %s\n%s\n****\n' % (roTerm, line))
                     hasError += 1
 
             # re-format to use 'properties' format
@@ -446,7 +446,7 @@ def readGPAD(gpadInFile):
                 properties = properties + 'go_qualifier_id=' + g
                 properties = properties + '|go_qualifier_term=' + goROLookup[g][0]
             else:
-                errorFile.write('Invalid Relation in GO-Property (3): cannot find RO:,etc id: %s\n%s\n****\n' % (g, line))
+                errorFile.write('Invalid Relation in GO-Property (3): cannot find RO:,BFO: id: %s\n%s\n****\n' % (g, line))
                 hasError += 1
 
         if hasError > 0:
