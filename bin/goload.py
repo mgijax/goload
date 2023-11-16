@@ -11,16 +11,16 @@
 #       The GPAD 2.0 file contains:
 #		1:  DB_Object_ID
 #               2:  Negation
-#               3:  Relation Ontology (RO)
+#               3:  Relation Ontology (RO) -> GO Property (roLookup)
 #               4:  Ontology_Class_ID
-#               5:  References (PMIDs)
-#               6:  Evidence_Type
+#               5:  References (PMIDs) -> Jnum ID (mgiRefLookup)
+#               6:  Evidence_Type/ECO -> GO evidence (ecoLookupByEco)
 #               7:  With_Or_From
 #		8:  Interacting_Taxon_ID
 #		9:  Annotation_Date (yyymmdd)
-#		10: Assigned_By (GO_Central)
-#		11: Annotation_Extensions
-#		12: Annotation_Properties
+#		10: Assigned_By (GO_Central, etc.)
+#		11: Annotation_Extensions (RO, BFO) -> GO Property, (roLookup) (UBERON) -> EMAPA (uberonLookup)
+#		12: Annotation_Properties (?) -> GO Property
 #
 # Outputs/Report:
 #
@@ -45,7 +45,7 @@
 # History:
 #
 # lec	08/2023
-#       wts2-1155/fl2-394/Test Rat/Human (gorat, goahuman)
+#       wts2-1155/GOC taking over GOA mouse, GOA human, etc.
 #
 '''
 
@@ -74,11 +74,6 @@ errorFileName = None
 errorFile = None
 hasError = 0
 
-# lookup file of mgi ids or pubmed ids -> J:
-# mgi id:jnum id
-# pubmed id:jnum id
-mgiRefLookup = {}
-
 #
 # use gpi file to build gpiLookup of object:MGI:xxxx relationship
 #
@@ -87,25 +82,27 @@ gpiFileName = None
 gpiFile = None
 gpiLookup = {}
 
-# lookup file of Evidence Code Ontology (_vocab_key = 111)
-# to GO Evidence Code (_vocab_key = 3)
-ecoLookupByEco = {}
-ecoLookupByEvidence = {}
+# lookup file of mgi ids or pubmed ids -> J:
+# mgi id:jnum id
+# pubmed id:jnum id
+mgiRefLookup = {}
 
-# lookup file of Uberon to EMAPA
-uberonLookup = {}
-
-# mapping of load reference J: to GO_REF IDs
+# lookup file of reference J: -> GO_REF IDs
 # see _LogicalDB_key = 185 (GO_REF)
 goRefLookup = {}
 
-# mapping of load reference J: to PubMed IDs
-pubmedLookup = {}
+# lookup file of Evidence Code Ontology (_vocab_key = 111)
+# to GO Evidence Code (_vocab_key = 3)
+ecoLookupByEco = {}      # used
+ecoLookupByEvidence = {} # not used, but is returned by ecolib
 
-# go-relation ontology lookup (RO/etc. id, term)
-goROLookup = {}
+# lookup file of Uberon -> EMAPA
+uberonLookup = {}
 
-# user lookup
+# lookup file of go-relation ontology (RO/BFO) -> GO Property
+roLookup = {}
+
+# lookup file of assignedBy -> MGI User/login
 userLookup = []
 
 #
@@ -122,8 +119,7 @@ def initialize():
     global ecoLookupByEvidence
     global uberonLookup
     global goRefLookup
-    global pubmedLookup
-    global goROLookup
+    global roLookup
     global userLookup
 
     #
@@ -203,22 +199,6 @@ def initialize():
     #print(goRefLookup)
 
     #
-    # lookup file of Pubmed->J:
-    #
-    results = db.sql('''
-        select pubmedid, jnumid
-        from BIB_Citation_Cache
-        where pubmedid is not null
-        and jnumid is not null
-        ''', 'auto')
-
-    for r in results:
-        key = r['pubmedid']
-        value = r['jnumid']
-        pubmedLookup[key] = value
-    #print(pubmedLookup)
-
-    #
     # note contains the go-property id RO:, etc.
     # will need to note (id) and the term itself
     #
@@ -231,10 +211,10 @@ def initialize():
     for r in results:
         key = r['note']
         value = r['term']
-        if key not in goROLookup:
-            goROLookup[key] = []
-        goROLookup[key].append(value)
-    #print(goROLookup)
+        if key not in roLookup:
+            roLookup[key] = []
+        roLookup[key].append(value)
+    #print(roLookup)
 
     #
     # read/store MGI_User used for GO (GO_)
@@ -288,16 +268,16 @@ def readGPAD(gpadInFile):
         # 2:  Negation
         negation = tokens[1]
 
-        # 3:  Relation Ontology (RO)
+        # 3:  Relation Ontology (RO) -> GO Property (roLookup)
         qualifier = tokens[2]
 
         # 4:  Ontology_Class_ID
         goID = tokens[3]
 
-        # 5:  References (PMIDs)
+        # 5:  References (PMIDs) -> Jnum ID (mgiRefLookup)
         references = tokens[4]
 
-        # 6:  Evidence_Type
+        # 6:  Evidence_Type/ECO -> GO evidence (ecoLookupByEco)
         evidenceCode = tokens[5]
 
         # 7:  With_Or_From
@@ -310,10 +290,10 @@ def readGPAD(gpadInFile):
         # 9:  Annotation_Date (yyymmdd)
         annotDate = tokens[8]
 
-        # 10: Assigned_By (GO_Central)
+        # 10: Assigned_By (GO_Central, etc.)
         assignedBy = tokens[9]
 
-        # 11: Annotation_Extensions
+        # 11: Annotation_Extensions (RO, BFO) -> GO Property, (roLookup) (UBERON) -> EMAPA (uberonLookup)
         extensions = tokens[10].replace('MGI:MGI:', 'MGI:')
 
         # 12: Annotation_Properties
@@ -402,13 +382,13 @@ def readGPAD(gpadInFile):
             # different delimiters; make them all the same ","
             extensions = extensions.replace('|',',')
 
-            # translate extensions to goROLookup terms
+            # translate extensions to roLookup terms
             s1 = extensions.split(",")
             for s in s1:
                 s2 = s.split("(")
                 roTerm = s2[0]
-                if roTerm in goROLookup:
-                    extensions = extensions.replace(roTerm, goROLookup[roTerm][0])
+                if roTerm in roLookup:
+                    extensions = extensions.replace(roTerm, roLookup[roTerm][0])
                 else:
                     errorFile.write('Invalid Relation in GO-Property (11,12): cannot find RO:,BFO: id: %s\n%s\n****\n' % (roTerm, line))
                     hasError += 1
@@ -440,11 +420,11 @@ def readGPAD(gpadInFile):
         #		go_qualifier_term=involved_in
         #
         for g in qualifier.split('|'):
-            if g in goROLookup:
+            if g in roLookup:
                 if len(properties) > 0:
                     properties = properties + '|'
                 properties = properties + 'go_qualifier_id=' + g
-                properties = properties + '|go_qualifier_term=' + goROLookup[g][0]
+                properties = properties + '|go_qualifier_term=' + roLookup[g][0]
             else:
                 errorFile.write('Invalid Relation in GO-Property (3): cannot find RO:,BFO: id: %s\n%s\n****\n' % (g, line))
                 hasError += 1
