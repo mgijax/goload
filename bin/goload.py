@@ -113,12 +113,12 @@ def initialize():
     global mgiInFileName, mgiInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
-    global mgiRefLookup
     global gpiFileName, gpiFile, gpiLookup
+    global mgiRefLookup
+    global goRefLookup
     global ecoLookupByEco
     global ecoLookupByEvidence
     global uberonLookup
-    global goRefLookup
     global roLookup
     global userLookup
 
@@ -232,7 +232,7 @@ def initialize():
 #
 def readGPAD(gpadInFile):
     #
-    #	for each row in the GPAD file (MGIINFILE_NAME_GPAD, PRINFILE_NAME_GPAD):
+    #	for each row in the GPAD file (MGIINFILE_NAME_GPAD):
     #
     #           if the reference does not exist in MGI (using mgiRefLookup)
     #                   write the record to the error file (INFILE_NAME_ERROR)
