@@ -70,8 +70,10 @@ annotFile = None
 
 # error formatted file
 errorFileName = None
+pubmedFileName = None
 # error file pointer
 errorFile = None
+pubmedFile = None
 hasError = 0
 
 #
@@ -113,6 +115,7 @@ def initialize():
     global mgiInFileName, mgiInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
+    global pubmedFileName, pubmedFile
     global gpiFileName, gpiFile, gpiLookup
     global mgiRefLookup
     global goRefLookup
@@ -130,11 +133,13 @@ def initialize():
     gpiFileName = os.environ['GPIFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
+    pubmedFileName = os.environ['PUBMED_ERROR']
 
     mgiInFile = open(mgiInFileName, 'r')
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
+    pubmedFile = open(pubmedFileName, 'w')
 
     #
     # lookup file of mgi ids or pubmed ids -> J:
@@ -343,6 +348,8 @@ def readGPAD(gpadInFile):
         # if reference does not exist...skip it
         if jnumIDFound == 0:
             errorFile.write('Invalid Reference/either no pubmed id or no jnum (5): %s\n%s\n****\n' % (references, line))
+            if references.startswith('PMID'):
+                pubmedFile.write(references + '\n')
             hasError += 1
             continue
 
@@ -486,6 +493,7 @@ def closeFiles():
     mgiInFile.close()
     annotFile.close()
     errorFile.close()
+    pubmedFile.close()
 
     return 0
 
