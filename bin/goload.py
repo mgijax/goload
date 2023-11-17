@@ -473,7 +473,7 @@ def readGPAD(gpadInFile):
 
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
-        # (dbobjectID, goID, goEvidenceCode, jnumID)
+        # (dbobjectID, goID, goEvidenceCode, jnumID, properties, inferred-from)
         annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, assignedBy, annotDate, properties))
 
     return 0
