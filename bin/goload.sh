@@ -167,10 +167,10 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run inferred-from cache
 #
-#echo "Running GO inferred-from cache load" >> ${LOG}
-#${MGICACHELOAD}/inferredfrom.go >> ${LOG} 
-#STAT=$?
-#checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
+echo "Running GO inferred-from cache load" >> ${LOG}
+${MGICACHELOAD}/inferredfrom.go >> ${LOG} 
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/inferredfrom.go"
 
 #
 # run eco check
@@ -184,26 +184,26 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 #
 # run go_annot_extensions_display_load.csh
 #
-#echo "Running go_annot_extensions_display_load.csh" >> ${LOG}
-#${MGICACHELOAD}/go_annot_extensions_display_load.csh
-#STAT=$?
-#checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
+echo "Running go_annot_extensions_display_load.csh" >> ${LOG}
+${MGICACHELOAD}/go_annot_extensions_display_load.csh
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
 
 #
 # run go_isoforms_display_load.csh
 #
-#echo "Running go_isoforms_display_load.csh" >> ${LOG}
-#${MGICACHELOAD}/go_isoforms_display_load.csh 
-#STAT=$?
-#checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
+echo "Running go_isoforms_display_load.csh" >> ${LOG}
+${MGICACHELOAD}/go_isoforms_display_load.csh 
+STAT=$?
+checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
 
 #
 # run BIB_updateWFStatusGO()
 #
-#echo "Running BIB_updateWFStatusGO" >> ${LOG}
-#cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
-#select BIB_updateWFStatusGO();
-#EOSQL
+echo "Running BIB_updateWFStatusGO" >> ${LOG}
+cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
+select BIB_updateWFStatusGO();
+EOSQL
 
 #
 # run postload cleanup and email logs

@@ -20,7 +20,7 @@
 #		9:  Annotation_Date (yyymmdd)
 #		10: Assigned_By (GO_Central, etc.)
 #		11: Annotation_Extensions (RO, BFO) -> GO Property, (roLookup) (UBERON) -> EMAPA (uberonLookup)
-#		12: Annotation_Properties (?) -> GO Property
+#		12: Annotation_Properties -> GO Property, things like contributor, model-state, noctua-model-id, etc.
 #
 # Outputs/Report:
 #
