@@ -366,6 +366,13 @@ def readGPAD(gpadInFile):
         inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
         # unexpected quote; remove it
         inferredFrom = inferredFrom.replace('"', '')
+        inferredFrom = inferredFrom.replace('UniprotkB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniprotKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniProtKb', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniPRotKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniPROtKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UNiProtKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UnIProtKB', 'UniProtKB')
 
         # start: extensions/properties
         # for MGI, we merge the extensions & properties into MGI-properties
