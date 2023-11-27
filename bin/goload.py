@@ -347,7 +347,7 @@ def readGPAD(gpadInFile):
 
         # if reference does not exist...skip it
         if jnumIDFound == 0:
-            errorFile.write('Invalid Reference/either no pubmed id or no jnum (5): %s\n%s\n****\n' % (references, line))
+            errorFile.write('Invalid Reference/either no GO_REF, no pubmed id or no jnum (5): %s\n%s\n****\n' % (references, line))
             if references.startswith('PMID'):
                 pubmedFile.write(references + '\n')
             hasError += 1
