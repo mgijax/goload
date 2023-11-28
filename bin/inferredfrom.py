@@ -23,6 +23,9 @@ import accessionlib
 
 db.setTrace()
 
+COLDL = '|'
+LINEDL = '\n'
+
 user = os.environ['MGD_DBUSER']
 passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 outputDir = os.environ['OUTPUTDIR']
@@ -316,6 +319,10 @@ def processCache():
                 print('\nThe following errors exist in the inferred-from text:\n\n' + eiErrors)
 
         accFile.close()
+
+        # insert the new data
+        db.bcp(accFileName, 'ACC_Accession', delimiter='|')
+        db.commit()
 
 #
 #

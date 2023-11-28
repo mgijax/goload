@@ -22,7 +22,7 @@ import go_annot_extensions
 db.setTrace()
 
 USAGE="""
-usage: %prog [-S -D -U -P -K]
+usage: %prog [-S -D -U -P]
 """
 
 ### Constants ###
@@ -69,7 +69,6 @@ def readCommandLine():
     parser.add_option("-D", dest="dbName")
     parser.add_option("-U", dest="dbUser")
     parser.add_option("-P", dest="passwordFile")
-    parser.add_option("-K", dest="evidenceKey")
 
     (options, args) = parser.parse_args()
 
