@@ -182,20 +182,20 @@ checkStatus ${STAT} "inferredfrom.sh"
 #checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
 
 #
-# run go_annot_extensions_display_load.csh
+# run go_annot_extensions_display.sh
 #
-echo "Running go_annot_extensions_display_load.csh" >> ${LOG}
-${MGICACHELOAD}/go_annot_extensions_display_load.csh
+echo "Running go_annot_extensions_display.sh" >> ${LOG}
+${GOLOAD}/bin/go_annot_extensions_display.sh
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/go_annot_extensions_display_load.csh"
+checkStatus ${STAT} "${GOLOAD}/go_annot_extensions_display.sh"
 
 #
-# run go_isoforms_display_load.csh
+# run go_isoforms_display.sh
 #
-echo "Running go_isoforms_display_load.csh" >> ${LOG}
-${MGICACHELOAD}/go_isoforms_display_load.csh 
+echo "Running go_isoforms_display.sh" >> ${LOG}
+${GOLOAD}/go_isoforms_display.sh 
 STAT=$?
-checkStatus ${STAT} "${MGICACHELOAD}/go_isoforms_display_load.csh"
+checkStatus ${STAT} "${GOLOAD}/go_isoforms_display.sh"
 
 #
 # run BIB_updateWFStatusGO()
