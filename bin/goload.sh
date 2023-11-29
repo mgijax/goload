@@ -210,11 +210,3 @@ EOSQL
 #
 shutDown
 
-#
-# invalid reference format
-#
-#cd ${OUTPUTDIR}
-#rm -rf pubmed.error
-#grep "Invalid Reference" ${INFILE_NAME_ERROR} | grep MGI | cut -f2,3,4 -d":" | sort | uniq > pubmed.error
-#grep "Invalid Reference" ${INFILE_NAME_ERROR} | grep PMID | cut -f2,3 -d":" | sort | uniq >> pubmed.error
-
