@@ -443,6 +443,10 @@ def readGPAD(gpadInFile):
                 errorFile.write('Invalid Relation in GO-Property (3): cannot find RO:,BFO: id: %s\n%s\n****\n' % (g, line))
                 hasError += 1
 
+        if len(assignedBy) == 0:
+                errorFile.write('Missing Assigned By (10): \n****%s\n' % (line))
+                hasError += 1
+
         if hasError > 0:
                 continue
 
@@ -468,17 +472,18 @@ def readGPAD(gpadInFile):
         # start:  assigned by
         #
         # if assignedBy does not exist in MGI_User, then add it
+        # for MGI, convert assignedBy -> 'GO_' + assignedBy
+        # example:  SynGO -> GO_SynGO, UniProt -> GO_UniProt 
         # use the prefix "GO_" to the MGI_User.login/name, so that we can find the GO annotations more easily
         #
-        assignedBy = assignedBy.replace('MGI', 'GO_MGI')
+        if assignedBy != 'GO_Central':
+                assignedBy = 'GO_' + assignedBy
         if assignedBy not in userLookup:
-            assignedBy = 'GO_' + assignedBy
             addSQL = '''
                 insert into MGI_User values (
                 (select max(_User_key) + 1 from MGI_User), 316353, 316350, '%s', '%s', null, null, 1000, 1000, now(), now()
                 )''' % (assignedBy, assignedBy)
-            print('adding new MGI_User...')
-            print(addSQL)
+            print('adding new MGI_User:' + str(addSQL))
             db.sql(addSQL, 'auto')
             db.commit()
             userLookup.append(assignedBy)
