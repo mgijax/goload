@@ -1,6 +1,6 @@
 '''
 #
-# Purpose: Load GO Inferred-From text data into the Accession table
+# Purpose: Load GO/Annotation/Evidence/Inferred-From accession id text into the Accession table
 #
 # Usage:
 #	inferredFrom.py -Sserver -Ddatabase -Uuser -Ppasswordfile
@@ -42,7 +42,6 @@ eiErrorStatus = '%s     %s     %s     %s\n'
 
 # maps provider prefix to logical database key
 # using lowercase
-# ncbi = refseq = 27: both prefixes can be used
 providerMap = {
         'mgi' : 1,
         'go' : 1,
@@ -217,8 +216,7 @@ def processCache():
 
         global accKey
 
-        # retrieve GO data in VOC_Evidence table
-
+        # retrieve GO/Annotation/Evidence/inferredFrom which contain accession ids
         cmd = '''
                 select e._AnnotEvidence_key, e.inferredFrom, m.symbol, ta.accID as goID, c.pubmedID
                 from VOC_Annot a, VOC_Evidence e, MRK_Marker m, ACC_Accession ta, MGI_User u, BIB_Citation_Cache c
@@ -312,12 +310,10 @@ def processCache():
                                 #print(e)
                                 eiErrors = eiErrors + eiErrorStatus % (symbol, goID, fullAccID, pubmedID)
 
-        # commit after all records have been processed
-        db.commit()
-
         if eiErrors != '':
                 print('\nThe following errors exist in the inferred-from text:\n\n' + eiErrors)
 
+        # close the bcp file
         accFile.close()
 
         # insert the new data
