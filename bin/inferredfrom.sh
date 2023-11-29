@@ -14,7 +14,7 @@ touch ${LOG}
  
 date | tee -a ${LOG}
 
-${PYTHON} ${GOLOAD}/bin/inferredfrom.py -S${MGD_DBSERVER} -D${MGD_DBNAME} -U${MGD_DBUSER} -P${MGD_DBPASSWORDFILE} |& tee -a ${LOG}
+${PYTHON} ${GOLOAD}/bin/inferredfrom.py |& tee -a ${LOG}
 
 date | tee -a ${LOG}
 

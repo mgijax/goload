@@ -3,7 +3,7 @@
 # Purpose: Load GO/Annotation/Evidence/Inferred-From accession id text into the Accession table
 #
 # Usage:
-#	inferredFrom.py -Sserver -Ddatabase -Uuser -Ppasswordfile
+#	inferredFrom.py
 #
 # History
 #
@@ -15,7 +15,6 @@
 
 import sys
 import os
-import getopt
 import re
 import db
 import loadlib
@@ -26,8 +25,6 @@ db.setTrace()
 COLDL = '|'
 LINEDL = '\n'
 
-user = os.environ['MGD_DBUSER']
-passwordFileName = os.environ['MGD_DBPASSWORDFILE']
 outputDir = os.environ['OUTPUTDIR']
 
 accTable = 'ACC_Accession'
@@ -104,19 +101,6 @@ providerIgnore = [
 embl_re1 = re.compile("^[A-Z]{1,1}[0-9]{5,5}$")
 embl_re2 = re.compile("^[A-Z]{2,2}[0-9]{6,6}$")
 
-def showUsage():
-        #
-        # Purpose:  Displayes the correct usage of this program and exists
-        #
- 
-        usage = 'usage: %s\n' % sys.argv[0] + \
-                '-S server\n' + \
-                '-D database\n' + \
-                '-U user\n' + \
-                '-P password file\n'
-
-        exit(1, usage)
-
 def exit(status, message = None):
         #
         # requires:
@@ -139,45 +123,13 @@ def init():
     # requires: 
     #
     # effects: 
-    # 1. Processes command line options
-    # 2. Initializes local DBMS parameters
-    # 3. Initializes global file descriptors/file names
+    # 1. Initializes local DBMS parameters
+    # 2. Initializes global file descriptors/file names
     #
     # returns:
     #
 
         global accFile, accKey
-
-        try:
-                optlist, args = getopt.getopt(sys.argv[1:], 'S:D:U:P:K:G:')
-        except:
-                showUsage()
-
-        server = db.get_sqlServer()
-        database = db.get_sqlDatabase()
-        user = None
-        password = None
-
-        for opt in optlist:
-                if opt[0] == '-S':
-                        server = opt[1]
-                elif opt[0] == '-D':
-                        database = opt[1]
-                elif opt[0] == '-U':
-                        user = opt[1]
-                elif opt[0] == '-P':
-                        password = str.strip(open(opt[1], 'r').readline())
-                else:
-                        showUsage()
-
-        if server is None or \
-           database is None or \
-           user is None or \
-           password is None:
-                showUsage()
-
-        db.set_sqlLogin(user, password, server, database)
-        db.useOneConnection(1)
 
         results = db.sql('select max(_Accession_key) + 1 as maxKey from ACC_Accession', 'auto')
         accKey = results[0]['maxKey']
