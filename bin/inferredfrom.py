@@ -47,7 +47,7 @@ providerMap = {
         'complexportal' : 211,
         'ec' : 8,
         'embl' : 9,
-        'ensembl' : 214, # needs new url
+        'ensembl' : 214,
         'ensembl_geneid' : 214,
         'hgnc' : 64,
         'interpro' : 28,
