@@ -48,14 +48,12 @@ providerMap = {
         'ec' : 8,
         'embl' : 9,
         'ensembl' : 214,
-        'ensembl_geneid' : 214,
         'hgnc' : 64,
         'interpro' : 28,
-        'ncbi' : 27,
         'ncbi_gene' : 160, 
         'pir' : 78,
-        'pr' : 135,
         'pombase' : 115,
+        'pr' : 135,
         'protein_id' : 27,
         'refseq' : 27,
         'rgd' : 47,
@@ -70,6 +68,7 @@ providerMap = {
         }
 
 #
+#        'ensembl_geneid' : 214,
 #        'gb' : 9,
 #        'genbank' : 9,
 #        'ncbi' : 27,
