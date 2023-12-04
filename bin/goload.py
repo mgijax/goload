@@ -366,6 +366,7 @@ def readGPAD(gpadInFile):
         inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
         # unexpected quote; remove it
         inferredFrom = inferredFrom.replace('"', '')
+        inferredFrom = inferredFrom.replace(',', '|')
         inferredFrom = inferredFrom.replace('UniprotkB', 'UniProtKB')
         inferredFrom = inferredFrom.replace('UniprotKB', 'UniProtKB')
         inferredFrom = inferredFrom.replace('UniProtKb', 'UniProtKB')
