@@ -51,6 +51,7 @@ providerMap = {
         'ensembl_geneid' : 214,
         'hgnc' : 64,
         'interpro' : 28,
+        'ncbi' : 27,
         'ncbi_gene' : 160, 
         'pir' : 78,
         'pr' : 135,
@@ -199,14 +200,12 @@ def processCache():
                     pubmedID = ""
 
                 #
-                # the accession ids are separated by '|' or ',' or none
+                # the accession ids are separated by '|' or none
                 # split them up into a list
                 #
 
                 if inferredFrom.find('|') >= 0:
                         allAccIDs = inferredFrom.split('|')
-                elif inferredFrom.find(',') >= 0:
-                        allAccIDs = inferredFrom.split(',')
                 else:
                         allAccIDs = [inferredFrom]
 
