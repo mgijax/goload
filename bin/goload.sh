@@ -176,10 +176,10 @@ checkStatus ${STAT} "inferredfrom.sh"
 # run eco check
 # comment out unless we keep finding ECO issues
 #
-echo "Running GO ecocheck.sh" >> ${LOG}
-${GOLOAD}/bin/ecocheck.sh >> ${LOG}
-STAT=$?
-checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
+#echo "Running GO ecocheck.sh" >> ${LOG}
+#${GOLOAD}/bin/ecocheck.sh >> ${LOG}
+#STAT=$?
+#checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
 
 #
 # run go_annot_extensions_display.sh
