@@ -116,7 +116,6 @@ def exit(status, message = None):
         if message is not None:
                 sys.stderr.write('\n' + str(message) + '\n')
 
-        db.useOneConnection()
         sys.exit(status)
 
 def init():

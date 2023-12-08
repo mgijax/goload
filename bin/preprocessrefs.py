@@ -40,8 +40,6 @@ import db
 
 print('\nRunning pre-procesing pmid: ', sys.argv[1])
 
-db.useOneConnection(1)
-
 # read input file & add quotes for SQL query
 inFile = open(sys.argv[1], 'r')
 pubmedids = []
@@ -91,5 +89,4 @@ else:
        print('no jnum changes needed')
 
 db.commit()
-db.useOneConnection(0)
 
