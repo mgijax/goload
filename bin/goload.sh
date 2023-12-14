@@ -101,16 +101,16 @@ preload ${OUTPUTDIR}
 # 
 # this proisoform/marker annotations are used by the reports_db/daily/GO_gpi.py
 #
-echo "Runnning proisoformload"
-${PROISOFORMLOAD}/bin/proisoform.sh
-STAT=$?
-checkStatus ${STAT} "proisoformload process"
+#echo "Runnning proisoformload"
+#${PROISOFORMLOAD}/bin/proisoform.sh
+#STAT=$?
+#checkStatus ${STAT} "proisoformload process"
 
-echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
-REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
-STAT=$?
-checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
+#echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
+#REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
+#STAT=$?
+#checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 
 #
 # copy new file from ${DATADOWNLOADS} and unzip
@@ -124,13 +124,13 @@ checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 #
 # pre-process
 #
-echo "Running pre-processing pmid" >> ${LOG}
-cd ${INPUTDIR}
-rm -rf ${INFILE_NAME_PMID}
-cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
-${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
-STAT=$?
-checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
+#echo "Running pre-processing pmid" >> ${LOG}
+#cd ${INPUTDIR}
+#rm -rf ${INFILE_NAME_PMID}
+#cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
+#${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
+#STAT=$?
+#checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
 
 # move to the ${OUTPUTDIR}
 cd ${OUTPUTDIR}
@@ -154,6 +154,9 @@ echo "Running goload.py" >> ${LOG}
 ${PYTHON} ${GOLOAD}/bin/goload.py >> ${LOG}
 STAT=$?
 checkStatus ${STAT} "${GOLOAD}/bin/goload.py"
+rm -rf ${PUBMED_ERROR}.sort
+sort ${PUBMED_ERROR} | uniq > ${PUBMED_ERROR}.sort
+mv ${PUBMED_ERROR}.sort ${PUBMED_ERROR}
 
 #
 # run annotation load with new annotations
