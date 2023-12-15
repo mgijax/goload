@@ -74,7 +74,7 @@ touch ${LOG}
 # the last time the load was run for this input file. If this file exists
 # and is more recent than the input file, the load does not need to be run.
 #
-#LASTRUN_FILE=${INPUTDIR/lastrun
+LASTRUN_FILE=${INPUTDIR/lastrun
 #if [ -f ${LASTRUN_FILE} ]
 #then
 #    if test ${LASTRUN_FILE} -nt ${FROM_MGIINFILE_NAME_GZ}
