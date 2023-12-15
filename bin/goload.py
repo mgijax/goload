@@ -285,6 +285,7 @@ def readGPAD(gpadInFile):
 
         # 5:  References (PMIDs) -> Jnum ID (mgiRefLookup)
         references = tokens[4]
+        references = references.replace('GOREF', 'GO_REF')
 
         # 6:  Evidence_Type/ECO -> GO evidence (ecoLookupByEco)
         evidenceCode = tokens[5]
