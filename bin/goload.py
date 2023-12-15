@@ -371,7 +371,7 @@ def readGPAD(gpadInFile):
         inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
 
         # needs to be fixed by Sierra
-        # unexpected quote; remove it; remove when fixed in mgi.gpad file
+        # fixed: unexpected quote; remove it; remove when fixed in mgi.gpad file
         #inferredFrom = inferredFrom.replace('"', '')
         # unexpected : > 1 delimiter
         inferredFrom = inferredFrom.replace(',', '|')
