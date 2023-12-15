@@ -47,7 +47,7 @@ providerMap = {
         'complexportal' : 211,
         'ec' : 8,
         'embl' : 9,
-        'ensembl' : 214,
+        'ensembl_geneid' : 214,
         'hgnc' : 64,
         'interpro' : 28,
         'ncbi_gene' : 160, 
@@ -68,7 +68,7 @@ providerMap = {
         }
 
 #
-#        'ensembl_geneid' : 214,
+#        'ensembl' : 214,
 #        'gb' : 9,
 #        'genbank' : 9,
 #        'ncbi' : 27,
