@@ -70,6 +70,29 @@ rm -rf ${LOG}
 touch ${LOG}
 
 #
+# There should be a "lastrun" file in the input directory that was created
+# the last time the load was run for this input file. If this file exists
+# and is more recent than the input file, the load does not need to be run.
+#
+#LASTRUN_FILE=${INPUTDIR/lastrun
+#if [ -f ${LASTRUN_FILE} ]
+#then
+#    if test ${LASTRUN_FILE} -nt ${FROM_MGIINFILE_NAME_GZ}
+#    then
+#        echo "Input file has not been updated - skipping load" | tee -a ${GOLOG}
+#        echo 'shutting down'
+#        exit 0
+#    fi
+#fi
+
+#
+# gunzip the gz file
+#
+#cp ${FROM_MGIINFILE_NAME_GZ} ${MGIINFILE_NAME_GZ}
+#cd ${INPUTDIR}
+#gunzip ${MGIINFILE_NAME_GZ}
+
+#
 # Source the DLA library functions.
 #
 if [ "${DLAJOBSTREAMFUNC}" != "" ]
@@ -101,36 +124,36 @@ preload ${OUTPUTDIR}
 # 
 # this proisoform/marker annotations are used by the reports_db/daily/GO_gpi.py
 #
-#echo "Runnning proisoformload"
-#${PROISOFORMLOAD}/bin/proisoform.sh
-#STAT=$?
-#checkStatus ${STAT} "proisoformload process"
+echo "Runnning proisoformload"
+${PROISOFORMLOAD}/bin/proisoform.sh
+STAT=$?
+checkStatus ${STAT} "proisoformload process"
 
-#echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
-#REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-#${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
-#STAT=$?
-#checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
+echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
+REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
+${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
+STAT=$?
+checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 
 #
 # copy new file from ${DATADOWNLOADS} and unzip
 #
-#echo "Copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
-#cd ${INPUTDIR}
-#cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
-#rm -rf ${MGIINFILE_NAME_GPAD}
-#gunzip ${MGIINFILE_NAME_GZ}
+echo "Copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
+cd ${INPUTDIR}
+cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
+rm -rf ${MGIINFILE_NAME_GPAD}
+gunzip ${MGIINFILE_NAME_GZ}
 
 #
 # pre-process
 #
-#echo "Running pre-processing pmid" >> ${LOG}
-#cd ${INPUTDIR}
-#rm -rf ${INFILE_NAME_PMID}
-#cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
-#${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
-#STAT=$?
-#checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
+echo "Running pre-processing pmid" >> ${LOG}
+cd ${INPUTDIR}
+rm -rf ${INFILE_NAME_PMID}
+cut -f5 ${MGIINFILE_NAME_GPAD} | sort | uniq | grep '^PMID' | cut -f2 -d":" > ${INFILE_NAME_PMID}
+${PYTHON} ${GOLOAD}/bin/preprocessrefs.py ${INFILE_NAME_PMID} >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "preprocessrefs.py ${INFILE_NAME_PMID}"
 
 # move to the ${OUTPUTDIR}
 cd ${OUTPUTDIR}
@@ -207,6 +230,11 @@ echo "Running BIB_updateWFStatusGO" >> ${LOG}
 cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0
 select BIB_updateWFStatusGO();
 EOSQL
+
+#
+# set new LASTRUN_FILE 
+#
+touch ${LASTRUN_FILE}
 
 #
 # run postload cleanup and email logs
