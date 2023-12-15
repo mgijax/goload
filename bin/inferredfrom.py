@@ -47,10 +47,12 @@ providerMap = {
         'complexportal' : 211,
         'ec' : 8,
         'embl' : 9,
+        'ensembl' : 214,
         'ensembl_geneid' : 214,
         'hgnc' : 64,
         'interpro' : 28,
         'ncbi_gene' : 160, 
+        'panther' : 147,
         'pir' : 78,
         'pombase' : 115,
         'pr' : 135,
@@ -68,29 +70,27 @@ providerMap = {
         }
 
 #
-#        'ensembl' : 214,
 #        'gb' : 9,
 #        'genbank' : 9,
 #        'ncbi' : 27,
-#        'panther' : 147,
 #        'sp_kw' : 111,
 #        'uniprot' : 13,
 
 #
 # ignore these providers
 #providerIgnore = [
-#        'cgd',
-#        'dictybase',
 #        'ecogene',
-#        'fb',
 #        'pmid',
-#        'tair',
 #        'uniprotid',
-#        'wb',
-#        'zfin'
 #]
 providerIgnore = [
+        'cgd',
+        'dictybase',
+        'fb',
+        'tair',
+        'wb',
         'xenbase',
+        'zfin',
 ]
 
 #
