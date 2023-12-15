@@ -86,10 +86,12 @@ LASTRUN_FILE=${INPUTDIR}/lastrun
 #fi
 
 #
-# gunzip the gz file
+# copy new file from ${DATADOWNLOADS} and unzip
 #
-#cp ${FROM_MGIINFILE_NAME_GZ} ${MGIINFILE_NAME_GZ}
+#echo "Copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
 #cd ${INPUTDIR}
+#cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
+#rm -rf ${MGIINFILE_NAME_GPAD}
 #gunzip ${MGIINFILE_NAME_GZ}
 
 #
@@ -134,15 +136,6 @@ REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 ${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
 STAT=$?
 checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
-
-#
-# copy new file from ${DATADOWNLOADS} and unzip
-#
-echo "Copying new file from ${FROM_MGIINFILE_NAME_GZ} to ${INPUTDIR}" >> ${LOG}
-cd ${INPUTDIR}
-cp ${FROM_MGIINFILE_NAME_GZ} ${INPUTDIR}
-rm -rf ${MGIINFILE_NAME_GPAD}
-gunzip ${MGIINFILE_NAME_GZ}
 
 #
 # pre-process
