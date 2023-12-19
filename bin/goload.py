@@ -59,9 +59,9 @@ import ecolib
 import uberonlib
 
 # GPAD files from the dataloads directory
-mgiInFileName = None
+gpadInFileName = None
 # GPAD file pointer
-mgiInFile = None
+gpadInFile = None
 
 # annotation formatted file
 annotFileName = None
@@ -112,7 +112,7 @@ userLookup = []
 #
 def initialize():
 
-    global mgiInFileName, mgiInFile
+    global gpadInFileName, gpadInFile
     global annotFileName, annotFile
     global errorFileName, errorFile
     global pubmedFileName, pubmedFile
@@ -129,13 +129,13 @@ def initialize():
     # open files
     #
 
-    mgiInFileName = os.environ['MGIINFILE_NAME_GPAD']
+    gpadInFileName = os.environ['MGIINFILE_NAME_GPAD']
     gpiFileName = os.environ['GPIFILE']
     annotFileName = os.environ['INFILE_NAME']
     errorFileName = os.environ['INFILE_NAME_ERROR']
     pubmedFileName = os.environ['PUBMED_ERROR']
 
-    mgiInFile = open(mgiInFileName, 'r')
+    gpadInFile = open(gpadInFileName, 'r')
     gpiFile = open(gpiFileName, 'r')
     annotFile = open(annotFileName, 'w')
     errorFile = open(errorFileName, 'w')
@@ -266,10 +266,9 @@ def readGPAD(gpadInFile):
         tokens = line[:-1].split('\t')
 
         # 1:  DB_Object_ID : without extra MGI:
+        tokens[0] = tokens[0].replace('PR:MGI:', 'MGI:')
+        tokens[0] = tokens[0].replace('PR:PR:', 'PR:')
         dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
-        # needs to be fixed by Sierra
-        dbobjectID = dbobjectID.replace('PR:MGI:', 'MGI:')
-        dbobjectID = dbobjectID.replace('PR:PR:', 'PR:')
 
         # 1:  DB_Object_ID with fill MGI:MGI:
         gpiobjectID = tokens[0]
@@ -512,7 +511,7 @@ def readGPAD(gpadInFile):
 #
 def closeFiles():
 
-    mgiInFile.close()
+    gpadInFile.close()
     annotFile.close()
     errorFile.close()
     pubmedFile.close()
@@ -526,7 +525,7 @@ def closeFiles():
 if initialize() != 0:
     sys.exit(1)
 
-if readGPAD(mgiInFile) != 0:
+if readGPAD(gpadInFile) != 0:
     sys.exit(1)
 
 closeFiles()
