@@ -201,7 +201,7 @@ checkStatus ${STAT} "inferredfrom.sh"
 #checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
 
 #
-# go-tracking
+# go-tracking : add new markers; remove old markers
 #
 echo "Running go-tracking" >> ${LOG}
 ${PYTHON} ${GOLOAD}/bin/gotracking.py >> ${LOG}
