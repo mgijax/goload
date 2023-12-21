@@ -201,6 +201,14 @@ checkStatus ${STAT} "inferredfrom.sh"
 #checkStatus ${STAT} "${GOLOAD}/bin/echocheck.sh"
 
 #
+# go-tracking
+#
+echo "Running go-tracking" >> ${LOG}
+${PYTHON} ${GOLOAD}/bin/gotracking.py >> ${LOG}
+STAT=$?
+checkStatus ${STAT} "${GOLOAD}/bin/gotracking.py"
+
+#
 # run go_annot_extensions_display.sh
 #
 echo "Running go_annot_extensions_display.sh" >> ${LOG}
