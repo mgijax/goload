@@ -189,7 +189,7 @@ checkStatus ${STAT} "${ANNOTLOADER_CSH} ${COMMON_CONFIG_CSH} go"
 echo "Running GO inferred-from cache load" >> ${LOG}
 ${GOLOAD}/bin/inferredfrom.sh >> ${LOG} 
 STAT=$?
-checkStatus ${STAT} "inferredfrom.sh"
+checkStatus ${STAT} "${GOLOAD}/bin/inferredfrom.sh"
 
 #
 # run eco check
