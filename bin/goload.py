@@ -268,7 +268,9 @@ def readGPAD(gpadInFile):
         # 1:  DB_Object_ID : without extra MGI:
         tokens[0] = tokens[0].replace('PR:MGI:', 'MGI:')
         tokens[0] = tokens[0].replace('PR:PR:', 'PR:')
-        dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
+        dbobjectID = tokens[0].replace('MGI:MGI:MGI:', 'MGI:')
+        dbobjectID = dbobjectID.replace('MGI:MGI:', 'MGI:')
+        #dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
 
         # 1:  DB_Object_ID with fill MGI:MGI:
         gpiobjectID = tokens[0]
