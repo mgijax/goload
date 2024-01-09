@@ -266,8 +266,6 @@ def readGPAD(gpadInFile):
         tokens = line[:-1].split('\t')
 
         # 1:  DB_Object_ID : without extra MGI:
-        tokens[0] = tokens[0].replace('PR:MGI:', 'MGI:')
-        tokens[0] = tokens[0].replace('PR:PR:', 'PR:')
         dbobjectID = tokens[0].replace('MGI:MGI:MGI:', 'MGI:')
         dbobjectID = dbobjectID.replace('MGI:MGI:', 'MGI:')
         #dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
@@ -286,6 +284,7 @@ def readGPAD(gpadInFile):
 
         # 5:  References (PMIDs) -> Jnum ID (mgiRefLookup)
         references = tokens[4]
+        # this is a hack and should be removed once this if fixed by PAINT
         references = references.replace('GOREF', 'GO_REF')
 
         # 6:  Evidence_Type/ECO -> GO evidence (ecoLookupByEco)
