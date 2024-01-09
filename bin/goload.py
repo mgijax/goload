@@ -284,7 +284,9 @@ def readGPAD(gpadInFile):
 
         # 5:  References (PMIDs) -> Jnum ID (mgiRefLookup)
         references = tokens[4]
-        # this is a hack and should be removed once this if fixed by PAINT
+        references = references.replace('MGI:MGI:', 'MGI:')
+        references = references.replace('PMID:', '')
+        # unexpected : PAINT issue but we want this to be processed
         references = references.replace('GOREF', 'GO_REF')
 
         # 6:  Evidence_Type/ECO -> GO evidence (ecoLookupByEco)
@@ -292,6 +294,16 @@ def readGPAD(gpadInFile):
 
         # 7:  With_Or_From
         inferredFrom = tokens[6]
+        inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
+        inferredFrom = inferredFrom.replace(',', '|')
+        # unexpected : inconsisten uniprotkb names; remove when fixed in mgi.gpad file
+        inferredFrom = inferredFrom.replace('UniprotkB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniprotKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniProtKb', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniPRotKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UniPROtKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UNiProtKB', 'UniProtKB')
+        inferredFrom = inferredFrom.replace('UnIProtKB', 'UniProtKB')
 
         # 8:  Interacting_Taxon_ID
         # MGI does nothing with this field
@@ -339,15 +351,12 @@ def readGPAD(gpadInFile):
 
         for r in referencesTokens:
 
-            refID = r.replace('MGI:MGI:', 'MGI:')
-            refID = refID.replace('PMID:', '')
-
-            if refID in mgiRefLookup:
-                jnumID = mgiRefLookup[refID]
+            if r in mgiRefLookup:
+                jnumID = mgiRefLookup[r]
                 jnumIDFound = 1
                  
-            if refID in goRefLookup:
-                jnumID = goRefLookup[refID]
+            if r in goRefLookup:
+                jnumID = goRefLookup[r]
                 jnumIDFound = 1
 
         # if reference does not exist...skip it
@@ -366,23 +375,6 @@ def readGPAD(gpadInFile):
             continue
 
         # end: references
-
-        # inferredFrom
-        inferredFrom = inferredFrom.replace('MGI:MGI:', 'MGI:')
-
-        # needs to be fixed by Sierra
-        # fixed: unexpected quote; remove it; remove when fixed in mgi.gpad file
-        #inferredFrom = inferredFrom.replace('"', '')
-        # unexpected : > 1 delimiter
-        inferredFrom = inferredFrom.replace(',', '|')
-        # unexpected : inconsisten uniprotkb names; remove when fixed in mgi.gpad file
-        inferredFrom = inferredFrom.replace('UniprotkB', 'UniProtKB')
-        inferredFrom = inferredFrom.replace('UniprotKB', 'UniProtKB')
-        inferredFrom = inferredFrom.replace('UniProtKb', 'UniProtKB')
-        inferredFrom = inferredFrom.replace('UniPRotKB', 'UniProtKB')
-        inferredFrom = inferredFrom.replace('UniPROtKB', 'UniProtKB')
-        inferredFrom = inferredFrom.replace('UNiProtKB', 'UniProtKB')
-        inferredFrom = inferredFrom.replace('UnIProtKB', 'UniProtKB')
 
         # start: extensions/properties
         # for MGI, we merge the extensions & properties into MGI-properties
