@@ -266,9 +266,9 @@ def readGPAD(gpadInFile):
         tokens = line[:-1].split('\t')
 
         # 1:  DB_Object_ID : without extra MGI:
+        # sierra bug
         dbobjectID = tokens[0].replace('MGI:MGI:MGI:', 'MGI:')
         dbobjectID = dbobjectID.replace('MGI:MGI:', 'MGI:')
-        #dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
 
         # 1:  DB_Object_ID with fill MGI:MGI:
         gpiobjectID = tokens[0]
@@ -329,6 +329,7 @@ def readGPAD(gpadInFile):
         #       properties = 'gene product=PR:Q9QWY8-2'
         #       dbobjectID = 'MGI:1342335'
         #
+        print(dbobjectID)
         databaseID, databaseTerm = dbobjectID.split(':')
         if databaseID in gpiSet:
             if gpiobjectID in gpiLookup:
