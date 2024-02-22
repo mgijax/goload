@@ -305,7 +305,6 @@ def readGPAD(gpadInFile):
         inferredFrom = inferredFrom.replace('UnIProtKB', 'UniProtKB')
 
         # 8:  Interacting_Taxon_ID
-        # MGI does nothing with this field
         taxID = tokens[7]
 
         # 9:  Annotation_Date (yyymmdd)
@@ -321,14 +320,14 @@ def readGPAD(gpadInFile):
         properties = tokens[11].replace('"','')
 
         #
-        # if non-MGI object, then add as Marker annotation and use 'gene prodcut' as a property
+        # if non-MGI object, then add as Marker annotation and use 'gene product' as a property
         # these are considered "isoforms" of the mouse gene
         # grab marker from gpiLookup
         # example: PR:Q9QWY8-2 -> MGI:1342335
         #       properties = 'gene product=PR:Q9QWY8-2'
         #       dbobjectID = 'MGI:1342335'
         #
-        print(dbobjectID)
+        #print(dbobjectID)
         databaseID, databaseTerm = dbobjectID.split(':')
         if databaseID in gpiSet:
             if gpiobjectID in gpiLookup:
@@ -459,6 +458,12 @@ def readGPAD(gpadInFile):
         if len(properties) > 0:
              properties = properties + '|'
         properties = properties + 'evidence=' + evidenceCode
+
+        # for taxID : append to "properties' as: Interacting taxon ID=xxxx
+        if len(taxID) > 0:
+                if len(properties) > 0:
+                        properties = properties + '|'
+                properties = properties + 'Interacting taxon ID=' + taxID
 
         #
         # re-format to mgi-property format
