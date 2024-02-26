@@ -266,7 +266,7 @@ def readGPAD(gpadInFile):
         tokens = line[:-1].split('\t')
 
         # 1:  DB_Object_ID : without extra MGI:
-        # sierra bug
+        # expect:  MGI:, PR:
         dbobjectID = tokens[0].replace('MGI:MGI:', 'MGI:')
 
         # 1:  DB_Object_ID with fill MGI:MGI:
@@ -285,8 +285,6 @@ def readGPAD(gpadInFile):
         references = tokens[4]
         references = references.replace('MGI:MGI:', 'MGI:')
         references = references.replace('PMID:', '')
-        # unexpected : PAINT issue but we want this to be processed
-        references = references.replace('GOREF', 'GO_REF')
 
         # 6:  Evidence_Type/ECO -> GO evidence (ecoLookupByEco)
         evidenceCode = tokens[5]
