@@ -70,19 +70,7 @@ providerMap = {
         }
 
 #
-#        'gb' : 9,
-#        'genbank' : 9,
-#        'ncbi' : 27,
-#        'sp_kw' : 111,
-#        'uniprot' : 13,
-
-#
 # ignore these providers
-#providerIgnore = [
-#        'ecogene',
-#        'pmid',
-#        'uniprotid',
-#]
 providerIgnore = [
         'cgd',
         'dictybase',
