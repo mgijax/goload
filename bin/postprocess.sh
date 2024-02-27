@@ -37,6 +37,7 @@ grep "cannot find RO:" goload.error | sort | uniq > roid.error
 
 rm -rf uber.error
 grep "uberon id not found" goload.error | sort | uniq > uber.error
+grep "uberon id has" goload.error | sort | uniq >> uber.error
 
 rm -rf uniprotkb.error
 cut -f1 mgi.gpad | grep UniProtKB | sort | uniq > uniprotkb.error
