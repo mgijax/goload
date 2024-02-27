@@ -229,7 +229,8 @@ def readGAF():
         modDate = tokens[13]
         createdBy = tokens[14]
 
-        if dbRef not in ['PMID:21873635']:
+        #if dbRef not in ['PMID:21873635']:
+        if dbRef not in ['GO_REF:0000033']:
             continue
         
         if mgiID.find('MGI:') < 0:
