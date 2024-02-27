@@ -4,6 +4,12 @@ ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload
 ${MIRROR_WGET}/download_package ftp.geneontology.org.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload.annotations
 
+TAG: goload-6-0-23-1
+DATE: 02/27/2024
+STAFF: lec
+gorefgen/gorefgen.py
+if dbRef not in ['GO_REF:0000033']:
+
 TAG: goload-6-0-22-12
 DATE: 10/25/2023
 STAFF: lec
