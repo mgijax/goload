@@ -362,9 +362,9 @@ def readGPAD(gpadInFile):
                 jnumIDFound = 1
 
         # if reference does not exist...skip it
+        # exclude Reactome references from pubmedFile/QC
         if jnumIDFound == 0:
             errorFile.write('Invalid Reference/either no GO_REF, no pubmed id or no jnum (5:References): %s\n%s\n****\n' % (references, line))
-            # exclude Reactome references from pubmedFile/QC
             if not references.startswith('Reactome'):
                 pubmedFile.write(references + '\n')
             hasError += 1
