@@ -79,6 +79,7 @@ hasError = 0
 #
 # use gpi file to build gpiLookup of object:MGI:xxxx relationship
 #
+databaseIDSet = ['MGI', 'PR', 'EMBL', 'ENSEMBL', 'RefSeq']
 gpiSet = ['PR', 'EMBL', 'ENSEMBL', 'RefSeq']
 gpiFileName = None
 gpiFile = None
@@ -333,6 +334,10 @@ def readGPAD(gpadInFile):
                 dbobjectID = gpiLookup[gpiobjectID][0]
             else:
                 errorFile.write('Invalid Object not in GPI file (1:DB_Object_ID): %s\n%s\n****\n' % (gpiobjectID, line))
+                hasError += 1
+                continue
+        if databaseID not in databaseIDSet:
+                errorFile.write('Invalid ool1/databaseID not expected (1:DB_Object_ID): %s\n%s\n****\n' % (databaseID, line))
                 hasError += 1
                 continue
 
