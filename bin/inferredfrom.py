@@ -132,7 +132,7 @@ def preCache():
         #
 
         cmd = '''select a._Accession_key, a.accID, a._Object_key, c.pubmedID
-                INTO TEMPORARY TABLE toCheck 
+                into temporary table toCheck 
                 from ACC_Accession a, VOC_Annot v, VOC_Evidence e, MGI_User u, BIB_Citation_Cache c
                 where a._MGIType_key = 25 
                 and v._AnnotType_key = 1000 
