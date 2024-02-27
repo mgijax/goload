@@ -225,6 +225,14 @@ STAT=$?
 checkStatus ${STAT} "${GOLOAD}/go_isoforms_display.sh"
 
 #
+# post processing
+#
+echo "Running postprocess.sh" >> ${LOG}
+${GOLOAD}/bin/postprocess.sh
+STAT=$?
+checkStatus ${STAT} "${GOLOAD}/postprocess.sh"
+
+#
 # run BIB_updateWFStatusGO()
 #
 echo "Running BIB_updateWFStatusGO" >> ${LOG}
