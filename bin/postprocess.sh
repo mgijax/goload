@@ -17,27 +17,27 @@ cd ${INPUTDIR}
 #select login from mgi_user where login like 'GO_%' order by login;
 #EOSQL
 
-rm -rf db_object_id
-cut -f1 mgi.gpad | cut -f1 -d":" | sort | uniq > db_object_id
+rm -rf db_object_id.error
+cut -f1 mgi.gpad | cut -f1 -d":" | sort | uniq > db_object_id.error
 
-rm -rf taxon
-cut -f8 mgi.gpad | sort | uniq > taxon
+rm -rf taxon.error
+cut -f8 mgi.gpad | sort | uniq > taxon.error
 
-rm -rf assignedby
-cut -f10 mgi.gpad | sort | uniq > assignedby
+rm -rf assignedby.error
+cut -f10 mgi.gpad | sort | uniq > assignedby.error
 
-rm -rf invalidobject
-grep "Invalid Object" goload.error | sort | uniq > invalidobject
+rm -rf invalidobject.error
+grep "Invalid Object" goload.error | sort | uniq > invalidobject.error
 
-rm -rf refs
-grep "Invalid Reference" goload.error | sort | uniq > refs
+rm -rf refs.error
+grep "Invalid Reference" goload.error | sort | uniq > refs.error
 
-rm -rf roid
-grep "cannot find RO:" goload.error | sort | uniq > roid
+rm -rf roid.error
+grep "cannot find RO:" goload.error | sort | uniq > roid.error
 
-rm -rf uber
-grep "uberon id not found" goload.error | sort | uniq > uber
+rm -rf uber.error
+grep "uberon id not found" goload.error | sort | uniq > uber.error
 
-rm -rf uniprotkb
-cut -f1 mgi.gpad | grep UniProtKB | sort | uniq > uniprotkb
+rm -rf uniprotkb.error
+cut -f1 mgi.gpad | grep UniProtKB | sort | uniq > uniprotkb.error
 
