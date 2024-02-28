@@ -410,7 +410,8 @@ def readGPAD(gpadInFile):
                     extensions = extensions.replace(roTerm, roLookup[roTerm][0])
                 else:
                     errorFile.write('Invalid Relation in GO-Property (11:Annotation_Extensions,12:Annotation_Properties): cannot find RO:,BFO: id: %s\n%s\n****\n' % (roTerm, line))
-                    hasError += 1
+                    # report error; but still process it
+                    #hasError += 1
 
             # re-format to use 'properties' format
             # (which will then be re-formated to mgi-property format)
