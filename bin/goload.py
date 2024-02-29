@@ -337,7 +337,7 @@ def readGPAD(gpadInFile):
                 hasError += 1
                 continue
         if databaseID not in databaseIDSet:
-                errorFile.write('Invalid ool1/databaseID not expected (1:DB_Object_ID): %s\n%s\n****\n' % (databaseID, line))
+                errorFile.write('Invalid col1/databaseID not expected (1:DB_Object_ID): %s\n%s\n****\n' % (databaseID, line))
                 hasError += 1
                 continue
 

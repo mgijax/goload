@@ -3,6 +3,14 @@
 #
 # grep unique errors 
 #
+# Invalid Object not in GPI file (1:DB_Object_ID): 
+# Invalid col1/databaseID not expected (1:DB_Object_ID): 
+# Invalid Reference/either no GO_REF, no pubmed id or no jnum (5:References): 
+# Invalid ECO id : cannot find valid GO Evidence Code (6:Evidence_Type): 
+# Invalid Relation in GO-Property (11:Annotation_Extensions,12:Annotation_Properties): cannot find RO:,BFO: id: 
+# Invalid Relation in GO-Property (3:Relation Ontology): cannot find RO:,BFO: id: 
+# Missing Assigned By (10):
+#
 
 cd `dirname $0`
 
@@ -28,6 +36,9 @@ cut -f10 mgi.gpad | sort | uniq > assignedby.error
 
 rm -rf invalidobject.error
 grep "Invalid Object" goload.error | sort | uniq > invalidobject.error
+
+rm -rf invalidcol1.error
+grep "Invalid col1" goload.error | sort | uniq > invalidcol1.error
 
 rm -rf refs.error
 grep "Invalid Reference" goload.error | sort | uniq > refs.error
