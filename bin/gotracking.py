@@ -16,7 +16,7 @@ import sys
 import os
 import db
 
-#db.setTrace()
+db.setTrace()
 
 # create new go_trackin records
 
