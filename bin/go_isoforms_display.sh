@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# process annotation isoform  and load into MGI_Note
+# process annotation isoform and load into MGI_Note
 #
 
 cd `dirname $0`

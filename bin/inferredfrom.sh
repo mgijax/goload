@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# process inferredfrom and load into ACC_Accession table
+# process inferredfrom and load into ACC_Accession
 #
 
 cd `dirname $0` 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# grep unique errors 
+# grep unique errors and store in seperate error files to make it a little easier to see
 #
 # Invalid Object not in GPI file (1:DB_Object_ID): 
 # Invalid col1/databaseID not expected (1:DB_Object_ID): 
