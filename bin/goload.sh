@@ -42,7 +42,8 @@
 #
 # History:
 #
-# lec	02/16/2010 - TR10035
+# 03/14/2024    lec
+#       wts2-1155/GOC taking over GOA mouse, GOA human, etc.
 #
 
 cd `dirname $0`
@@ -131,6 +132,9 @@ ${PROISOFORMLOAD}/bin/proisoform.sh
 STAT=$?
 checkStatus ${STAT} "proisoformload process"
 
+#
+# generate th mgi.gpi file
+#
 echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
 ${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
@@ -153,7 +157,6 @@ cd ${OUTPUTDIR}
 
 #
 # run annotation load with an empty file to remove previous data
-# not needed right now
 #
 echo "Running annotation load to delete existing data (_annottype_key = 1000)" >> ${LOG}
 rm -rf ${INPUTDIR}/goload.annot
