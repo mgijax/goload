@@ -4,8 +4,6 @@
 # defaults for GO/Mouse csh file
 #
 
-#. ${ANNOTLOAD}/Configuration
-
 setenv ANNOTDATADIR             ${DATALOADSOUTPUT}/mgi/goload/input
 setenv ANNOTMODE                new
 #setenv ANNOTMODE                preview
