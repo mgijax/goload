@@ -2,15 +2,12 @@
 #
 # preprocessrefs.py
 #
-#       The purpose of this script is to process a set of pubmedis from goamouse or gomousenoctua
+#       The purpose of this script is to process a set of pubmedis from goload
 #
 #       The input files are generated from:
 #
-#               goamouse/goamouse.sh
-#                       - creates goamouse/input/goa_mouse_isoform.pmid, goamouse/input/goa_mouse.pmid
-#
-#               gomousenoctua/gomousenoctua.sh
-#                       - creates gomousenoctua/input/gomousenoctua.pmid
+#               goload.sh
+#                       - creates input/goload.pmid
 #
 #       Then the specific shell script will call preprocessrefs.py, passing it the input file name
 #
@@ -43,8 +40,6 @@ import db
 
 print('\nRunning pre-procesing pmid: ', sys.argv[1])
 
-db.useOneConnection(1)
-
 # read input file & add quotes for SQL query
 inFile = open(sys.argv[1], 'r')
 pubmedids = []
@@ -52,9 +47,6 @@ for line in inFile.readlines():
         p = "'" + line[:-1] + "'"
         pubmedids.append(p)
 inFile.close()
-
-relevanceSQL = ""
-jnumSQL = ""
 
 for i in pubmedids:
     # select where jnumid is null ; includes relevance = keep and discard
@@ -65,6 +57,9 @@ for i in pubmedids:
     and jnumid is null
     ''' % i
     #''' % ','.join(pubmedids)
+
+    relevanceSQL = ""
+    jnumSQL = ""
 
     results = db.sql(cmd, 'auto')
     for r in results:
@@ -94,5 +89,4 @@ else:
        print('no jnum changes needed')
 
 db.commit()
-db.useOneConnection(0)
 

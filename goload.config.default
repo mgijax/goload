@@ -1,16 +1,9 @@
 #format: sh
 #
-#  goamouse.config
+#  goload.config
 #
 #  This file sets up environment variables that are needed for a specific
 #  data provider input file to be handled by the annotation loader.
-#
-# GOA config file for processing GOA file and loading annotations
-#
-# Note that we use the GOA file from EBI since they are the original
-# source of this information.
-# There is a GOA file available on the GO site, but the MGI GO group
-# suspects that the GO file is more out-of-date than the EBI file.
 #
 ###########################################################################
 
@@ -43,45 +36,25 @@ export ANNOTLOADER_CSH
 ###########################################################################
 
 # Path name of the archive, logs, reports and output directories
-FILEDIR=${DATALOADSOUTPUT}/go/goamouse
+FILEDIR=${DATALOADSOUTPUT}/mgi/goload
 ARCHIVEDIR=${FILEDIR}/archive
 LOGDIR=${FILEDIR}/logs
 RPTDIR=${FILEDIR}/reports
 OUTPUTDIR=${FILEDIR}/output
 INPUTDIR=${FILEDIR}/input
-INFILE_NAME=${INPUTDIR}/goamouse.annot
-export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR INFILE_NAME
+FROM_MGIINFILE_NAME_GZ=${DATADOWNLOADS}/snapshot.geneontology.org/annotations/mgi.gpad.gz
+MGIINFILE_NAME_GZ=${INPUTDIR}/mgi.gpad.gz
+MGIINFILE_NAME_GPAD=${INPUTDIR}/mgi.gpad
+INFILE_NAME=${INPUTDIR}/goload.annot
+INFILE_NAME_PMID=${INPUTDIR}/goload.pmid
+PUBMED_ERROR=${INPUTDIR}/pubmed.error
+INFILE_NAME_ERROR=${INPUTDIR}/goload.error
+export FILEDIR ARCHIVEDIR LOGDIR RPTDIR OUTPUTDIR INPUTDIR
+export MGIINFILE_NAME_GZ MGIINFILE_NAME_GPAD 
+export INFILE_NAME INFILE_NAME_PMID INFILE_NAME_ERROR PUBMED_ERROR
 
-PROTEIN_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse.gaf.gz
-PROTEIN_GAF=${INPUTDIR}/goa_mouse.gaf
-PROTEIN_SORTED=${INPUTDIR}/goa_mouse.gaf.sorted
-
-ISOFORM_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse_isoform.gaf.gz
-ISOFORM_GAF=${INPUTDIR}/goa_mouse_isoform.gaf
-ISOFORM_SORTED=${INPUTDIR}/goa_mouse_isoform.gaf.sorted
-
-PROTEIN_PMID=${INPUTDIR}/goa_mouse.pmid
-ISOFORM_PMID=${INPUTDIR}/goa_mouse_isoform.pmid
-
-#COMPLEX_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse_complex.gaf.gz
-#COMPLEX_GAF=${INPUTDIR}/goa_mouse_complex.gaf
-#COMPLEX_SORTED=${INPUTDIR}/goa_mouse_complex.gaf.sorted
-
-#RNA_GZ=${DATADOWNLOADS}/goa/MOUSE/goa_mouse_rna.gaf.gz
-#RNA_GAF=${INPUTDIR}/goa_mouse_rna.gaf
-#RNA_SORTED=${INPUTDIR}/goa_mouse_rna.gaf.sorted
-
-export PROTEIN_GZ PROTEIN_GAF PROTEIN_SORTED
-export ISOFORM_GZ ISOFORM_GAF ISOFORM_SORTED
-export PROTEIN_PMID ISOFORM_PMID
-#export COMPLEX_GZ COMPLEX_GAF COMPLEX_SORTED
-#export RNA_GZ RNA_GAF RNA_SORTED
-
-GOAEDITOR=GOA
-ANNOTINPUTFILE=${INPUTDIR}/goamouse.annot
-ANNOTLOG=${ANNOTINPUTFILE}.log
-DELETEUSER="GOA_"
-export GOAEDITOR ANNOTINPUTFILE ANNOTLOG DELETEUSER
+ECOFILE=${DATADOWNLOADS}/raw.githubusercontent.com/evidenceontology/evidenceontology/master/gaf-eco-mapping-derived.txt
+export ECOFILE
 
 UBERONFILE=${DATADOWNLOADS}/purl.obolibrary.org/obo/uberon.obo
 UBERONTEXTFILE=${OUTPUTDIR}/uberon.txt
@@ -91,17 +64,17 @@ GPIFILE=${PUBREPORTDIR}/output/mgi.gpi
 export GPIFILE
 
 # Complete path name of the log files
-LOG_FILE=${LOGDIR}/goamouse.log
-LOG_PROC=${LOGDIR}/goamouse.proc.log
-LOG_DIAG=${LOGDIR}/goamouse.diag.log
-LOG_CUR=${LOGDIR}/goamouse.cur.log
-LOG_VAL=${LOGDIR}/goamouse.val.log
+LOG_FILE=${LOGDIR}/goload.log
+LOG_PROC=${LOGDIR}/goload.proc.log
+LOG_DIAG=${LOGDIR}/goload.diag.log
+LOG_CUR=${LOGDIR}/goload.cur.log
+LOG_VAL=${LOGDIR}/goload.val.log
 # Send debug messages to the diagnostic log (true or false)
 LOG_DEBUG=false
 export LOG_FILE LOG_PROC LOG_DIAG LOG_CUR LOG_VAL LOG_DEBUG
 
 # The name of the job stream for the load
-JOBSTREAM=goamouseload
+JOBSTREAM=goload
 export JOBSTREAM
 
 ###########################################################################
@@ -111,7 +84,7 @@ export JOBSTREAM
 ###########################################################################
 
 # The name of the load for the subject of an email notification
-MAIL_LOADNAME="GOA/Mouse annotation load"
+MAIL_LOADNAME="GO/Mouse/GPAD annotation load"
 export MAIL_LOADNAME
 
 INSTALLDIR=${GOLOAD}

@@ -47,7 +47,7 @@ def processUberon():
     # read/store UBERON-to-EMAPA info
     #
 
-    print('reading uberon -> emapa translation file...')
+    print('reading uberon -> emapa translation file')
 
     #
     # read/store list of primary EMAPA ids

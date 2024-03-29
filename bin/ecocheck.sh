@@ -1,12 +1,12 @@
 #!/bin/sh
 
 #
-# Template
+# check ECO ID -> Evidence Code associations used in GO annotatins
 #
 
 cd `dirname $0` 
 
-. ${GOLOAD}/gomousenoctua/gomousenoctua.config
+. ${GOLOAD}/goload.config
 
 ECOLOG=${LOGDIR}/ecocheck.sh.log
 rm -rf ${ECOLOG}
@@ -19,7 +19,7 @@ ${PYTHON} ${GOLOAD}/lib/ecolib.py | sort | tee -a ${ECOLOG}
 
 echo '' | tee -a ${ECOLOG}
 
-echo 'Eco Id -> Evidence Code associations used in GO annotatins' | tee -a ${ECOLOG}
+echo 'ECO Id -> Evidence Code associations used in GO annotatins' | tee -a ${ECOLOG}
 
 cat - <<EOSQL | ${PG_DBUTILS}/bin/doisql.csh $0 | tee -a ${ECOLOG}
 select distinct p.value, t.term, t.abbreviation, m.symbol
