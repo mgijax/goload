@@ -449,10 +449,14 @@ def readGPAD(gpadInFile):
                 errorFile.write('Invalid Relation in GO-Property (3:Relation Ontology): cannot find RO:,BFO: id: %s\n%s\n****\n' % (g, line))
                 hasError += 1
 
+        # set qualifier to MGI-qualifier term
+        # if RO:0002325, then MGI-qualifier = 'colocalizes_with'
+        # if RO:0002326, then MGI-qualifier = 'contributes_to'
         if qualifier in ('RO:0002325', 'RO:0002326'):
                 qualifier = roLookup[qualifier][0]
                 if negation == 'NOT':
                         qualifier = negation + '|' + qualifier
+        # else MGI-qualifier = input file 'negation' value
         else:
                 qualifier = negation
 
