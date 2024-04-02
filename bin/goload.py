@@ -449,6 +449,13 @@ def readGPAD(gpadInFile):
                 errorFile.write('Invalid Relation in GO-Property (3:Relation Ontology): cannot find RO:,BFO: id: %s\n%s\n****\n' % (g, line))
                 hasError += 1
 
+        if qualifier in ('RO:0002325', 'RO:0002326'):
+                qualifier = roLookup[qualifier][0]
+                if negation == 'NOT':
+                        qualifier = negation + '|' + qualifier
+        else:
+                qualifier = negation
+
         if len(assignedBy) == 0:
                 errorFile.write('Missing Assigned By (10): \n****%s\n' % (line))
                 hasError += 1
@@ -505,7 +512,7 @@ def readGPAD(gpadInFile):
         # write data to the annotation file
         # note that the annotation load will qc duplicate annotations itself
         # (dbobjectID, goID, goEvidenceCode, jnumID, properties, inferred-from)
-        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, negation, assignedBy, annotDate, properties))
+        annotFile.write(annotLine % (goID, dbobjectID, jnumID, goEvidenceCode, inferredFrom, qualifier, assignedBy, annotDate, properties))
 
     return 0
 
