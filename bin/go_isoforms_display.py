@@ -182,10 +182,10 @@ def transformProperties(properties, providerLinkMap={}):
                 url = providerLinkMap['RefSeq'].replace('@@@@', linkValue)
                 value = makeNoteTag(url, value)
                 
-            elif PRO_regex.match(value) and 'Protein Ontology' in providerLinkMap:
+            elif PRO_regex.match(value):
                 # keep the PR: prefix
                 linkValue = value
-                url = providerLinkMap['Protein Ontology'].replace('@@@@', linkValue)
+                url = 'https://proconsortium.org/app/entry/' + linkValue
                 value = makeNoteTag(url, value)
                 
             elif REFSEQ_regex.match(value) and 'RefSeq' in providerLinkMap:
