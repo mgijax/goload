@@ -52,8 +52,6 @@ DATABASE_PROVIDERS = [
     ('CL','Cell Ontology'),
     # Ensembl
     ('Ensembl Gene Model','Ensembl Gene Model'),
-    # PR: IDs
-    ('Protein Ontology', 'Protein Ontology'),
     # UniProtKB: IDs
     ('SWISS-PROT', 'UniProt')
 ]
@@ -266,10 +264,10 @@ def transformProperties(properties, providerLinkMap={}):
             url = providerLinkMap['Ensembl Gene Model'].replace('@@@@', linkValue)
             value = makeNoteTag(url, value)
         
-        elif PRO_regex.match(value) and 'Protein Ontology' in providerLinkMap:
+        elif PRO_regex.match(value):
              # keep the PR: prefix
             linkValue = value
-            url = providerLinkMap['Protein Ontology'].replace('@@@@', linkValue)
+            url = 'https://proconsortium.org/app/entry/' + linkValue
             value = makeNoteTag(url, value)
         
         elif UNIPROTKB_regex.match(value) and 'UniProt' in providerLinkMap:

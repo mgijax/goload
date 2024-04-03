@@ -45,7 +45,6 @@ CREATEDBY_KEY = 1001
 DATABASE_PROVIDERS = [
     ('Sequence DB', 'EMBL'),
     ('RefSeq', 'RefSeq'),
-    ('Protein Ontology', 'Protein Ontology'),
     ('SWISS-PROT', 'UniProt')
 ]
 
