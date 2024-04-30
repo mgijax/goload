@@ -266,8 +266,8 @@ def transformProperties(properties, providerLinkMap={}):
         
         elif PRO_regex.match(value):
              # keep the PR: prefix
-            linkValue = value
-            url = 'https://proconsortium.org/app/entry/' + linkValue
+            linkValue = value.replace(':','_')
+            url = 'http:/purl.obolibrary.org/obo/' + linkValue
             value = makeNoteTag(url, value)
         
         elif UNIPROTKB_regex.match(value) and 'UniProt' in providerLinkMap:
