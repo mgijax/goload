@@ -185,7 +185,6 @@ def transformProperties(properties, providerLinkMap={}):
                 # keep the PR: prefix
                 linkValue = value.replace(':','_')
                 url = 'http:/purl.obolibrary.org/obo/' + linkValue
-                #url = 'https://proconsortium.org/app/entry/' + linkValue
                 value = makeNoteTag(url, value)
                 
             elif REFSEQ_regex.match(value) and 'RefSeq' in providerLinkMap:
