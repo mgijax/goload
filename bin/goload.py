@@ -326,7 +326,7 @@ def readGPAD(gpadInFile):
         #       properties = 'gene product=PR:Q9QWY8-2'
         #       dbobjectID = 'MGI:1342335'
         #
-        #print(dbobjectID)
+        print(dbobjectID)
         databaseID, databaseTerm = dbobjectID.split(':')
         if databaseID in gpiSet:
             if gpiobjectID in gpiLookup:
