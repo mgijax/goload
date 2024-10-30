@@ -4,6 +4,12 @@ ${MIRROR_WGET}/download_package raw.githubusercontent.com.evidenceontology
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-24-3
+DATE: 10/30/2024
+STAFF: lec
+wts2-1155/e4g-10/post GOC/snapshot changes
+comment out test print()
+
 TAG: goload-6-0-24-2
 DATE: 09/30/2024
 STAFF: lec
