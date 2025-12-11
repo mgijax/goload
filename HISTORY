@@ -6,7 +6,7 @@ ${MIRROR_WGET}/download_package current.geneontology.org.goload
 
 TAG: no new tag
 DATE: 11/19/2025
-wts2-1684/sprt-18/Install new GOC Snapshot
+wts2-1684/sprt-18/Process new GOC Snapshot
 still using snapshot.geneontology.org
 just added comments to history to note new GOC/snapshot file
 no coding changes
