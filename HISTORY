@@ -2,14 +2,13 @@ ${MIRROR_WGET}/download_package purl.obolibrary.org.pr
 ${MIRROR_WGET}/download_package purl.obolibrary.org.uberon.obo
 ${MIRROR_WGET}/download_package raw.githubusercontent.com.evidenceontology
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
-${MIRROR_WGET}/download_package current.geneontology.org.goload
+${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
-TAG: no new tag
-DATE: 11/19/2025
+TAG: goload-6-0-27-1
+DATE: 03/06/2026
 wts2-1684/sprt-18/Process new GOC Snapshot
 still using snapshot.geneontology.org
-just added comments to history to note new GOC/snapshot file
-no coding changes
+        modified:   bin/goload.sh : call to generate GO_gpi.py fix
 
 TAG: goload-6-0-24-3
 DATE: 10/30/2024

@@ -137,7 +137,8 @@ checkStatus ${STAT} "proisoformload process"
 #
 echo "Generate ${PUBREPORTDIR}/output/mgi.gpi"
 REPORTOUTPUTDIR=${PUBREPORTDIR}/output;export REPORTOUTPUTDIR
-${PYTHON} ${PUBRPTS}/daily/GO_gpi.py
+cd ${PUBRPTS}/daily
+${PYTHON} GO_gpi.py
 STAT=$?
 checkStatus ${STAT} "create ${PUBREPORTDIR}/output/mgi.gpi file"
 
