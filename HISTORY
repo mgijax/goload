@@ -4,9 +4,10 @@ ${MIRROR_WGET}/download_package raw.githubusercontent.com.evidenceontology
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-27-3
 TAG: goload-6-0-27-2
 TAG: goload-6-0-27-1
-DATE: 03/10/2026
+DATE: 03/23/2026
 wts2-1684/sprt-18/Process new GOC Snapshot
 still using snapshot.geneontology.org
         modified:   bin/goload.sh : call to generate GO_gpi.py fix
