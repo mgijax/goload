@@ -32,7 +32,7 @@ import os
 import db
 
 # only turn on when debugging
-#db.setTrace()
+db.setTrace()
 
 #
 # Main
@@ -48,6 +48,9 @@ for line in inFile.readlines():
         pubmedids.append(p)
 inFile.close()
 
+relevanceSQL = ""
+jnumSQL = ""
+
 for i in pubmedids:
     # select where jnumid is null ; includes relevance = keep and discard
     cmd = '''
@@ -57,9 +60,6 @@ for i in pubmedids:
     and jnumid is null
     ''' % i
     #''' % ','.join(pubmedids)
-
-    relevanceSQL = ""
-    jnumSQL = ""
 
     results = db.sql(cmd, 'auto')
     for r in results:
@@ -83,7 +83,7 @@ else:
        print('no relevance changes needed')
 
 if len(jnumSQL) > 0:
-       #print(jnumSQL)
+#       #print(jnumSQL)
        db.sql(jnumSQL, None)
 else:
        print('no jnum changes needed')

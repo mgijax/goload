@@ -4,6 +4,11 @@ ${MIRROR_WGET}/download_package raw.githubusercontent.com.evidenceontology
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
 
+TAG: goload-6-0-27-4
+DATE: 04/02/2026
+wts2-1838/refs used in GO load not being processed from 'discard' status
+        modified:   bin/preprocessrefs.py
+
 TAG: goload-6-0-27-3
 TAG: goload-6-0-27-2
 TAG: goload-6-0-27-1
