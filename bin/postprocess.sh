@@ -26,13 +26,13 @@ cd ${INPUTDIR}
 #EOSQL
 
 rm -rf db_object_id.error
-cut -f1 mgi.gpad | cut -f1 -d":" | sort | uniq > db_object_id.error
+cut -f1 MOUSE-mod.gpad | cut -f1 -d":" | sort | uniq > db_object_id.error
 
 rm -rf taxon.error
-cut -f8 mgi.gpad | sort | uniq > taxon.error
+cut -f8 MOUSE-mod.gpad | sort | uniq > taxon.error
 
 rm -rf assignedby.error
-cut -f10 mgi.gpad | sort | uniq > assignedby.error
+cut -f10 MOUSE-mod.gpad | sort | uniq > assignedby.error
 
 rm -rf invalidobject.error
 grep "Invalid Object" goload.error | sort | uniq > invalidobject.error
@@ -51,5 +51,5 @@ grep "uberon id not found" goload.error | sort | uniq > uberon.error
 grep "uberon id has" goload.error | sort | uniq >> uberon.error
 
 rm -rf uniprotkb.error
-cut -f1 mgi.gpad | grep UniProtKB | sort | uniq > uniprotkb.error
+cut -f1 MOUSE-mod.gpad | grep UniProtKB | sort | uniq > uniprotkb.error
 
