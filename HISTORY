@@ -2,7 +2,12 @@ ${MIRROR_WGET}/download_package purl.obolibrary.org.pr
 ${MIRROR_WGET}/download_package purl.obolibrary.org.uberon.obo
 ${MIRROR_WGET}/download_package raw.githubusercontent.com.evidenceontology
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
-${MIRROR_WGET}/download_package snapshot.geneontology.org.goload
+${MIRROR_WGET}/download_package current.geneontology.org.goload
+
+TAG: goload-6-0-28-1
+DATE: 06/29/2026
+wts2-1868/URLs changes for the GO annotation files
+        modified:   goload.config.default
 
 TAG: goload-6-0-27-4
 DATE: 04/02/2026
