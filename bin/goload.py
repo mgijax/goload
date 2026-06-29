@@ -320,7 +320,6 @@ def readGPAD(gpadInFile):
 	# replace this by multiple 'contributor-id=' lines
         properties = tokens[11].replace('"','')
         properties = properties.replace('|https:', '|contributor-id=https:')
-        properties = properties.split('|')
 
         #
         # if non-MGI object, then add as Marker annotation and use 'gene product' as a property
