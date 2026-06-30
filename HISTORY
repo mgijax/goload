@@ -4,6 +4,7 @@ ${MIRROR_WGET}/download_package raw.githubusercontent.com.evidenceontology
 ${MIRROR_WGET}/download_package ftp.ebi.ac.uk.goload 
 ${MIRROR_WGET}/download_package current.geneontology.org.goload
 
+TAG: goload-6-0-28-6
 TAG: goload-6-0-28-5
 TAG: goload-6-0-28-4
 TAG: goload-6-0-28-3
